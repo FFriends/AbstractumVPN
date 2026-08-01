@@ -1,0 +1,106 @@
+name: 'Abstractum — проверка сборки'
+
+# Быстрая обратная связь на пуш: собирается ли дерево вообще.
+# Инсталляторы здесь НЕ собираются — они долгие и нужны только релизу.
+# Локальной сборки у нас нет, поэтому это единственное место, где ошибка
+# компиляции обнаруживается до еженедельного релиза.
+
+on:
+  push:
+    branches:
+      - dev
+      - 'feature/**'
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - 'metadata/**'
+  pull_request:
+    branches:
+      - dev
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # Новый пуш в ту же ветку отменяет предыдущую проверку — она уже неактуальна.
+  group: build-check-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  QT_VERSION: 6.10.1
+  CONAN_VERSION: 2.28.0
+  PYTHON_VERSION: '3.14'
+  QT_MIRROR: https://mirrors.ocf.berkeley.edu/qt/
+  QT_MODULES: 'qtremoteobjects qt5compat qtshadertools'
+
+jobs:
+  Linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: 'linux'
+          target: 'desktop'
+          arch: 'linux_gcc_64'
+          modules: ${{ env.QT_MODULES }}
+          dir: ${{ runner.temp }}
+          setup-python: 'true'
+          set-env: 'true'
+          aqtversion: '==3.3.0'
+          py7zrversion: '==0.22.*'
+          extra: '--base ${{ env.QT_MIRROR }}'
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - run: pip install "conan==${{ env.CONAN_VERSION }}"
+
+      - run: sudo apt-get update && sudo apt-get install -y libxkbcommon-x11-0 libsecret-1-dev
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+          fetch-depth: 1
+
+      - name: 'Сборка без инсталлятора'
+        shell: bash
+        env:
+          QT_INSTALL_DIR: ${{ runner.temp }}
+        run: bash deploy/build.sh
+
+  Windows:
+    runs-on: windows-2022
+    steps:
+      - uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2022_64'
+          modules: ${{ env.QT_MODULES }}
+          dir: ${{ runner.temp }}
+          setup-python: 'true'
+          set-env: 'true'
+          aqtversion: '==3.3.0'
+          py7zrversion: '==0.22.*'
+          extra: '--base ${{ env.QT_MIRROR }}'
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - run: pip install "conan==${{ env.CONAN_VERSION }}"
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+          fetch-depth: 1
+
+      - name: 'Сборка без инсталлятора'
+        shell: cmd
+        env:
+          QT_INSTALL_DIR: ${{ runner.temp }}
+        run: deploy\build.bat

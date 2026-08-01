@@ -1,0 +1,328 @@
+name: 'Abstractum — еженедельный релиз'
+
+# Сборка идёт ТОЛЬКО здесь. Локально проект не компилируется — см. docs PLAN.md.
+#
+# Расписание: понедельник 03:00 UTC. Релиз собирается ТОЛЬКО если с момента
+# прошлого релиза появились коммиты. Нет изменений — джоб выходит, ничего не
+# публикуя и не тратя раннеры на сборку.
+#
+# ВАЖНО (ограничения GitHub, не наши):
+#  * schedule срабатывает ТОЛЬКО для файла на ветке по умолчанию;
+#  * в форках запланированные workflow отключены, пока их не включат вручную
+#    во вкладке Actions;
+#  * при 60 днях без активности в репозитории расписание автоматически глохнет.
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Собрать релиз даже если новых коммитов нет'
+        type: boolean
+        default: false
+      prerelease:
+        description: 'Пометить релиз как pre-release'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: abstractum-release
+  cancel-in-progress: false
+
+env:
+  QT_VERSION: 6.10.1
+  QIF_VERSION: '4.7'
+  CONAN_VERSION: 2.28.0
+  PYTHON_VERSION: '3.14'
+  QT_MIRROR: https://mirrors.ocf.berkeley.edu/qt/
+  QT_MODULES: 'qtremoteobjects qt5compat qtshadertools'
+
+jobs:
+  # ---------------------------------------------------------------------------
+  Check:
+    name: 'Проверка изменений и расчёт версии'
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.decide.outputs.should_release }}
+      tag: ${{ steps.decide.outputs.tag }}
+      base_version: ${{ steps.decide.outputs.base_version }}
+      commit_count: ${{ steps.decide.outputs.commit_count }}
+      previous_tag: ${{ steps.decide.outputs.previous_tag }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 'Решение: релизить или нет'
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE: ${{ inputs.force }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Базовая версия — единственный источник правды, из CMakeLists.txt.
+          # Руками её здесь не дублируем.
+          base_version=$(sed -n 's/^set(AMNEZIAVPN_VERSION \([0-9.]*\)).*/\1/p' CMakeLists.txt)
+          if [ -z "$base_version" ]; then
+            echo "::error file=CMakeLists.txt::Не удалось извлечь AMNEZIAVPN_VERSION"
+            exit 1
+          fi
+          echo "base_version=$base_version" >> "$GITHUB_OUTPUT"
+
+          # Прошлый релиз берём из релизов, а не из тегов: тег может быть создан
+          # руками и не соответствовать опубликованному.
+          previous_tag=$(gh release list --limit 1 --json tagName --jq '.[0].tagName // ""')
+          echo "previous_tag=$previous_tag" >> "$GITHUB_OUTPUT"
+
+          if [ -z "$previous_tag" ]; then
+            echo "Прошлых релизов нет — это первый."
+            commit_count=$(git rev-list --count HEAD)
+            should_release=true
+          elif git rev-parse -q --verify "refs/tags/${previous_tag}" >/dev/null; then
+            commit_count=$(git rev-list --count "${previous_tag}..HEAD")
+            if [ "$commit_count" -gt 0 ]; then
+              should_release=true
+            else
+              should_release=false
+            fi
+          else
+            # Релиз есть, а тега в истории нет (например, тег удалён или релиз
+            # сделан с другой ветки). Молча собирать нельзя — это скроет проблему.
+            echo "::warning::Релиз ${previous_tag} есть, но тега нет в истории. Считаю изменения от начала ветки."
+            commit_count=$(git rev-list --count HEAD)
+            should_release=true
+          fi
+
+          if [ "${FORCE:-false}" = "true" ]; then
+            echo "Ручной запуск с force=true — релизим независимо от изменений."
+            should_release=true
+          fi
+
+          echo "commit_count=$commit_count" >> "$GITHUB_OUTPUT"
+          echo "should_release=$should_release" >> "$GITHUB_OUTPUT"
+
+          # Тег: <версия из CMake>-<ISO-год>w<ISO-неделя>, напр. v5.0.0.5-2026w31.
+          # ISO-неделя (%G/%V), а не %Y/%W — иначе на стыке года неделя уезжает.
+          week=$(date -u +%Gw%V)
+          tag="v${base_version}-${week}"
+
+          # Повторный запуск на той же неделе не должен падать на занятом теге.
+          if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+            n=2
+            while git rev-parse -q --verify "refs/tags/${tag}.${n}" >/dev/null; do
+              n=$((n + 1))
+            done
+            tag="${tag}.${n}"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### Решение по релизу"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Прошлый релиз | \`${previous_tag:-нет}\` |"
+            echo "| Новых коммитов | ${commit_count} |"
+            echo "| Собираем | ${should_release} |"
+            echo "| Тег | \`${tag}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  Build-Linux:
+    name: 'Сборка Linux'
+    needs: Check
+    if: needs.Check.outputs.should_release == 'true'
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: 'Установка Qt'
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: 'linux'
+          target: 'desktop'
+          arch: 'linux_gcc_64'
+          modules: ${{ env.QT_MODULES }}
+          dir: ${{ runner.temp }}
+          setup-python: 'true'
+          tools: 'tools_ifw'
+          set-env: 'true'
+          aqtversion: '==3.3.0'
+          py7zrversion: '==0.22.*'
+          extra: '--base ${{ env.QT_MIRROR }}'
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 'Установка Conan'
+        run: pip install "conan==${{ env.CONAN_VERSION }}"
+
+      - name: 'Системные пакеты'
+        run: sudo apt-get update && sudo apt-get install -y libxkbcommon-x11-0 libsecret-1-dev
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+          fetch-depth: 1
+
+      - name: 'Сборка'
+        shell: bash
+        env:
+          QT_INSTALL_DIR: ${{ runner.temp }}
+        run: bash deploy/build.sh --installer all
+
+      - name: 'Артефакты'
+        uses: actions/upload-artifact@v4
+        with:
+          name: abstractum-linux
+          # if-no-files-found: error — молчаливый пустой релиз хуже красной сборки.
+          # Пути проверить на первом прогоне и при расхождении поправить здесь.
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            deploy/build/AmneziaVPN*.run
+            deploy/build/*.deb
+            deploy/build/*.rpm
+            deploy/build/*.tar.gz
+
+  # ---------------------------------------------------------------------------
+  Build-Windows:
+    name: 'Сборка Windows'
+    needs: Check
+    if: needs.Check.outputs.should_release == 'true'
+    runs-on: windows-2022
+
+    steps:
+      - name: 'Установка Qt'
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2022_64'
+          modules: ${{ env.QT_MODULES }}
+          dir: ${{ runner.temp }}
+          setup-python: 'true'
+          tools: 'tools_ifw'
+          set-env: 'true'
+          aqtversion: '==3.3.0'
+          py7zrversion: '==0.22.*'
+          extra: '--base ${{ env.QT_MIRROR }}'
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 'Установка Conan'
+        run: pip install "conan==${{ env.CONAN_VERSION }}"
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+          fetch-depth: 1
+
+      - name: 'Сборка'
+        shell: cmd
+        env:
+          QT_INSTALL_DIR: ${{ runner.temp }}
+        run: deploy\build.bat --installer all
+
+      - name: 'Артефакты'
+        uses: actions/upload-artifact@v4
+        with:
+          name: abstractum-windows
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            deploy/build/*.exe
+            deploy/build/*.msi
+
+  # ---------------------------------------------------------------------------
+  Release:
+    name: 'Публикация релиза'
+    needs: [Check, Build-Linux, Build-Windows]
+    if: needs.Check.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 'Скачать артефакты сборок'
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: 'Список того, что публикуем'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$(ls -A artifacts 2>/dev/null)" ]; then
+            echo "::error::Артефактов нет — публиковать нечего."
+            exit 1
+          fi
+          ls -lhR artifacts
+
+      - name: 'Создать релиз'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.Check.outputs.tag }}
+          PREVIOUS_TAG: ${{ needs.Check.outputs.previous_tag }}
+          COMMIT_COUNT: ${{ needs.Check.outputs.commit_count }}
+          BASE_VERSION: ${{ needs.Check.outputs.base_version }}
+          PRERELEASE: ${{ inputs.prerelease == null && 'true' || inputs.prerelease }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          notes_file=$(mktemp)
+          {
+            echo "Автоматическая еженедельная сборка AbstractumVPN."
+            echo ""
+            echo "* Базовая версия: \`${BASE_VERSION}\` (из \`CMakeLists.txt\`)"
+            echo "* Коммитов с прошлого релиза: **${COMMIT_COUNT}**"
+            echo "* Собрано из: \`${GITHUB_SHA}\`"
+            echo ""
+            echo "## Изменения"
+            echo ""
+            if [ -n "${PREVIOUS_TAG}" ] && git rev-parse -q --verify "refs/tags/${PREVIOUS_TAG}" >/dev/null; then
+              git log --no-merges --pretty='* %s (%h)' "${PREVIOUS_TAG}..HEAD"
+            else
+              git log --no-merges --pretty='* %s (%h)' -n 50
+            fi
+            echo ""
+            echo "---"
+            echo ""
+            echo "Собрано: Windows x64, Linux x64. macOS, Android и iOS требуют"
+            echo "сертификатов подписи и в этот пайплайн пока не входят."
+          } > "$notes_file"
+
+          gh release create "$TAG" \
+            --title "AbstractumVPN $TAG" \
+            --notes-file "$notes_file" \
+            --target "$GITHUB_SHA" \
+            $([ "$PRERELEASE" = "true" ] && echo --prerelease) \
+            artifacts/*
+
+          echo "Опубликовано: $TAG" >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  Skipped:
+    name: 'Изменений нет — релиз пропущен'
+    needs: Check
+    if: needs.Check.outputs.should_release == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "С релиза ${{ needs.Check.outputs.previous_tag }} новых коммитов нет. Сборка не запускалась."
+          echo "Изменений с \`${{ needs.Check.outputs.previous_tag }}\` нет — релиз пропущен." >> "$GITHUB_STEP_SUMMARY"
