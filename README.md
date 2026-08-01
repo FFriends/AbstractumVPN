@@ -75,11 +75,15 @@ You can do it via a web-interface or any other method you're familiar with.
 
 ## Checking out the source code
 
-Make sure to pull all submodules after checking out the repo.
+A plain clone is enough — there are no submodules to initialise:
 
 ```bash
-git submodule update --init --recursive
+git clone https://github.com/FFriends/AbstractumVPN.git
 ```
+
+Third-party sources under `client/3rd/` are vendored into the tree, so a fresh
+clone is self-contained and does not depend on third-party hosts staying up.
+Each vendored component keeps its original licence file.
 
 ## Hacking guide
 
