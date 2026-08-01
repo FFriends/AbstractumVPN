@@ -99,7 +99,8 @@ PageType {
 
                 onLinkActivated: Qt.openUrlExternally(link)
                 textFormat: Text.RichText
-                text: qsTr("Use <a href=\"https://www.torproject.org/download/\" style=\"color: #FBB26A;\">Tor Browser</a> to open this URL.")
+                text: qsTr("Use <a href=\"https://www.torproject.org/download/\" style=\"color: %1;\">Tor Browser</a> to open this URL.")
+                          .arg(AmneziaStyle.color.goldenApricotString)
 
                 MouseArea {
                     anchors.fill: parent
