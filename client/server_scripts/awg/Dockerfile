@@ -1,4 +1,7 @@
-FROM amneziavpn/amneziawg-go:latest
+# Pinned by digest so that every install gets the same binary. build_container.sh
+# runs `docker build --pull`, which with a floating tag would fetch whatever the
+# registry serves at that moment. Was :latest, resolved 2026-08-01.
+FROM amneziavpn/amneziawg-go@sha256:6ef2c3a07a07a40515ae97e2a204b93e12260d65bfb81866a0820e523a95f727
 
 LABEL maintainer="AmneziaVPN"
 

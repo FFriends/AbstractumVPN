@@ -1,4 +1,5 @@
-FROM amneziavpn/amnezia-wg:latest
+# Pinned by digest — see awg/Dockerfile. Was :latest, resolved 2026-08-01.
+FROM amneziavpn/amnezia-wg@sha256:ea050861bd2012a6265817636ce7c0c15764ef955782d953cef42e05c1381250
 
 LABEL maintainer="AmneziaVPN"
 

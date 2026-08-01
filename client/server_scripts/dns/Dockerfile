@@ -1,4 +1,7 @@
-FROM mvance/unbound:latest
+# AmneziaDNS. Pinned by digest — see awg/Dockerfile. This one resolves every DNS
+# query the user makes inside the tunnel, so a silently substituted image would
+# be the worst possible place for one. Was :latest, resolved 2026-08-01.
+FROM mvance/unbound@sha256:76906da36d1806f3387338f15dcf8b357c51ce6897fb6450d6ce010460927e90
 
 LABEL maintainer="AmneziaVPN" 
 
