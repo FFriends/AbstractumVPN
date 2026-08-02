@@ -1,0 +1,5 @@
+# Byte-cache left behind by generate_icons.py and generate_wordmark.py.
+# Kept in a local .gitignore rather than the root one: a new file never
+# conflicts on an upstream merge, an edited upstream file conflicts forever.
+__pycache__/
+*.pyc
