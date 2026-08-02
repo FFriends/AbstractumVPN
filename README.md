@@ -133,7 +133,7 @@ Then `deploy/build.sh` or `deploy\build.bat`.
 Report vulnerabilities through
 [GitHub Security Advisories](https://github.com/FFriends/AbstractumVPN/security/advisories/new).
 It keeps the discussion private until a fix ships, and it stays open even while the issue
-tracker is closed.
+tracker is closed. Scope, timelines and what counts as ours are in [SECURITY.md](SECURITY.md).
 
 Two things worth knowing before you rely on this:
 
@@ -152,6 +152,11 @@ happens on `dev`, and the build only runs in CI.
 
 The issue tracker is closed for now. Security reports still go through the advisories link
 above; for anything else, open a pull request.
+
+## Where this gets written about
+
+[**@AbstractumMind**](https://t.me/AbstractumMind) on Telegram: what is being built, what broke
+on the way, and whatever else seems worth writing down. Not a support desk.
 
 ## Licence and origin
 

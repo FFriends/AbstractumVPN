@@ -156,11 +156,13 @@ PageType {
         }
     }
     
-    // Телеграм и почта убраны: своих каналов пока нет, а чужие вели в поддержку
-    // другого проекта. Вернуть, когда появятся.
+    // The upstream mail address was dropped: it led to another project's support desk.
+    // Keep every id listed here in sync with the objects below - QML resolves the list
+    // at load time and silently renders an empty section if an id is missing.
     property list<QtObject> contacts: [
         github,
-        website
+        website,
+        telegram
     ]
 
     QtObject {
@@ -182,6 +184,17 @@ PageType {
         readonly property string imageSource: "qrc:/images/controls/github.svg"
         readonly property var handler: function() {
             Qt.openUrlExternally("https://github.com/FFriends/AbstractumVPN/releases/latest")
+        }
+    }
+
+    QtObject {
+        id: telegram
+
+        readonly property string title: qsTr("Telegram")
+        readonly property string description: qsTr("News and notes on how this is built")
+        readonly property string imageSource: "qrc:/images/controls/telegram.svg"
+        readonly property var handler: function() {
+            Qt.openUrlExternally("https://t.me/AbstractumMind")
         }
     }
 }
