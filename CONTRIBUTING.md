@@ -33,8 +33,15 @@ into the tree, so a fresh clone does not depend on other people's repositories s
 
 ## Commits
 
-Prefix in English, message in Russian, written in the first person as you would describe your
-own work:
+The prefix is English. **The message can be English or Russian**, whichever you think in. We
+read both, and a clear message in your own language beats a stilted one in someone else's.
+
+```
+fix: reconnect after the machine wakes from sleep
+
+The watchdog never fired: tunnel liveness was read from the interface state
+instead of the time of the last handshake.
+```
 
 ```
 fix: поправил переподключение после выхода из сна
@@ -47,8 +54,6 @@ Prefixes: `feat` `fix` `chore` `ci` `build` `docs` `refactor`.
 
 Keep the body to a few lines and spend them on **why**, not on retelling the diff. If a change
 needs fifteen lines to justify, it probably wants to be two changes.
-
-Do not add `Co-Authored-By` or any AI-attribution trailer.
 
 ## What not to put in a commit message
 
@@ -76,12 +81,13 @@ Work lands on `dev`. Larger changes go through `feature/**` and a pull request.
 
 ## Reporting problems
 
-Bugs and features: [issues](https://github.com/FFriends/AbstractumVPN/issues).
+**The issue tracker is closed for now.** For bugs and features, open a pull request, or wait
+until it opens.
 
-Security vulnerabilities:
+Security vulnerabilities are the exception and always have a channel:
 [GitHub Security Advisories](https://github.com/FFriends/AbstractumVPN/security/advisories/new),
-which keeps things private until a fix ships. Please do not open a public issue for something
-exploitable.
+which keeps things private until a fix ships. Use it even for something you are not sure about;
+a false alarm costs us five minutes.
 
 ## Upstream
 

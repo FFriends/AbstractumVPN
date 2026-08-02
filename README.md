@@ -20,6 +20,8 @@ No accounts, no subscriptions, no operator in the middle.
 [How it works](#how-it-works) ·
 [Build from source](#building)
 
+[Русский](README_RU.md)
+
 </div>
 
 ---
@@ -53,7 +55,19 @@ Enter an address, a login and a password or key. The client SSHes in, installs D
 it is missing, builds the container for the protocol you picked, and connects. Removing it
 later is one button.
 
-Any Linux box with root over SSH works: a €4 VPS, a home server, a Raspberry Pi.
+## What the server needs
+
+Any Linux machine you control, reachable over SSH. Nothing is pre-configured by hand.
+
+| | |
+|---|---|
+| **Distribution** | Anything with `apt-get`, `dnf`, `yum`, `zypper` or `pacman`, and systemd. Debian, Ubuntu, Fedora, CentOS, openSUSE and Arch all qualify |
+| **Access** | SSH, as `root` or as a user in the `sudo` / `wheel` group |
+| **Docker** | Installed for you if it is missing. Nothing to prepare |
+| **Ports** | Opened for you through the host firewall. Defaults: OpenVPN `1194`, WireGuard `51820`, AmneziaWG `55424`, XRay and Cloak `443`, IKEv2 `500` and `4500` UDP |
+
+Before installing anything the client looks at the package manager's lock file. If the machine
+is already busy, it says so instead of starting a second install on top.
 
 ## Protocols
 
@@ -70,6 +84,22 @@ Any Linux box with root over SSH works: a €4 VPS, a home server, a Raspberry P
 `AmneziaWG` and `AmneziaDNS` keep their names on purpose: they are components you install on
 your own server, not our branding. Renaming them would leave you unable to recognise what you
 actually deployed.
+
+## Other things it can install
+
+The same one-button flow puts these on your server as well:
+
+| | |
+|---|---|
+| **AmneziaDNS** | An `unbound` resolver reachable only inside the tunnel, forwarding over DNS-over-TLS. Your DNS stops going to your provider |
+| **SFTP storage** | A private file share on the server |
+| **SOCKS5 proxy** | For applications that speak SOCKS but not VPN |
+| **MTProxy** | Telegram proxy |
+| **Website in Tor** | Publishes a site as an onion service |
+
+There is no manual setup guide for these, because there is nothing to set up manually. Open
+the server in Settings, go to its **Services** tab, pick one, and the client installs it over
+the same SSH session. Removing it is the same button.
 
 ## Install
 
@@ -101,9 +131,9 @@ Then `deploy/build.sh` or `deploy\build.bat`.
 ## Security
 
 Report vulnerabilities through
-[GitHub Security Advisories](https://github.com/FFriends/AbstractumVPN/security/advisories/new),
-which keeps the discussion private until a fix ships. Please do not open a public issue for
-anything exploitable.
+[GitHub Security Advisories](https://github.com/FFriends/AbstractumVPN/security/advisories/new).
+It keeps the discussion private until a fix ships, and it stays open even while the issue
+tracker is closed.
 
 Two things worth knowing before you rely on this:
 
@@ -119,6 +149,9 @@ Neither is a secret and neither is fixed yet.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Short version: commits follow `type: summary`, work
 happens on `dev`, and the build only runs in CI.
+
+The issue tracker is closed for now. Security reports still go through the advisories link
+above; for anything else, open a pull request.
 
 ## Licence and origin
 
