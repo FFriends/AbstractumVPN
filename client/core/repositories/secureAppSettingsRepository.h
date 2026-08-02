@@ -53,14 +53,6 @@ public:
     bool isAppsSplitTunnelingEnabled() const;
     void setAppsSplitTunnelingEnabled(bool enabled);
 
-    QString getGatewayEndpoint(bool isTestPurchase = false) const;
-    void setGatewayEndpoint(const QString &endpoint);
-    void resetGatewayEndpoint();
-    void setDevGatewayEndpoint();
-    bool isDevGatewayEnv(bool isTestPurchase = false) const;
-    void toggleDevGatewayEnv(bool enabled);
-    QByteArray readGatewayProxyUrls(const QString &cacheKey) const;
-    void writeGatewayProxyUrls(const QString &cacheKey, const QByteArray &proxyUrlsEncrypted);
 
     bool isKillSwitchEnabled() const;
     void setKillSwitchEnabled(bool enabled);
@@ -73,21 +65,13 @@ public:
     void setStartMinimized(bool enabled);
     bool isScreenshotsEnabled() const;
     void setScreenshotsEnabled(bool enabled);
-    bool isNewsNotifications() const;
-    void setNewsNotifications(bool enabled);
     bool isSaveLogs() const;
     void setSaveLogs(bool enabled);
     QDateTime getLogEnableDate() const;
     void setLogEnableDate(const QDateTime &date);
     
     QString getInstallationUuid(bool createIfNotExists) const;
-    QStringList getReadNewsIds() const;
-    void setReadNewsIds(const QStringList &ids);
 
-    bool isHomeAdLabelVisible() const;
-    void disableHomeAdLabel();
-    bool isPremV1MigrationReminderActive() const;
-    void disablePremV1MigrationReminder();
     QByteArray backupAppConfig() const;
     bool restoreAppConfig(const QByteArray &cfg);
     void clearSettings();
@@ -117,7 +101,6 @@ private:
     void setValue(const QString &key, const QVariant &value);
 
     SecureQSettings* m_settings;
-    QString m_gatewayEndpoint;
 };
 
 #endif // SECUREAPPSETTINGSREPOSITORY_H

@@ -118,18 +118,6 @@ PageType {
 
                 text: qsTr("Software version: %1").arg(SettingsController.getAppVersion())
                 color: AmneziaStyle.color.mutedGray
-
-                MouseArea {
-                    property int clickCount: 0
-                    anchors.fill: parent
-                    onClicked: {
-                        if (clickCount > 10) {
-                            SettingsController.enableDevMode()
-                        } else {
-                            clickCount++
-                        }
-                    }
-                }
             }
 
             BasicButtonType {

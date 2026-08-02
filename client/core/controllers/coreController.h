@@ -32,9 +32,6 @@
 #include "core/controllers/appSplitTunnelingController.h"
 #include "core/controllers/ipSplitTunnelingController.h"
 #include "core/controllers/allowedDnsController.h"
-#include "core/controllers/api/servicesCatalogController.h"
-#include "core/controllers/api/subscriptionController.h"
-#include "core/controllers/api/newsController.h"
 #include "core/controllers/selfhosted/installController.h"
 #include "core/controllers/settingsController.h"
 #include "core/controllers/connectionController.h"
@@ -167,9 +164,6 @@ private:
     AppSplitTunnelingController* m_appSplitTunnelingController;
     IpSplitTunnelingController* m_ipSplitTunnelingController;
     AllowedDnsController* m_allowedDnsController;
-    ServicesCatalogController* m_servicesCatalogController;
-    SubscriptionController* m_subscriptionController;
-    NewsController* m_newsController;
     UpdateController* m_updateController;
     InstallController* m_installController;
     ExportController* m_exportController;

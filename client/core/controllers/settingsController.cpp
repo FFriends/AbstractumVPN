@@ -37,7 +37,6 @@ SettingsController::SettingsController(SecureServersRepository* serversRepositor
       m_appSettingsRepository(appSettingsRepository)
 {
     m_appVersion = QString("%1 (%2, %3)").arg(QString(APP_VERSION), __DATE__, GIT_COMMIT_HASH);
-    m_isDevModeEnabled = m_appSettingsRepository->isDevGatewayEnv();
 }
 
 void SettingsController::toggleAmneziaDns(bool enable)
@@ -240,16 +239,6 @@ void SettingsController::toggleScreenshotsEnabled(bool enable)
     m_appSettingsRepository->setScreenshotsEnabled(enable);
 }
 
-bool SettingsController::isNewsNotificationsEnabled() const
-{
-    return m_appSettingsRepository->isNewsNotifications();
-}
-
-void SettingsController::toggleNewsNotificationsEnabled(bool enable)
-{
-    m_appSettingsRepository->setNewsNotifications(enable);
-}
-
 bool SettingsController::isKillSwitchEnabled() const
 {
     return m_appSettingsRepository->isKillSwitchEnabled();
@@ -273,56 +262,6 @@ void SettingsController::toggleStrictKillSwitch(bool enable)
 QString SettingsController::getInstallationUuid(bool createIfNotExists) const
 {
     return m_appSettingsRepository->getInstallationUuid(createIfNotExists);
-}
-
-void SettingsController::enableDevMode()
-{
-    m_isDevModeEnabled = true;
-}
-
-bool SettingsController::isDevModeEnabled() const
-{
-    return m_isDevModeEnabled;
-}
-
-void SettingsController::resetGatewayEndpoint()
-{
-    m_appSettingsRepository->resetGatewayEndpoint();
-}
-
-void SettingsController::setGatewayEndpoint(const QString &endpoint)
-{
-    m_appSettingsRepository->setGatewayEndpoint(endpoint);
-}
-
-QString SettingsController::getGatewayEndpoint() const
-{
-    return m_appSettingsRepository->isDevGatewayEnv() ? "Dev endpoint" : m_appSettingsRepository->getGatewayEndpoint();
-}
-
-bool SettingsController::isDevGatewayEnv() const
-{
-    return m_appSettingsRepository->isDevGatewayEnv();
-}
-
-void SettingsController::toggleDevGatewayEnv(bool enabled)
-{
-    m_appSettingsRepository->toggleDevGatewayEnv(enabled);
-    if (enabled) {
-        m_appSettingsRepository->setDevGatewayEndpoint();
-    } else {
-        m_appSettingsRepository->resetGatewayEndpoint();
-    }
-}
-
-bool SettingsController::isHomeAdLabelVisible() const
-{
-    return m_appSettingsRepository->isHomeAdLabelVisible();
-}
-
-void SettingsController::disableHomeAdLabel()
-{
-    m_appSettingsRepository->disableHomeAdLabel();
 }
 
 void SettingsController::checkIfNeedDisableLogs()
@@ -349,16 +288,6 @@ QLocale SettingsController::getAppLanguage() const
 void SettingsController::setAppLanguage(const QLocale &locale)
 {
     m_appSettingsRepository->setAppLanguage(locale);
-}
-
-bool SettingsController::isPremV1MigrationReminderActive() const
-{
-    return m_appSettingsRepository->isPremV1MigrationReminderActive();
-}
-
-void SettingsController::disablePremV1MigrationReminder()
-{
-    m_appSettingsRepository->disablePremV1MigrationReminder();
 }
 
 QString SettingsController::nextAvailableServerName() const

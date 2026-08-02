@@ -134,9 +134,6 @@ void CoreController::initCoreControllers()
     m_usersController = new UsersController(m_serversRepository, this);
     m_ipSplitTunnelingController = new IpSplitTunnelingController(m_appSettingsRepository, this);
     m_allowedDnsController = new AllowedDnsController(m_appSettingsRepository);
-    m_servicesCatalogController = new ServicesCatalogController(m_appSettingsRepository);
-    m_subscriptionController = new SubscriptionController(m_serversRepository, m_appSettingsRepository);
-    m_newsController = new NewsController(m_appSettingsRepository, m_serversRepository);
     m_updateController = new UpdateController(m_appSettingsRepository, this);
     
     m_installController = new InstallController(m_serversRepository, m_appSettingsRepository, this);
