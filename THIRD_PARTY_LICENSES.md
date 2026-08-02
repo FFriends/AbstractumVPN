@@ -6,6 +6,19 @@ Each component is distributed under its own license as linked below.
 
 ---
 
+## JetBrains Mono
+
+- Source: https://github.com/JetBrains/JetBrainsMono
+- Version: 2.304
+- License: SIL Open Font License 1.1
+- License Text: client/fonts/JetBrainsMono-OFL.txt
+
+Used to draw the wordmark in client/images/AbstractumVPN_Full_logo.svg. The
+SemiBold weight is vendored so the logo can be regenerated; the font is not
+loaded at runtime.
+
+---
+
 ## QtKeychain
 
 - Source: https://github.com/frankosterfeld/qtkeychain
