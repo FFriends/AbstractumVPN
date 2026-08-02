@@ -51,7 +51,7 @@ private:
     const QString ConnectedTrayIconName = "active.png";
     const QString DisconnectedTrayIconName = "default.png";
     const QString ErrorTrayIconName = "error.png";
-    QString  websiteUrl = "https://amnezia.org";
+    QString  websiteUrl = "https://github.com/FFriends/AbstractumVPN";
 };
 
 #endif  // SYSTEMTRAYNOTIFICATIONHANDLER_H

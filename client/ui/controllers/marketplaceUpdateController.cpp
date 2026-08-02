@@ -151,7 +151,7 @@ void MarketplaceUpdateController::hideCover()
 void MarketplaceUpdateController::showUpdatePrompt(const QString &storeUrl)
 {
     const QString title = tr("Update available");
-    const QString message = tr("A new version of AmneziaVPN is available.");
+    const QString message = tr("A new version of AbstractumVPN is available.");
     const QString updateTitle = tr("Update");
     const QString skipTitle = tr("Skip");
 

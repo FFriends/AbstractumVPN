@@ -257,51 +257,32 @@ PageType {
                 disabledColor: AmneziaStyle.color.mutedGray
                 textColor: AmneziaStyle.color.goldenApricot
 
-                text: qsTr("Site Amnezia")
+                text: qsTr("Project on GitHub")
 
                 rightImageSource: "qrc:/images/controls/external-link.svg"
 
                 clickedFunc: function() {
-                    Qt.openUrlExternally(LanguageUiController.getCurrentSiteUrl())
+                    Qt.openUrlExternally("https://github.com/FFriends/AbstractumVPN")
                 }
             }
         }
     }
 
+    // Only self-hosted. The paid-hosting entry, purchase restore and the link to
+    // the upstream site were removed: this build has no subscription layer.
     property list<QtObject> variants: [
-        amneziaVpn,
         selfHostVpn,
         backupRestore,
         fileOpen,
-        qrScan,
-        restorePurchases,
-        siteLink
+        qrScan
     ]
     
-    QtObject {
-        id: amneziaVpn
-
-        property string title: qsTr("VPN by Amnezia")
-        property string description: qsTr("The easiest way to connect to the VPN")
-        property string imageSource: "qrc:/images/controls/amnezia.svg"
-        property bool featuredAmneziaConnection: true
-        property bool isVisible: true
-        property var handler: function() {
-            PageController.showBusyIndicator(true)
-            var result = SubscriptionUiController.fillAvailableServices()
-            PageController.showBusyIndicator(false)
-            if (result) {
-                PageController.goToPage(PageEnum.PageSetupWizardApiServicesList)
-            }
-        }
-    }
-
     QtObject {
         id: selfHostVpn
 
         property bool featuredAmneziaConnection: false
         property string title: qsTr("Self-hosted VPN")
-        property string description: qsTr("Configure Amnezia VPN on your own server")
+        property string description: qsTr("Configure AbstractumVPN on your own server")
         property string imageSource: "qrc:/images/controls/server.svg"
         property bool isVisible: true
         property var handler: function() {
@@ -370,31 +351,4 @@ PageType {
         }
     }
 
-    QtObject {
-        id: restorePurchases
-
-        property bool featuredAmneziaConnection: false
-        property string title: qsTr("Restore purchases")
-        property string description: qsTr("")
-        property string imageSource: "qrc:/images/controls/refresh-cw.svg"
-        property bool isVisible: Qt.platform.os === "ios" || IsMacOsNeBuild
-        property var handler: function() {
-            PageController.showBusyIndicator(true)
-            SubscriptionUiController.restoreServiceFromAppStore()
-            PageController.showBusyIndicator(false)
-        }
-    }
-
-    QtObject {
-        id: siteLink
-
-        property bool featuredAmneziaConnection: false
-        property string title: qsTr("I have nothing")
-        property string description: qsTr("")
-        property string imageSource: "qrc:/images/controls/help-circle.svg"
-        property bool isVisible: PageController.isStartPageVisible() && Qt.platform.os !== "ios" && !IsMacOsNeBuild
-        property var handler: function() {
-            Qt.openUrlExternally(LanguageUiController.getCurrentSiteUrl())
-        }
-    }
 }

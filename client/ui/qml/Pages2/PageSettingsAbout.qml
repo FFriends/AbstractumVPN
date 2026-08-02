@@ -58,7 +58,7 @@ PageType {
                 Layout.leftMargin: 16
                 Layout.rightMargin: 16
 
-                text: qsTr("Support Amnezia")
+                text: qsTr("Support the project")
                 horizontalAlignment: Text.AlignHCenter
             }
 
@@ -73,7 +73,7 @@ PageType {
                 height: 20
                 font.pixelSize: 14
 
-                text: qsTr("Amnezia is a free and open-source application. You can support the developers if you like it.")
+                text: qsTr("Добавим позже <3")
                 color: AmneziaStyle.color.paleGray
             }
 
@@ -149,61 +149,19 @@ PageType {
                 text: qsTr("Check for updates")
 
                 clickedFunc: function() {
-                    Qt.openUrlExternally("https://github.com/amnezia-vpn/desktop-client/releases/latest")
+                    Qt.openUrlExternally("https://github.com/FFriends/AbstractumVPN/releases/latest")
                 }
             }
 
-            BasicButtonType {
-                id: privacyPolicyButton
-
-                Layout.alignment: Qt.AlignHCenter
-                Layout.bottomMargin: 16
-                Layout.topMargin: -15
-                implicitHeight: 25
-
-                defaultColor: AmneziaStyle.color.transparent
-                hoveredColor: AmneziaStyle.color.translucentWhite
-                pressedColor: AmneziaStyle.color.sheerWhite
-                disabledColor: AmneziaStyle.color.mutedGray
-                textColor: AmneziaStyle.color.goldenApricot
-
-                text: qsTr("Privacy Policy")
-
-                clickedFunc: function() {
-                    Qt.openUrlExternally(LanguageUiController.getCurrentSiteUrl("policy"))
-                }
-            }
         }
     }
     
+    // Телеграм и почта убраны: своих каналов пока нет, а чужие вели в поддержку
+    // другого проекта. Вернуть, когда появятся.
     property list<QtObject> contacts: [
-        telegramGroup,
-        mail,
         github,
         website
     ]
-
-    QtObject {
-        id: telegramGroup
-
-        readonly property string title: qsTr("Telegram group")
-        readonly property string description: qsTr("To discuss features")
-        readonly property string imageSource: "qrc:/images/controls/telegram.svg"
-        readonly property var handler: function() {
-            Qt.openUrlExternally(qsTr("https://t.me/amnezia_vpn_en"))
-        }
-    }
-
-    QtObject {
-        id: mail
-
-        readonly property string title: qsTr("support@amnezia.org")
-        readonly property string description: qsTr("For reviews and bug reports")
-        readonly property string imageSource: "qrc:/images/controls/mail.svg"
-        readonly property var handler: function() {
-            Qt.openUrlExternally(qsTr("mailto:support@amnezia.org"))
-        }
-    }
 
     QtObject {
         id: github
@@ -212,18 +170,18 @@ PageType {
         readonly property string description: qsTr("Discover the source code")
         readonly property string imageSource: "qrc:/images/controls/github.svg"
         readonly property var handler: function() {
-            Qt.openUrlExternally(qsTr("https://github.com/amnezia-vpn/amnezia-client"))
+            Qt.openUrlExternally("https://github.com/FFriends/AbstractumVPN")
         }
     }
 
     QtObject {
         id: website
 
-        readonly property string title: qsTr("Website")
-        readonly property string description: qsTr("Visit official website")
-        readonly property string imageSource: "qrc:/images/controls/amnezia.svg"
+        readonly property string title: qsTr("Releases")
+        readonly property string description: qsTr("Download the latest build")
+        readonly property string imageSource: "qrc:/images/controls/github.svg"
         readonly property var handler: function() {
-            Qt.openUrlExternally(LanguageUiController.getCurrentSiteUrl())
+            Qt.openUrlExternally("https://github.com/FFriends/AbstractumVPN/releases/latest")
         }
     }
 }
