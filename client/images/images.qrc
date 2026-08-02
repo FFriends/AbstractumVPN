@@ -10,7 +10,6 @@
         <file>controls/app.svg</file>
         <file>controls/archive-restore.svg</file>
         <file>controls/arrow-left.svg</file>
-        <file>controls/arrow-left-right.svg</file>
         <file>controls/arrow-right.svg</file>
         <file>controls/bug.svg</file>
         <file>controls/check.svg</file>
@@ -40,9 +39,6 @@
         <file>controls/mail.svg</file>
         <file>controls/map-pin.svg</file>
         <file>controls/more-vertical.svg</file>
-        <file>controls/news.svg</file>
-        <file>controls/news-unread.svg</file>
-        <file>controls/unread-dot.svg</file>
         <file>controls/plus.svg</file>
         <file>controls/qr-code.svg</file>
         <file>controls/radio-button-inner-circle-pressed.png</file>
@@ -57,7 +53,6 @@
         <file>controls/server.svg</file>
         <file>controls/settings-2.svg</file>
         <file>controls/settings.svg</file>
-        <file>controls/settings-news.svg</file>
         <file>controls/share-2.svg</file>
         <file>controls/split-tunneling.svg</file>
         <file>controls/smartphone.svg</file>

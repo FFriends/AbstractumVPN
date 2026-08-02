@@ -38,8 +38,8 @@ QtObject {
         readonly property color translucentSlateGray: Qt.rgba(85/255, 86/255, 92/255, 0.13)
         readonly property color translucentOnyxBlack: Qt.rgba(28/255, 29/255, 33/255, 0.13)
 
-        // Main accent. Consumed as a string by TermsAndPrivacyText.qml and
-        // BaseHeaderType.qml, which build HTML links, so it has to stay a string.
+        // Main accent. Consumed as a string by BaseHeaderType.qml, which builds
+        // HTML links, so it has to stay a string.
         readonly property string goldenApricotString: '#9BBFDE'
 
         // Honest aliases for the accent family. Same values as the legacy names
