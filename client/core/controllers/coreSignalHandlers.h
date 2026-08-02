@@ -19,8 +19,6 @@ private:
     void initInstallControllerHandler();
     void initExportControllerHandler();
     void initImportControllerHandler();
-    void initApiCountryModelUpdateHandler();
-    void initSubscriptionRefreshHandler();
     void initAdminConfigRevokedHandler();
     void initPassphraseRequestHandler();
     void initTranslationsUpdatedHandler();

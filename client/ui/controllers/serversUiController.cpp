@@ -157,15 +157,7 @@ void ServersUiController::updateModel()
     m_serversModel->updateModel(m_orderedServerDescriptions, defaultServerId);
 
     if (!m_processedServerId.isEmpty()) {
-        if (isServerFromApi(m_processedServerId)) {
-            const auto &description = serverDescriptionById(m_processedServerId);
-            if (description.isApiV2 && description.isCountrySelectionAvailable
-                && !description.apiAvailableCountries.isEmpty()) {
-                emit updateApiCountryModel();
-            }
-        } else {
-            updateContainersModel();
-        }
+        updateContainersModel();
     }
     updateDefaultServerContainersModel();
 
@@ -360,15 +352,7 @@ void ServersUiController::setProcessedServerId(const QString &serverId)
         m_processedServerId = normalizedServerId;
 
         if (newIndex >= 0) {
-            if (isServerFromApi(m_processedServerId)) {
-                const auto &description = serverDescriptionById(m_processedServerId);
-                if (description.isApiV2 && description.isCountrySelectionAvailable
-                    && !description.apiAvailableCountries.isEmpty()) {
-                    emit updateApiCountryModel();
-                }
-            } else {
-                updateContainersModel();
-            }
+            updateContainersModel();
         }
 
         emit processedServerIdChanged(m_processedServerId);

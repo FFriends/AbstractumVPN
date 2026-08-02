@@ -112,7 +112,6 @@ signals:
     void processedServerIdChanged(const QString &serverId);
     void processedContainerIndexChanged(int index);
     void hasServersFromGatewayApiChanged();
-    void updateApiCountryModel();
 
 public:
     void updateModel();
