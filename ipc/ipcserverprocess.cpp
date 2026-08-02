@@ -31,11 +31,24 @@ void IpcServerProcess::start()
 {
     if (m_process->program().isEmpty()) {
         qDebug() << "IpcServerProcess failed to start, program is empty";
+        return;
+    }
+
+    if (m_process->arguments().isEmpty()) {
+        // sanitizeArguments returns nothing when it did not recognise the
+        // command line. Starting anyway would mean running a root process with
+        // its arguments silently thrown away.
+        qCritical() << "IpcServerProcess refusing to start" << m_process->program()
+                    << "- no accepted arguments";
+        return;
     }
 
     Utils::killProcessByName(m_process->program());
     m_process->start();
-    qDebug() << "IpcServerProcess started, " << m_process->program() << m_process->arguments();
+    // Argument values stay out of the log: one of them is the IKEv2
+    // certificate password.
+    qDebug() << "IpcServerProcess started," << m_process->program() << "with"
+             << m_process->arguments().size() << "arguments";
 
     m_process->waitForStarted();
 }
@@ -61,13 +74,6 @@ void IpcServerProcess::setArguments(const QStringList &arguments)
 void IpcServerProcess::setInputChannelMode(QProcess::InputChannelMode mode)
 {
      m_process->setInputChannelMode(mode);
-}
-
-void IpcServerProcess::setNativeArguments(const QString &arguments)
-{
-#ifdef Q_OS_WIN
-    m_process->setNativeArguments(arguments);
-#endif
 }
 
 void IpcServerProcess::setProcessChannelMode(QProcess::ProcessChannelMode mode)

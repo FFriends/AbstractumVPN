@@ -11,14 +11,21 @@
 #include "daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "peerverifier.h"
 
 #if defined(MZ_MACOS) || defined(MZ_LINUX)
 #  include <sys/stat.h>
 #  include <sys/types.h>
 #  include <unistd.h>
 
-constexpr const char* TMP_PATH = "/tmp/amneziavpn.socket";
-constexpr const char* VAR_PATH = "/var/run/amneziavpn/daemon.socket";
+// Renamed away from "amneziavpn": this application installs alongside
+// AmneziaVPN instead of over it, and both daemons run as root. Sharing the
+// path meant whichever started first owned it, and the other product's client
+// would then be talking to this daemon.
+constexpr const char* SOCKET_DIR_NAME = "abstractumvpn";
+constexpr const char* TMP_PATH = "/tmp/abstractumvpn.socket";
+constexpr const char* VAR_PATH = "/var/run/abstractumvpn/daemon.socket";
+constexpr const char* VAR_DIR = "/var/run/abstractumvpn";
 #endif
 
 namespace {
@@ -56,6 +63,14 @@ bool DaemonLocalServer::initialize() {
     QLocalSocket* socket = m_server.nextPendingConnection();
     Q_ASSERT(socket);
 
+    // Second privileged channel, same gate as the Qt Remote Objects one -
+    // see ipc/peerverifier.h.
+    if (!amnezia::PeerVerifier::isTrustedPeer(socket)) {
+      socket->abort();
+      socket->deleteLater();
+      return;
+    }
+
     DaemonLocalServerConnection* connection =
         new DaemonLocalServerConnection(&m_server, socket);
     connect(socket, &QLocalSocket::disconnected, connection,
@@ -67,7 +82,7 @@ bool DaemonLocalServer::initialize() {
 
 QString DaemonLocalServer::daemonPath() const {
 #if defined(MZ_WINDOWS)
-  return "\\\\.\\pipe\\amneziavpn";
+  return "\\\\.\\pipe\\abstractumvpn";
 #endif
 #if defined(MZ_MACOS) || defined(MZ_LINUX)
   QDir dir("/var/run");
@@ -76,19 +91,21 @@ QString DaemonLocalServer::daemonPath() const {
     return TMP_PATH;
   }
 
-  if (dir.exists("amneziavpn")) {
-    logger.debug() << "/var/run/amneziavpn seems to be usable";
+  if (dir.exists(SOCKET_DIR_NAME)) {
+    logger.debug() << VAR_DIR << "seems to be usable";
     return VAR_PATH;
   }
 
-  if (!dir.mkdir("amneziavpn")) {
-    logger.warning() << "Failed to create /var/run/amneziavpn";
+  if (!dir.mkdir(SOCKET_DIR_NAME)) {
+    logger.warning() << "Failed to create" << VAR_DIR;
     return TMP_PATH;
   }
 
-  if (chmod("/var/run/amneziavpn", S_IRWXU | S_IRWXG | S_IRWXO) < 0) {
-    logger.warning()
-        << "Failed to set the right permissions to /var/run/amneziavpn";
+  // Traversable by everyone, writable only by root. The socket inside carries
+  // its own world access; the directory does not need to hand out the right
+  // to create or replace entries in it.
+  if (chmod(VAR_DIR, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) < 0) {
+    logger.warning() << "Failed to set the right permissions to" << VAR_DIR;
     return TMP_PATH;
   }
 

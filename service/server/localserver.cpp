@@ -12,6 +12,7 @@
 #include "ipc.h"
 #include "killswitch.h"
 #include "logger.h"
+#include "peerverifier.h"
 
 #ifdef Q_OS_WIN
     #include "tapcontroller_win.h"
@@ -28,14 +29,34 @@ LocalServer::LocalServer(QObject *parent) : QObject(parent),
     m_server = QSharedPointer<QLocalServer>(new QLocalServer(this));
     m_server->setSocketOptions(QLocalServer::WorldAccessOption);
 
+    // On POSIX the channel is a file in /tmp, which everyone may write to. A
+    // leftover from a crash - or a path someone else created first - would
+    // otherwise keep this service silent while the client talks to whoever
+    // owns the name. We are root here, so taking the name back is ours to do.
+    QLocalServer::removeServer(amnezia::getIpcServiceUrl());
+
     if (!m_server->listen(amnezia::getIpcServiceUrl())) {
-        qDebug() << QString("Unable to start the server: %1.").arg(m_server->errorString());
+        qCritical() << QString("Unable to start the IPC server: %1. The client will not be able to reach this service.")
+                               .arg(m_server->errorString());
         return;
     }
 
     QObject::connect(m_server.data(), &QLocalServer::newConnection, this, [this]() {
+        QLocalSocket *connection = m_server->nextPendingConnection();
+        if (!connection) {
+            return;
+        }
+
+        // Everything behind this socket runs as root/SYSTEM, so the caller is
+        // checked before it is given a voice - see ipc/peerverifier.h.
+        if (!amnezia::PeerVerifier::isTrustedPeer(connection)) {
+            connection->abort();
+            connection->deleteLater();
+            return;
+        }
+
         qDebug() << "LocalServer new connection";
-        m_serverNode.addHostSideConnection(m_server->nextPendingConnection());
+        m_serverNode.addHostSideConnection(connection);
 
         if (!m_isRemotingEnabled) {
             m_isRemotingEnabled = true;

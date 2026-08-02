@@ -1,8 +1,14 @@
 #ifndef IPC_H
 #define IPC_H
 
+#include <QDebug>
+#include <QFileInfo>
+#include <QMap>
 #include <QObject>
 #include <QString>
+#include <QStringList>
+
+#include <functional>
 
 #include "../client/core/utils/utilities.h"
 
@@ -55,47 +61,111 @@ inline QString getIpcProcessUrl(int pid) {
 #endif
 }
 
+// Whitelist of what the client is allowed to hand to a process the service
+// runs as root/SYSTEM. Everything is described per option: how many values
+// follow the key, and what those values are allowed to look like.
+//
+// Anything not described here is refused, and refusal drops the whole command
+// line rather than the offending token. A root process started with a command
+// line we only half understand is worse than one that fails to start: the
+// second is visible immediately, the first is not.
+//
+// Values are never written to the log - one of them is the certificate
+// password for IKEv2.
 inline QStringList sanitizeArguments(PermittedProcess proc, const QStringList &args) {
-    using Validator = std::function<bool(const QString&)>;
-    QMap<QString, Validator> namedArgs;
+    using Validator = std::function<bool(const QStringList&)>;
+
+    struct Rule {
+        int values = 0;
+        Validator validator;
+    };
+
+    const Validator existingFile = [](const QStringList &v) {
+        return v.size() == 1 && !v.first().isEmpty() && QFileInfo(v.first()).isFile();
+    };
+    const Validator nonEmpty = [](const QStringList &v) {
+        return v.size() == 1 && !v.first().isEmpty();
+    };
+    // "--management <host> <port>": the client always points OpenVPN at its own
+    // management server on loopback, so nothing else has any business here.
+    const Validator loopbackAndPort = [](const QStringList &v) {
+        if (v.size() != 2) {
+            return false;
+        }
+        if (v.first() != QLatin1String("127.0.0.1") && v.first() != QLatin1String("::1")) {
+            return false;
+        }
+        bool ok = false;
+        const uint port = v.at(1).toUInt(&ok);
+        return ok && port > 0 && port <= 65535;
+    };
+
+    QMap<QString, Rule> namedArgs;
     QList<Validator> positionalArgs;
 
     switch (proc) {
+    case OpenVPN:
+        namedArgs["--config"] = { 1, existingFile };
+        namedArgs["--management"] = { 2, loopbackAndPort };
+        namedArgs["--management-client"] = { 0, nullptr };
+        break;
     case Tun2Socks:
-        namedArgs["-device"] = [](const QString& v) { return v.startsWith("tun://"); };
-        namedArgs["-proxy"] = [](const QString& v) { return v.startsWith("socks5://"); };
+        namedArgs["-device"] = { 1, [](const QStringList &v) { return v.first().startsWith("tun://"); } };
+        namedArgs["-proxy"] = { 1, [](const QStringList &v) { return v.first().startsWith("socks5://"); } };
+        break;
+    case CertUtil:
+        namedArgs["-f"] = { 0, nullptr };
+        namedArgs["-importpfx"] = { 0, nullptr };
+        namedArgs["-p"] = { 1, nonEmpty };
+        positionalArgs << existingFile
+                       << [](const QStringList &v) { return v.first() == QLatin1String("NoExport"); };
+        break;
+    case Wireguard:
+        // Nothing is allowed through: no code path in this application starts
+        // wireguard as a privileged process. The value stays in the enum so
+        // the numbering keeps matching an already installed service.
         break;
     default:
-        //FIXME
-        return args;
+        break;
     }
 
-
     QStringList sanitized;
+    int positionalIndex = 0;
 
-    for (int i = 0, pos = 0; i < args.size(); i++) {
-        const auto& key = args[i];
+    for (int i = 0; i < args.size(); i++) {
+        const QString &token = args.at(i);
 
-        if (const auto found = namedArgs.find(key); found != namedArgs.end()) {
-            const auto validator = found.value();
-
-            if (validator) {
-                if (i + 1 < args.size()) {
-                    const auto& value = args[i+1];
-                    if (validator(value)) {
-                        sanitized << key << value;
-                        i++;
-                    }
-                }
-            } else {
-                sanitized << key;
+        if (const auto found = namedArgs.constFind(token); found != namedArgs.constEnd()) {
+            const QStringList values = args.mid(i + 1, found->values);
+            if (static_cast<int>(values.size()) != found->values) {
+                qWarning() << "sanitizeArguments: process" << static_cast<int>(proc) << "- option" << token << "is missing its values";
+                return {};
             }
-        } else if (pos < positionalArgs.size()) {
-            if (const auto validator = positionalArgs[pos]; validator && validator(key)) {
-                sanitized << key;
-                pos++;
+            if (found->validator && !found->validator(values)) {
+                qWarning() << "sanitizeArguments: process" << static_cast<int>(proc) << "- rejected the value given for" << token;
+                return {};
             }
+
+            sanitized << token << values;
+            i += found->values;
+            continue;
         }
+
+        if (positionalIndex < positionalArgs.size()) {
+            const Validator &validator = positionalArgs.at(positionalIndex);
+            if (validator && !validator({ token })) {
+                qWarning() << "sanitizeArguments: process" << static_cast<int>(proc) << "- rejected positional argument"
+                           << positionalIndex;
+                return {};
+            }
+
+            sanitized << token;
+            positionalIndex++;
+            continue;
+        }
+
+        qWarning() << "sanitizeArguments: process" << static_cast<int>(proc) << "- unexpected argument, refusing the whole command line";
+        return {};
     }
 
     return sanitized;

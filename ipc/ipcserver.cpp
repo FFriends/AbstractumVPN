@@ -14,6 +14,7 @@
 #include <QStringList>
 
 #include "logger.h"
+#include "peerverifier.h"
 #include "router.h"
 #include "killswitch.h"
 #include "xray.h"
@@ -40,16 +41,33 @@ int IpcServer::createPrivilegedProcess()
 
     pd.localServer->setSocketOptions(QLocalServer::WorldAccessOption);
 
+    // The name is predictable - a counter, not a secret - so free it the same
+    // way the main channel does before claiming it.
+    QLocalServer::removeServer(amnezia::getIpcProcessUrl(m_localpid));
+
     if (!pd.localServer->listen(amnezia::getIpcProcessUrl(m_localpid))) {
-        qDebug() << QString("Unable to start the server: %1.").arg(pd.localServer->errorString());
+        qCritical() << QString("Unable to start the privileged process server: %1.").arg(pd.localServer->errorString());
         return -1;
     }
 
     // Make sure any connections are handed to QtRO
     QObject::connect(pd.localServer.data(), &QLocalServer::newConnection, this, [pd]() {
+        QLocalSocket *connection = pd.localServer->nextPendingConnection();
+        if (!connection) {
+            return;
+        }
+
+        // This channel starts processes as root/SYSTEM, so it is gated exactly
+        // like the main one - see ipc/peerverifier.h.
+        if (!amnezia::PeerVerifier::isTrustedPeer(connection)) {
+            connection->abort();
+            connection->deleteLater();
+            return;
+        }
+
         qDebug() << "IpcServer new connection";
         if (pd.serverNode) {
-            pd.serverNode->addHostSideConnection(pd.localServer->nextPendingConnection());
+            pd.serverNode->addHostSideConnection(connection);
             pd.serverNode->enableRemoting(pd.ipcProcess.data());
         }
     });

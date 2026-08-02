@@ -21,7 +21,6 @@ public:
 
     void setArguments(const QStringList &arguments) override;
     void setInputChannelMode(QProcess::InputChannelMode mode) override;
-    void setNativeArguments(const QString &arguments) override;
     void setProcessChannelMode(QProcess::ProcessChannelMode mode) override;
     void setProgram(int programId) override;
     void setWorkingDirectory(const QString &dir) override;

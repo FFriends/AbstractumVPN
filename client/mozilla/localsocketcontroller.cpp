@@ -102,12 +102,15 @@ void LocalSocketController::initialize(const Device* device, const Keys* keys) {
 void LocalSocketController::initializeInternal() {
   m_daemonState = eInitializing;
 
+  // Must stay in step with DaemonLocalServer::daemonPath(). Renamed away from
+  // "amneziavpn" so that this client and an installed AmneziaVPN daemon never
+  // end up on the same privileged socket.
 #ifdef MZ_WINDOWS
-  QString path = "\\\\.\\pipe\\amneziavpn";
+  QString path = "\\\\.\\pipe\\abstractumvpn";
 #else
-  QString path = "/var/run/amneziavpn/daemon.socket";
+  QString path = "/var/run/abstractumvpn/daemon.socket";
   if (!QFileInfo::exists(path)) {
-    path = "/tmp/amneziavpn.socket";
+    path = "/tmp/abstractumvpn.socket";
   }
 #endif
 
