@@ -1,176 +1,137 @@
-# Amnezia VPN
+<div align="center">
 
-### _The best client for self-hosted VPN_
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="client/images/AbstractumVPN_Full_logo.svg">
+  <img src="client/images/AbstractumVPN_Full_logo_light.svg" alt="AbstractumVPN" width="320">
+</picture>
 
+<br><br>
 
-[![Build Status](https://github.com/amnezia-vpn/amnezia-client/actions/workflows/deploy.yml/badge.svg?branch=dev)](https://github.com/amnezia-vpn/amnezia-client/actions/workflows/deploy.yml?query=branch:dev)
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/amnezia-vpn/amnezia-client)
+**A VPN client that builds the server for you.**
 
-### [English]([https://github.com/amnezia-vpn/amnezia-client/blob/dev/README_RU.md](https://github.com/amnezia-vpn/amnezia-client/tree/dev?tab=readme-ov-file#)) | [Русский](https://github.com/amnezia-vpn/amnezia-client/blob/dev/README_RU.md)
+You give it a machine you own. It installs the VPN there over SSH, then connects to it.
+No accounts, no subscriptions, no operator in the middle.
 
+[![Build](https://github.com/FFriends/AbstractumVPN/actions/workflows/abstractum-ci.yml/badge.svg)](https://github.com/FFriends/AbstractumVPN/actions/workflows/abstractum-ci.yml)
+[![Release](https://img.shields.io/github/v/release/FFriends/AbstractumVPN?include_prereleases&label=release)](https://github.com/FFriends/AbstractumVPN/releases)
+[![Licence](https://img.shields.io/badge/licence-GPL--3.0-blue)](LICENSE)
 
-[Amnezia](https://amnezia.org?utm_source=github&utm_campaign=amnezia_website-readme-en) is an open-source VPN client, with a key feature that enables you to deploy your own VPN server on your server.
+[Download](https://github.com/FFriends/AbstractumVPN/releases/latest) ·
+[How it works](#how-it-works) ·
+[Build from source](#building)
 
-[![Image](https://github.com/amnezia-vpn/amnezia-client/blob/dev/metadata/img-readme/uipic4.png)](https://amnezia.org)
+</div>
 
-### [Website](https://amnezia.org?utm_source=github&utm_campaign=amnezia_website-readme-en) | [Alt website link](https://storage.googleapis.com/amnezia/amnezia.org?utm_source=github&utm_campaign=amnezia_website-readme-en-mirror) | [Documentation](https://docs.amnezia.org) | [Troubleshooting](https://docs.amnezia.org/troubleshooting)
+---
 
-> [!TIP]
-> If the [Amnezia website](https://amnezia.org?utm_source=github&utm_campaign=amnezia_website-readme-en) is blocked in your region, you can use an [Alternative website link](https://storage.googleapis.com/amnezia/amnezia.org?utm_source=github&utm_campaign=amnezia_website-readme-en-mirror).
+## Why this exists
 
-<a href="https://amnezia.org/en/downloads?utm_source=github&utm_campaign=amnezia_button-readme-en"><img src="https://github.com/amnezia-vpn/amnezia-client/blob/dev/metadata/img-readme/download-website.svg" width="150" style="max-width: 100%; margin-right: 10px"></a>
-<a href="https://storage.googleapis.com/amnezia/amnezia.org?m-path=/en/downloads&utm_source=github&utm_campaign=amnezia_button-readme-en-mirrow"><img src="https://github.com/amnezia-vpn/amnezia-client/blob/dev/metadata/img-readme/download-alt.svg" width="150" style="max-width: 100%;"></a>
+A commercial VPN asks you to trust a company with the traffic you are trying to protect.
+Self-hosting removes that company, but usually replaces it with an afternoon of SSH,
+Docker and config files.
 
-[All releases](https://github.com/amnezia-vpn/amnezia-client/releases)
+AbstractumVPN does the afternoon for you and then gets out of the way. The server is yours.
+The keys are yours. Nothing phones home.
 
-<br/>
+## How it works
 
-<a href="https://www.testiny.io"><img src="https://github.com/amnezia-vpn/amnezia-client/blob/dev/metadata/img-readme/testiny.png" height="28px"></a>
+The part that makes this different from every other client: **it provisions the server.**
 
-## Features
-
-- Very easy to use - enter your IP address, SSH login, password and Amnezia will automatically install VPN docker containers to your server and connect to the VPN.
-- Classic VPN-protocols: OpenVPN, WireGuard and IKEv2 protocols.
-- Protocols with traffic Masking (Obfuscation): OpenVPN over [Cloak](https://github.com/cbeuw/Cloak) plugin, Shadowsocks (OpenVPN over Shadowsocks), [AmneziaWG](https://docs.amnezia.org/documentation/amnezia-wg/) and XRay.
-- Split tunneling support - add any sites to the client to enable VPN only for them or add Apps (only for Android and Desktop).
-- Windows, MacOS, Linux, Android, iOS releases.
-- Support for AmneziaWG protocol configuration on [Keenetic beta firmware](https://docs.keenetic.com/ua/air/kn-1611/en/6319-latest-development-release.html#UUID-186c4108-5afd-c10b-f38a-cdff6c17fab3_section-idm33192196168192-improved).
-
-## Links
-
-- [https://amnezia.org](https://amnezia.org/?utm_source=github&utm_campaign=amnezia_website-read) - Project website | [Alternative link (mirror)](https://storage.googleapis.com/amnezia/amnezia.org?utm_source=github&utm_campaign=amnezia_website-read)
-- [https://docs.amnezia.org](https://docs.amnezia.org/?utm_source=github&utm_campaign=amnezia_website-read) - Documentation | [Alternative link (mirror)](https://storage.googleapis.com/amnezia/docs?utm_source=github&utm_campaign=amnezia_website-read)
-- [https://www.reddit.com/r/AmneziaVPN](https://www.reddit.com/r/AmneziaVPN) - Reddit  
-- [https://telegram.me/amnezia_vpn_en](https://telegram.me/amnezia_vpn_en) - Telegram support channel (English) 
-- [https://telegram.me/amnezia_vpn_ir](https://telegram.me/amnezia_vpn_ir) - Telegram support channel (Farsi) 
-- [https://telegram.me/amnezia_vpn_mm](https://telegram.me/amnezia_vpn_mm) - Telegram support channel (Myanmar)  
-- [https://telegram.me/amnezia_vpn](https://telegram.me/amnezia_vpn) - Telegram support channel (Russian)
-- [Get Premium for 6 or 12 months](https://storage.googleapis.com/amnezia/pay?utm_source=github&utm_campaign=ampay-read)
-
-## Tech
-
-AmneziaVPN uses several open-source projects to work:
-
-- [OpenSSL](https://www.openssl.org/)
-- [OpenVPN](https://openvpn.net/)
-- [Qt](https://www.qt.io/)
-- [LibSsh](https://libssh.org)
-- [WireGuard](https://www.wireguard.com/)
-- [Xray-core](https://xtls.github.io/en/)
-- [Conan](https://conan.io/)
-- and more...
-
-## Help us with translations
-
-Download the most actual translation files.
-
-Go to ["Actions" tab](https://github.com/amnezia-vpn/amnezia-client/actions?query=is%3Asuccess+branch%3Adev), click on the first line.
-Then scroll down to the "Artifacts" section and download "AmneziaVPN_translations".
-
-Unzip this file.
-Each *.ts file contains strings for one corresponding language.
-
-Translate or correct some strings in one or multiple *.ts files and commit them back to this repository into the ``client/translations`` folder.
-You can do it via a web-interface or any other method you're familiar with.
-
-## Checking out the source code
-
-A plain clone is enough — there are no submodules to initialise:
-
-```bash
-git clone https://github.com/FFriends/AbstractumVPN.git
+```
+  you                    your server                    the internet
+   │                          │                              │
+   │  1. SSH in, install      │                              │
+   ├─────────────────────────►│                              │
+   │     Docker + container   │                              │
+   │                          │                              │
+   │  2. connect to it        │                              │
+   ├═════════════════════════►│─────────────────────────────►│
+   │     encrypted tunnel     │                              │
 ```
 
-Third-party sources under `client/3rd/` are vendored into the tree, so a fresh
-clone is self-contained and does not depend on third-party hosts staying up.
-Each vendored component keeps its original licence file.
+Enter an address, a login and a password or key. The client SSHes in, installs Docker if
+it is missing, builds the container for the protocol you picked, and connects. Removing it
+later is one button.
 
-## Hacking guide
+Any Linux box with root over SSH works: a €4 VPS, a home server, a Raspberry Pi.
 
-Want to contribute? Welcome!
+## Protocols
 
-### Build requirements
+| | Good for |
+|---|---|
+| **AmneziaWG** | The default. WireGuard speed, with obfuscation so the traffic does not look like WireGuard |
+| **WireGuard** | Fast and simple, when nothing is inspecting your traffic |
+| **OpenVPN** | Mature and widely understood. Slower |
+| **OpenVPN over Cloak** | Makes the connection resemble ordinary HTTPS |
+| **OpenVPN over Shadowsocks** | Another masking layer, useful where Cloak is blocked |
+| **XRay** | Deep packet inspection evasion |
+| **IKEv2** | Built into Windows, no extra driver |
 
-* [`CMake`](https://cmake.org/download/)
-* Compiler and underlying build system, depending on the target:
-  - [Linux] Any of `make` and `gcc`
-  - [Apple] [`Xcode`](https://developer.apple.com/xcode/) or [`Xcode command line tools`](https://developer.apple.com/xcode/)
-  - [Windows] [`Visual Studio 2022`](https://aka.ms/vs/17/release/vs_community.exe) or [`VS 2022 Build Tools`](https://aka.ms/vs/17/release/vs_buildtools.exe)
-  - [Android] [`Android SDK`](#installing-android-sdk) and [`Ninja`](https://ninja-build.org/)
-* [`Qt 6.10+`](https://www.qt.io/download-open-source) with the following modules:
-  - Core module for targeting platform (Desktop/Android/iOS)
-  - Qt 5 Compatibility module
-  - Qt Remote Objects
-* [`Conan`](https://conan.io/downloads) package manager
-  - On MacOS is enough just to use `homebrew` or install it in `.venv` in project root
-  - Other systems must have it in `PATH`
-* (Optional) Installer dependencies:
-  - [Windows/Linux] [`Qt Installer Framework`](https://www.qt.io/download-open-source)
-  - [Windows] [`WIX toolset`](https://github.com/wixtoolset/wix/releases)
+`AmneziaWG` and `AmneziaDNS` keep their names on purpose: they are components you install on
+your own server, not our branding. Renaming them would leave you unable to recognise what you
+actually deployed.
 
-### Building the project using scripts
+## Install
 
-* Run scripts located in `deploy` directory
-* Basically, if dependencies are located in default installation paths, the scripts will find them automatically.
-* If they differ, specify them using the following variables:
-  - `QT_INSTALL_DIR` - Qt root installation folder
-  - `QT_ROOT_PATH`   - Qt framework root directory
-  - `QIF_ROOT_PATH`  - Qt Installer Framework root path
-  - `ANDROID_HOME`   - Path to Android SDK root folder
-  - and others. Check scripts for more
+Grab a build from [Releases](https://github.com/FFriends/AbstractumVPN/releases/latest).
 
-Unix-like:
-```bash
-# Build executables for the host platform
-deploy/build.sh
+| | |
+|---|---|
+| **Windows** | `AbstractumVPN_*_windows_x64.exe` |
+| **Linux** | `AbstractumVPN_*_linux_x64.run` |
 
-# Or just
-deploy/build.sh
+Builds are not code-signed yet, so Windows SmartScreen will warn about an unknown publisher.
+macOS, Android and iOS are not built at the moment: the code supports them, the signing
+certificates do not exist.
 
-# Build executables and installers for the host platform
-deploy/build.sh --installer all
+## Building
 
-# Build Android APK and AAB
-deploy/build.sh -t android --aab
+**There is no local build.** Everything compiles in GitHub Actions, and that is deliberate:
+Qt 6.10 plus nineteen Conan dependencies built from source is not a toolchain worth
+reproducing on every machine.
 
-# Call for help
-deploy/build.sh -h
-```
+Push, then watch [Actions](https://github.com/FFriends/AbstractumVPN/actions). A daily job at
+03:00 UTC builds anything new; the weekly job publishes a release when there is something to
+release.
 
-Windows:
-```batch
-:: Build executables for Windows
-deploy/build.bat
+If you do want a local toolchain anyway: CMake 3.25+, Conan 2.x, Qt 6.10+ **with Qt Remote
+Objects** (not in the default Qt install; without it the privileged service will not build).
+Then `deploy/build.sh` or `deploy\build.bat`.
 
-:: Build executables with IFW installer for Windows
-deploy/build.bat --installer ifw
+## Security
 
-:: Build executables with IFW and WIX installer for Windows
-deploy/build.bat --installer ifw --installer wix
+Report vulnerabilities through
+[GitHub Security Advisories](https://github.com/FFriends/AbstractumVPN/security/advisories/new),
+which keeps the discussion private until a fix ships. Please do not open a public issue for
+anything exploitable.
 
-:: Or just
-deploy/build.bat --installer all
-```
+Two things worth knowing before you rely on this:
 
-### Developing the project in IDEs
+- **On Linux the stored server list is not encrypted.** Upstream disabled it because the
+  keychain backend is unreliable there. Your server addresses and keys sit in plain
+  `QSettings`.
+- Arguments passed to the privileged helper are validated for one of the four processes it
+  can launch. The other three inherit an upstream `FIXME`.
 
-* Basically, you can use any IDE that handles CMake and Qt kits properly to run configure and build steps, and to navigate through the code nicely. For example:
-  - `Qt Creator`
-  - `Visual Studio Code` with `Qt Extension Pack`
-  - and so on
+Neither is a secret and neither is fixed yet.
 
-* To use `Xcode`, you have to configure project first by using `cmake`. The easiest way to do it is to use `Qt Creator` for configuration. Then open `AmneziaVPN.xcodeproj` file from the build folder by using `Xcode`. Note that none of the files changed are saved - the files actually getting changed in build directory. Copy them manually if necessary
+## Contributing
 
-* `Android studio` could be used in the same way - just configure the project by using `cmake` manually or by using `Qt Creator`. Open `<build-dir>/client/android-build` in `Android studio` then. Do not forget to copy the changes - everything you do is saved under the build directory actually.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Short version: commits follow `type: summary`, work
+happens on `dev`, and the build only runs in CI.
 
-### Installing Android SDK
+## Licence and origin
 
-* Android SDK could be installed using the following methods:
-  - Using `Qt Creator`. Use `Preferences`->`SDKs`
-  - Using `Android studio`. By default it installs necessary `SDKs` automatically during the installation
-  - Manually by using `sdk-manager`. Check [this](https://developer.android.com/tools) page for details
+GPL-3.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
-## License
+AbstractumVPN is derived from
+[amnezia-vpn/amnezia-client](https://github.com/amnezia-vpn/amnezia-client), forked at
+`e38a2339`. Most of this codebase is their work, and the licence is inherited rather than
+chosen: GPLv3 requires it.
 
-This project is licensed under the GNU General Public License v3.0 (see LICENSE) and also includes third-party components distributed under their own terms (see THIRD_PARTY_LICENSES.md).
+This is an independent project. It is not affiliated with or endorsed by Amnezia. **Report
+problems with AbstractumVPN here, not to them.** What differs so far: no subscriptions, no
+paid hosting, no advertising, and no calls to anyone else's infrastructure.
 
+Third-party components and their licences are listed in
+[THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
