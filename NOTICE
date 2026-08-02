@@ -1,0 +1,63 @@
+AbstractumVPN
+=============
+
+AbstractumVPN is a VPN client derived from AmneziaVPN.
+
+    Upstream:  https://github.com/amnezia-vpn/amnezia-client
+    Forked at: e38a2339 (2026-07-31)
+
+This is an independent project. It is not affiliated with, endorsed by, or
+supported by Amnezia. Please report issues with AbstractumVPN to this
+repository, not to the upstream project.
+
+
+Licence
+-------
+
+AbstractumVPN is free software licensed under the GNU General Public License,
+version 3. The full text is in LICENSE.
+
+The licence is inherited and cannot be changed: GPLv3 section 5 requires a
+modified work to be licensed as a whole under the same terms. Third-party
+components carry their own licences, listed in THIRD_PARTY_LICENSES.md.
+
+
+Copyright
+---------
+
+Copyright holders, all rights reserved under GPLv3:
+
+    Copyright (c) 2026 AbstractumVPN contributors
+    Copyright (c) 2024 AmneziaVPN                        (11 files)
+    Copyright (c) 2023 Private Internet Access, Inc.     (4 files)
+
+Most of this codebase is upstream work. Per-file copyright headers state who
+holds copyright in that file and must not be removed — GPLv3 section 4 requires
+that all such notices are preserved.
+
+A further 115 files carry an MPL 2.0 header and no explicit copyright line:
+
+    /* This Source Code Form is subject to the terms of the Mozilla Public
+     * License, v. 2.0. ... */
+
+These are Mozilla VPN derived components — client/daemon/, client/mozilla/ and
+parts of client/platforms/ — and remain under MPL 2.0.
+
+
+Trademarks
+----------
+
+The GPL grants rights to the code, not to names or logos. "Amnezia",
+"AmneziaVPN" and the Amnezia logo belong to their owners; this project uses its
+own name and artwork.
+
+Names of third-party components are kept unchanged on purpose, because they
+identify software the user actually runs rather than this product:
+
+    AmneziaDNS    an unbound container with Amnezia's configuration, deployed
+                  by the user onto their own server
+    AmneziaWG     the WireGuard-derived protocol by Amnezia
+    OpenVPN, WireGuard, XRay, Cloak, Shadowsocks, IKEv2, unbound, Docker
+
+Renaming any of these would leave users unable to recognise, in this client,
+the software they installed themselves.

@@ -233,11 +233,16 @@ jobs:
         with:
           fetch-depth: 1
 
+      # Только IFW. `--installer all` разворачивается в `ifw wix`, а WIX toolset на
+      # раннере отсутствует: cpack получает пустой WIX_BIN_DIR и падает с
+      # «Fatal WiX Generator Error». Проверено прогоном 30723887125 — компиляция и
+      # IFW прошли, упала ровно упаковка WIX. IFW даёт рабочий .exe-инсталлятор;
+      # .msi вернём, если понадобится, вместе с шагом установки WIX.
       - name: 'Сборка'
         shell: cmd
         env:
           QT_INSTALL_DIR: ${{ runner.temp }}
-        run: deploy\build.bat --installer all
+        run: deploy\build.bat --installer ifw
 
       - name: 'Артефакты'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -247,7 +252,6 @@ jobs:
           retention-days: 7
           path: |
             deploy/build/*.exe
-            deploy/build/*.msi
 
   # ---------------------------------------------------------------------------
   Release:

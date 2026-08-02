@@ -168,17 +168,3 @@ deploy/build.bat --installer all
 
 GPL v3.0
 
-## Донаты
-
-Patreon: [https://www.patreon.com/amneziavpn](https://www.patreon.com/amneziavpn)
-
-Bitcoin: bc1qmhtgcf9637rl3kqyy22r2a8wa8laka4t9rx2mf <br>
-USDT BEP20: 0x6abD576765a826f87D1D95183438f9408C901bE4 <br>
-USDT TRC20: TELAitazF1MZGmiNjTcnxDjEiH5oe7LC9d <br>
-XMR: 48spms39jt1L2L5vyw2RQW6CXD6odUd4jFu19GZcDyKKQV9U88wsJVjSbL4CfRys37jVMdoaWVPSvezCQPhHXUW5UKLqUp3 <br> 
-TON: UQDpU1CyKRmg7L8mNScKk9FRc2SlESuI7N-Hby4nX-CcVmns
-
-## Благодарности
-
-Этот проект тестируется с помощью BrowserStack.
-Мы выражаем благодарность [BrowserStack](https://www.browserstack.com) за поддержку нашего проекта.

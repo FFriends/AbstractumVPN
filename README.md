@@ -174,16 +174,3 @@ deploy/build.bat --installer all
 
 This project is licensed under the GNU General Public License v3.0 (see LICENSE) and also includes third-party components distributed under their own terms (see THIRD_PARTY_LICENSES.md).
 
-## Donate
-
-Patreon: [https://www.patreon.com/amneziavpn](https://www.patreon.com/amneziavpn)
-
-Bitcoin: bc1qmhtgcf9637rl3kqyy22r2a8wa8laka4t9rx2mf <br>
-USDT BEP20: 0x6abD576765a826f87D1D95183438f9408C901bE4 <br>
-USDT TRC20: TELAitazF1MZGmiNjTcnxDjEiH5oe7LC9d <br>
-XMR: 48spms39jt1L2L5vyw2RQW6CXD6odUd4jFu19GZcDyKKQV9U88wsJVjSbL4CfRys37jVMdoaWVPSvezCQPhHXUW5UKLqUp3 <br> 
-TON: UQDpU1CyKRmg7L8mNScKk9FRc2SlESuI7N-Hby4nX-CcVmns
-## Acknowledgments
-
-This project is tested with BrowserStack.
-We express our gratitude to [BrowserStack](https://www.browserstack.com) for supporting our project.
