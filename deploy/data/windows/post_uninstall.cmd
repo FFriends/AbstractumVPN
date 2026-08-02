@@ -7,15 +7,15 @@ set "USER_APP_DIR=%ORG_DIR%\AmneziaVPN"
 set "USER_LOG_DIR=%USER_APP_DIR%\log"
 set "SYS_APP_DIR=%ProgramData%\AmneziaVPN"
 set "SYS_LOG_DIR=%SYS_APP_DIR%\log"
-set "SYS_LOG_FILE=%SYS_LOG_DIR%\AmneziaVPN-service.log"
+set "SYS_LOG_FILE=%SYS_LOG_DIR%\AbstractumVPN-service.log"
 
 timeout /t 1
-sc stop AmneziaVPN-service
-sc delete AmneziaVPN-service
-sc stop AmneziaWGTunnel$AmneziaVPN
-sc delete AmneziaWGTunnel$AmneziaVPN
-taskkill /IM "AmneziaVPN-service.exe" /F
-taskkill /IM "AmneziaVPN.exe" /F
+sc stop AbstractumVPN-service
+sc delete AbstractumVPN-service
+sc stop AmneziaWGTunnel$AbstractumVPN
+sc delete AmneziaWGTunnel$AbstractumVPN
+taskkill /IM "AbstractumVPN-service.exe" /F
+taskkill /IM "AbstractumVPN.exe" /F
 
 rem Delete the service log file under ProgramData
 if exist "%SYS_LOG_FILE%" del /F /Q "%SYS_LOG_FILE%"

@@ -6,7 +6,11 @@
 
 #include "../client/core/utils/utilities.h"
 
-#define IPC_SERVICE_URL "local:AmneziaVpnIpcInterface"
+// Name of the channel between the unprivileged client and the root service.
+// Both sides must agree on it, so a client and a service from different brands
+// cannot talk to each other - which is the point: this build does not drive an
+// installed AmneziaVPN service, and that service does not answer this client.
+#define IPC_SERVICE_URL "local:AbstractumVpnIpcInterface"
 
 namespace amnezia {
 

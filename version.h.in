@@ -9,8 +9,17 @@
 #define APP_MAJOR_VERSION "@APP_MAJOR_VERSION@"
 #endif
 
-#define APPLICATION_NAME    "AmneziaVPN"
-#define SERVICE_NAME        "AmneziaVPN-service"
-#define ORGANIZATION_NAME   "AmneziaVPN.ORG"
+// Changing these three is what makes this a separate product rather than a
+// reskin. They decide, respectively: the desktop entry and settings filename,
+// the name the privileged service registers under in the OS, and the settings
+// directory / Windows registry path.
+//
+// Consequence, accepted deliberately: an existing AmneziaVPN install is not
+// upgraded. Its service, its settings and its stored servers stay where they
+// are, and this application does not see them. Migration is an explicit import
+// action, not something that happens silently behind the user's back.
+#define APPLICATION_NAME    "AbstractumVPN"
+#define SERVICE_NAME        "AbstractumVPN-service"
+#define ORGANIZATION_NAME   "AbstractumVPN"
 
 #endif  // VERSION_H

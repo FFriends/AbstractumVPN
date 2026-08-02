@@ -42,7 +42,7 @@ PageType {
 
             Image {
                 id: image
-                source: "qrc:/images/amneziaBigLogo.png"
+                source: "qrc:/images/AbstractumBigLogo.png"
 
                 Layout.alignment: Qt.AlignCenter
                 Layout.topMargin: 16

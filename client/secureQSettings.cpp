@@ -17,7 +17,12 @@ using namespace QKeychain;
 namespace {
     constexpr const char *settingsKeyTag = "settingsKeyTag";
     constexpr const char *settingsIvTag = "settingsIvTag";
-    constexpr const char *keyChainName = "AmneziaVPN-Keychain";
+    // The encryption key and IV for Servers/serversList live in the system
+    // keychain under this name. Change it and the key is no longer found, which
+    // means the stored server list cannot be decrypted - the user sees an empty
+    // list, not an error. Renamed once, as part of becoming a separate product;
+    // do not touch it again without a migration path.
+    constexpr const char *keyChainName = "AbstractumVPN-Keychain";
 }
 
 SecureQSettings::SecureQSettings(const QString &organization, const QString &application, QObject *parent, bool enableEncryption)

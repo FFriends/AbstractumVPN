@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" width="320" height="64" role="img" aria-label="AbstractumVPN">
+  <title>AbstractumVPN</title>
+  <!--
+    Horizontal lock-up: mark plus wordmark. Mark geometry is identical to
+    AbstractumVPN_logo.svg - keep the two in sync if either changes.
+
+    Wordmark is JetBrains Mono, with a fallback chain for machines that do not
+    have it. The font is NOT vendored yet, so this renders differently depending
+    on the viewer - fine for docs, not fine for a shipped asset. Vendoring the
+    TTF (SIL OFL) and converting this text to outlines is still to do.
+
+    Note the app's UI font is PT Root UI (client/fonts/pt-root-ui_vf.ttf); the
+    logo deliberately uses a different face.
+  -->
+  <g>
+    <rect x="6"  y="16" width="40" height="8" rx="4" fill="#9BBFDE"/>
+    <rect x="18" y="28" width="40" height="8" rx="4" fill="#3E5D75"/>
+    <rect x="6"  y="40" width="40" height="8" rx="4" fill="#9BBFDE"/>
+  </g>
+  <text x="78" y="41"
+        font-family="JetBrains Mono, ui-monospace, SFMono-Regular, Consolas, monospace"
+        font-size="24" font-weight="600" letter-spacing="-0.4">
+    <tspan fill="#D7D8DB">Abstractum</tspan><tspan fill="#9BBFDE">VPN</tspan>
+  </text>
+</svg>

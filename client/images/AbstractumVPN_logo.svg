@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="AbstractumVPN">
+  <title>AbstractumVPN</title>
+  <!--
+    Mark: three bars, the middle one displaced.
+    "abstractum" - that which is drawn away. Reads as traffic being split:
+    part of it goes one way, the rest another. That is what the product does.
+
+    Geometry is deliberately coarse: bars are 8 units thick with 4-unit gaps in
+    a 64 box, so the shape survives a 16 px tray icon without hinting. Do not
+    add detail, gradients or thin strokes - they die at that size and the tray
+    also renders this monochrome.
+
+    Colours come from the app palette (client/ui/qml/Modules/Style/AmneziaStyle.qml).
+  -->
+  <rect x="6"  y="16" width="40" height="8" rx="4" fill="#9BBFDE"/>
+  <rect x="18" y="28" width="40" height="8" rx="4" fill="#3E5D75"/>
+  <rect x="6"  y="40" width="40" height="8" rx="4" fill="#9BBFDE"/>
+</svg>
