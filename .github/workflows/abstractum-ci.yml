@@ -1,19 +1,21 @@
 name: 'Abstractum — проверка сборки'
 
-# Быстрая обратная связь на пуш: собирается ли дерево вообще.
-# Инсталляторы здесь НЕ собираются — они долгие и нужны только релизу.
-# Локальной сборки у нас нет, поэтому это единственное место, где ошибка
-# компиляции обнаруживается до еженедельного релиза.
+# Собирается ли дерево вообще. Инсталляторы здесь НЕ собираются — они долгие и
+# нужны только релизу. Локальной сборки у нас нет, поэтому это единственное
+# место, где ошибка компиляции обнаруживается до еженедельного релиза.
+#
+# РАСПИСАНИЕ, А НЕ КАЖДЫЙ ПУШ (решение 01.08.2026). Правки идут пачками, и
+# сорокаминутная сборка на каждую не окупалась. Раз в сутки в 03:00 UTC = 06:00
+# МСК, и только если с прошлой успешной проверки появились коммиты.
+#
+# Цена решения, которую надо понимать: сломанная сборка теперь обнаруживается не
+# через 40 минут, а в худшем случае через сутки. Если правка рискованная —
+# запускать вручную, не дожидаясь ночи:
+#   gh workflow run abstractum-ci.yml -R FFriends/AbstractumVPN
 
 on:
-  push:
-    branches:
-      - dev
-      - 'feature/**'
-    paths-ignore:
-      - '**/*.md'
-      - 'docs/**'
-      - 'metadata/**'
+  schedule:
+    - cron: '0 3 * * *'
   pull_request:
     branches:
       - dev
@@ -21,9 +23,9 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
-  # Новый пуш в ту же ветку отменяет предыдущую проверку — она уже неактуальна.
   group: build-check-${{ github.ref }}
   cancel-in-progress: true
 
@@ -35,7 +37,66 @@ env:
   QT_MODULES: 'qtremoteobjects qt5compat qtshadertools'
 
 jobs:
+  Check:
+    name: 'Есть ли новые коммиты с прошлой проверки'
+    runs-on: ubuntu-latest
+    outputs:
+      should_build: ${{ steps.decide.outputs.should_build }}
+      last_checked: ${{ steps.decide.outputs.last_checked }}
+
+    steps:
+      - name: 'Решение'
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Гейт нужен только расписанию. Ручной запуск и PR проверяем всегда:
+          # руками запускают именно тогда, когда результат нужен сейчас.
+          if [ "$EVENT" != "schedule" ]; then
+            echo "Событие «$EVENT» — собираем без условий."
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            echo "last_checked=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Полезная нагрузка события schedule минимальна, поэтому имя ветки по
+          # умолчанию берём с запасным путём — иначе фильтр молча станет пустым.
+          branch="${{ github.event.repository.default_branch }}"
+          if [ -z "$branch" ]; then
+            branch=$(gh repo view "$REPO" --json defaultBranchRef --jq '.defaultBranchRef.name')
+          fi
+
+          # Последняя УСПЕШНАЯ проверка на ветке по умолчанию. Фильтр по ветке
+          # обязателен: у прогонов из PR свой SHA слияния, он с HEAD не совпадёт
+          # никогда и гейт перестал бы работать.
+          last=$(gh run list -R "$REPO" \
+                   --workflow abstractum-ci.yml \
+                   --branch "$branch" \
+                   --status success \
+                   --limit 1 --json headSha --jq '.[0].headSha // ""')
+
+          echo "last_checked=$last" >> "$GITHUB_OUTPUT"
+
+          if [ -z "$last" ]; then
+            echo "Успешных проверок ещё не было — собираем."
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+          elif [ "$last" = "$SHA" ]; then
+            echo "С прошлой успешной проверки коммитов нет — пропускаем."
+            echo "should_build=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Прошлая проверка была на ${last}, сейчас ${SHA} — собираем."
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+          fi
+
   Linux:
+    needs: Check
+    if: needs.Check.outputs.should_build == 'true'
     runs-on: ubuntu-22.04
     steps:
       - uses: jurplel/install-qt-action@b7840a6733f49e2a39c4355260d2375063d39b61 # v3
@@ -72,6 +133,8 @@ jobs:
         run: bash deploy/build.sh
 
   Windows:
+    needs: Check
+    if: needs.Check.outputs.should_build == 'true'
     runs-on: windows-2022
     steps:
       - uses: jurplel/install-qt-action@b7840a6733f49e2a39c4355260d2375063d39b61 # v3
@@ -104,3 +167,14 @@ jobs:
         env:
           QT_INSTALL_DIR: ${{ runner.temp }}
         run: deploy\build.bat
+
+  Skipped:
+    name: 'Изменений нет — проверка пропущена'
+    needs: Check
+    if: needs.Check.outputs.should_build == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "С коммита ${{ needs.Check.outputs.last_checked }} изменений не было."
+          echo "Раннеры под сборку не поднимались."
+          echo "Изменений с \`${{ needs.Check.outputs.last_checked }}\` нет — проверка пропущена." >> "$GITHUB_STEP_SUMMARY"
