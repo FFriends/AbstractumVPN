@@ -13,8 +13,6 @@ set(HEADERS ${HEADERS}
     ${CLIENT_ROOT_DIR}/core/protocols/protocolUtils.h
     ${CLIENT_ROOT_DIR}/core/utils/constants/configKeys.h
     ${CLIENT_ROOT_DIR}/core/utils/constants/protocolConstants.h
-    ${CLIENT_ROOT_DIR}/core/utils/constants/apiKeys.h
-    ${CLIENT_ROOT_DIR}/core/utils/constants/apiConstants.h
     ${CLIENT_ROOT_DIR}/core/utils/errorStrings.h
     ${CLIENT_ROOT_DIR}/core/utils/selfhosted/scriptsRegistry.h
     ${CLIENT_ROOT_DIR}/core/utils/qrCodeUtils.h
@@ -58,7 +56,6 @@ set(HEADERS ${HEADERS}
     ${CLIENT_ROOT_DIR}/../common/logger/logger.h
     ${CLIENT_ROOT_DIR}/../common/crypto/cryptoUtils.h
     ${CLIENT_ROOT_DIR}/ui/utils/qmlUtils.h
-    ${CLIENT_ROOT_DIR}/core/utils/api/apiUtils.h
     ${CLIENT_ROOT_DIR}/core/utils/osSignalHandler.h
     ${CLIENT_ROOT_DIR}/core/utils/utilities.h
     ${CLIENT_ROOT_DIR}/core/utils/managementServer.h
@@ -136,7 +133,6 @@ set(SOURCES ${SOURCES}
     ${CLIENT_ROOT_DIR}/../common/logger/logger.cpp
     ${CLIENT_ROOT_DIR}/../common/crypto/cryptoUtils.cpp
     ${CLIENT_ROOT_DIR}/ui/utils/qmlUtils.cpp
-    ${CLIENT_ROOT_DIR}/core/utils/api/apiUtils.cpp
     ${CLIENT_ROOT_DIR}/core/utils/serverConfigUtils.cpp
     ${CLIENT_ROOT_DIR}/core/utils/osSignalHandler.cpp
     ${CLIENT_ROOT_DIR}/core/utils/utilities.cpp

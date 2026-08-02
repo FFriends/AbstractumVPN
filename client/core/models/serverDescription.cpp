@@ -3,10 +3,7 @@
 #include <QMap>
 
 #include "core/utils/serverConfigUtils.h"
-#include "core/utils/constants/apiKeys.h"
-#include "core/utils/constants/apiConstants.h"
 #include "core/utils/constants/protocolConstants.h"
-#include "core/utils/api/apiUtils.h"
 #include "core/utils/containers/containerUtils.h"
 #include "core/protocols/protocolUtils.h"
 #include "core/models/protocols/awgProtocolConfig.h"
@@ -130,57 +127,22 @@ ServerDescription buildServerDescription(const NativeServerConfig &server, bool 
     return row;
 }
 
-ServerDescription buildServerDescription(const LegacyApiServerConfig &server, bool /*isAmneziaDnsEnabled*/)
+ServerDescription buildUnsupportedSubscriptionDescription(const QJsonObject &storedJson)
 {
-    ServerDescription row = buildBaseDescription(server);
-    row.configVersion = serverConfigUtils::ConfigSource::Telegram;
-    row.isApiV1 = true;
-    row.isServerFromGatewayApi = false;
-    row.hasWriteAccess = false;
+    ServerDescription row;
 
-    row.serverName = server.displayName;
-    row.baseDescription = server.description;
-
-    const QString fullDescriptionForCollapsed = row.baseDescription;
-    row.collapsedServerDescription = fullDescriptionForCollapsed;
-    row.expandedServerDescription = fullDescriptionForCollapsed;
-    return row;
-}
-
-ServerDescription buildServerDescription(const ApiV2ServerConfig &server, bool /*isAmneziaDnsEnabled*/)
-{
-    ServerDescription row = buildBaseDescription(server);
-    row.configVersion = serverConfigUtils::ConfigSource::AmneziaGateway;
-    row.isApiV2 = true;
-    row.isServerFromGatewayApi = true;
-    row.isPremium = server.isPremium() || server.isExternalPremium();
-    row.hasWriteAccess = false;
-
-    row.serverName = server.displayName;
-    row.baseDescription = server.apiConfig.serverCountryCode.isEmpty() ? server.description : server.apiConfig.serverCountryName;
-
-    row.isCountrySelectionAvailable = !server.apiConfig.availableCountries.isEmpty();
-    row.apiAvailableCountries = server.apiConfig.availableCountries;
-    row.apiServerCountryCode = server.apiConfig.serverCountryCode;
-
-    row.isAdVisible = server.apiConfig.serviceInfo.isAdVisible;
-    row.adHeader = server.apiConfig.serviceInfo.adHeader;
-    row.adDescription = server.apiConfig.serviceInfo.adDescription;
-    row.adEndpoint = server.apiConfig.serviceInfo.adEndpoint;
-    row.isRenewalAvailable = server.apiConfig.serviceInfo.isRenewalAvailable;
-
-    if (!server.apiConfig.isInAppPurchase) {
-        if (server.apiConfig.subscriptionExpiredByServer) {
-            row.isSubscriptionExpired = true;
-        } else if (!server.apiConfig.subscription.endDate.isEmpty()) {
-            row.isSubscriptionExpired = apiUtils::isSubscriptionExpired(server.apiConfig.subscription.endDate);
-            row.isSubscriptionExpiringSoon = apiUtils::isSubscriptionExpiringSoon(server.apiConfig.subscription.endDate);
-        }
+    // displayName is what the user renamed it to, description is what the service
+    // called it. Either is better than an empty row.
+    row.serverName = storedJson.value(QStringLiteral("displayName")).toString();
+    if (row.serverName.isEmpty()) {
+        row.serverName = storedJson.value(QStringLiteral("description")).toString();
     }
+    row.baseDescription = storedJson.value(QStringLiteral("description")).toString();
+    row.hostName = storedJson.value(QStringLiteral("hostName")).toString();
 
-    const QString fullDescriptionForCollapsed = row.baseDescription;
-    row.collapsedServerDescription = fullDescriptionForCollapsed;
-    row.expandedServerDescription = fullDescriptionForCollapsed;
+    row.collapsedServerDescription = row.baseDescription;
+    row.expandedServerDescription = row.baseDescription;
+
     return row;
 }
 

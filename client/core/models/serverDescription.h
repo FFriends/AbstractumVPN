@@ -3,14 +3,13 @@
 
 #include <QString>
 #include <QJsonArray>
+#include <QJsonObject>
 
 #include "core/utils/containerEnum.h"
 #include "core/utils/selfhosted/sshSession.h"
 #include "core/models/selfhosted/selfHostedAdminServerConfig.h"
 #include "core/models/selfhosted/selfHostedUserServerConfig.h"
 #include "core/models/selfhosted/nativeServerConfig.h"
-#include "core/models/api/legacyApiServerConfig.h"
-#include "core/models/api/apiV2ServerConfig.h"
 
 namespace amnezia
 {
@@ -56,8 +55,11 @@ struct ServerDescription
 ServerDescription buildServerDescription(const SelfHostedAdminServerConfig &server, bool isAmneziaDnsEnabled);
 ServerDescription buildServerDescription(const SelfHostedUserServerConfig &server, bool isAmneziaDnsEnabled);
 ServerDescription buildServerDescription(const NativeServerConfig &server, bool isAmneziaDnsEnabled);
-ServerDescription buildServerDescription(const LegacyApiServerConfig &server, bool isAmneziaDnsEnabled);
-ServerDescription buildServerDescription(const ApiV2ServerConfig &server, bool isAmneziaDnsEnabled);
+
+// A server left over from a subscription service. Nothing can be parsed out of
+// it any more, so the name is read straight from the stored JSON - without it
+// the entry would show up in the list nameless.
+ServerDescription buildUnsupportedSubscriptionDescription(const QJsonObject &storedJson);
 
 } // namespace amnezia
 

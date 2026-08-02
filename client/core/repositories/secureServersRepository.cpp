@@ -7,7 +7,6 @@
 #include <QUuid>
 
 #include "core/utils/serverConfigUtils.h"
-#include "core/utils/constants/apiKeys.h"
 #include "core/utils/constants/configKeys.h"
 
 using namespace amnezia;
@@ -52,19 +51,11 @@ QString storedServerDisplayName(const SecureServersRepository *repository, const
             return cfg->displayName;
         }
         break;
-    case Kind::AmneziaPremiumV2:
-    case Kind::AmneziaFreeV3:
-    case Kind::ExternalPremium:
-        if (const auto cfg = repository->apiV2Config(serverId)) {
-            return cfg->displayName;
-        }
-        break;
-    case Kind::AmneziaPremiumV1:
-    case Kind::AmneziaFreeV2:
-        if (const auto cfg = repository->legacyApiConfig(serverId)) {
-            return cfg->displayName;
-        }
-        break;
+    case Kind::UnsupportedSubscription: {
+        const QJsonObject stored = repository->rawServerJson(serverId);
+        const QString displayName = stored.value(QStringLiteral("displayName")).toString();
+        return displayName.isEmpty() ? stored.value(QStringLiteral("description")).toString() : displayName;
+    }
     case Kind::Invalid:
     default:
         break;
@@ -300,6 +291,12 @@ void SecureServersRepository::removeServer(const QString &serverId)
     emit serverRemoved(serverId, removedIndex);
 }
 
+QJsonObject SecureServersRepository::rawServerJson(const QString &serverId) const
+{
+    const auto it = m_serverJsonById.constFind(serverId);
+    return it == m_serverJsonById.constEnd() ? QJsonObject() : withoutStorageServerId(it.value());
+}
+
 serverConfigUtils::ConfigType SecureServersRepository::serverKind(const QString &serverId) const
 {
     const auto it = m_serverJsonById.constFind(serverId);
@@ -346,32 +343,6 @@ std::optional<NativeServerConfig> SecureServersRepository::nativeConfig(const QS
         return std::nullopt;
     }
     return NativeServerConfig::fromJson(strippedJson);
-}
-
-std::optional<ApiV2ServerConfig> SecureServersRepository::apiV2Config(const QString &serverId) const
-{
-    const auto it = m_serverJsonById.constFind(serverId);
-    if (it == m_serverJsonById.constEnd()) {
-        return std::nullopt;
-    }
-    const QJsonObject strippedJson = withoutStorageServerId(it.value());
-    if (!serverConfigUtils::isApiV2Subscription(serverConfigUtils::configTypeFromJson(strippedJson))) {
-        return std::nullopt;
-    }
-    return ApiV2ServerConfig::fromJson(strippedJson);
-}
-
-std::optional<LegacyApiServerConfig> SecureServersRepository::legacyApiConfig(const QString &serverId) const
-{
-    const auto it = m_serverJsonById.constFind(serverId);
-    if (it == m_serverJsonById.constEnd()) {
-        return std::nullopt;
-    }
-    const QJsonObject strippedJson = withoutStorageServerId(it.value());
-    if (!serverConfigUtils::isLegacyApiSubscription(serverConfigUtils::configTypeFromJson(strippedJson))) {
-        return std::nullopt;
-    }
-    return LegacyApiServerConfig::fromJson(strippedJson);
 }
 
 int SecureServersRepository::serversCount() const

@@ -17,9 +17,6 @@
 #include "core/utils/containers/containerUtils.h"
 #include "core/utils/protocolEnum.h"
 #include "core/utils/serverConfigUtils.h"
-#include "core/utils/constants/apiKeys.h"
-#include "core/utils/constants/apiConstants.h"
-#include "core/utils/api/apiUtils.h"
 #include "core/utils/serialization/serialization.h"
 #include "core/utils/utilities.h"
 #include "core/utils/protocolEnum.h"
@@ -207,13 +204,10 @@ ImportController::ImportResult ImportController::extractConfigFromData(const QSt
     case ConfigTypes::Amnezia: {
         result.config = QJsonDocument::fromJson(config.toUtf8()).object();
 
+        // Keys from a subscription service are refused outright. Without this the
+        // config would slip through as a self-hosted one, land in the list with no
+        // containers, and fail later with something meaningless.
         if (serverConfigUtils::isServerFromApi(result.config)) {
-            auto apiConfig = result.config.value(apiDefs::key::apiConfig).toObject();
-            apiConfig[apiDefs::key::vpnKey] = data;
-            result.config[apiDefs::key::apiConfig] = apiConfig;
-        }
-
-        if (serverConfigUtils::isLegacyApiSubscription(serverConfigUtils::configTypeFromJson(result.config))) {
             result.errorCode = ErrorCode::LegacyApiV1NotSupportedError;
             result.config = {};
             return result;
@@ -389,28 +383,8 @@ void ImportController::importConfig(const QJsonObject &config)
         m_serversRepository->addServer(QString(), config, serverConfigUtils::configTypeFromJson(config));
         emit importFinished();
     } else if (config.contains(configKey::configVersion)) {
-        quint16 crc = qChecksum(QJsonDocument(config).toJson());
-        bool hasServerWithCrc = false;
-        const QVector<QString> ids = m_serversRepository->orderedServerIds();
-        for (const QString &id : ids) {
-            const auto apiV2 = m_serversRepository->apiV2Config(id);
-            if (!apiV2.has_value()) {
-                continue;
-            }
-            if (static_cast<quint16>(apiV2->crc) == crc) {
-                hasServerWithCrc = true;
-                break;
-            }
-        }
-
-        if (hasServerWithCrc) {
-            emit importErrorOccurred(ErrorCode::ApiConfigAlreadyAdded, true);
-        } else {
-            QJsonObject configWithCrc = config;
-            configWithCrc.insert(configKey::crc, crc);
-            m_serversRepository->addServer(QString(), configWithCrc, serverConfigUtils::configTypeFromJson(configWithCrc));
-            emit importFinished();
-        }
+        // Same refusal on the second path into the importer.
+        emit importErrorOccurred(ErrorCode::LegacyApiV1NotSupportedError, true);
     } else {
         qDebug() << "Failed to import profile";
         qDebug().noquote() << QJsonDocument(config).toJson();

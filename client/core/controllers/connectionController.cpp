@@ -74,18 +74,7 @@ ErrorCode ConnectionController::defaultContainerForServer(const QString &serverI
         container = cfg->defaultContainer;
         return ErrorCode::NoError;
     }
-    case serverConfigUtils::ConfigType::AmneziaPremiumV2:
-    case serverConfigUtils::ConfigType::AmneziaFreeV3:
-    case serverConfigUtils::ConfigType::ExternalPremium: {
-        const auto cfg = m_serversRepository->apiV2Config(serverId);
-        if (!cfg.has_value()) {
-            return ErrorCode::InternalError;
-        }
-        container = cfg->defaultContainer;
-        return ErrorCode::NoError;
-    }
-    case serverConfigUtils::ConfigType::AmneziaPremiumV1:
-    case serverConfigUtils::ConfigType::AmneziaFreeV2:
+    case serverConfigUtils::ConfigType::UnsupportedSubscription:
         return ErrorCode::LegacyApiV1NotSupportedError;
     case serverConfigUtils::ConfigType::Invalid:
     default:
@@ -104,7 +93,9 @@ ErrorCode ConnectionController::isConnectionSupported(const QString &serverId) c
     }
 
     const serverConfigUtils::ConfigType kind = m_serversRepository->serverKind(serverId);
-    if (serverConfigUtils::isLegacyApiSubscription(kind)) {
+    // Answered before anything else: the drawer this code raises is the only place
+    // the user is told why such a server cannot connect.
+    if (serverConfigUtils::isUnsupportedSubscription(kind)) {
         return ErrorCode::LegacyApiV1NotSupportedError;
     }
 
@@ -115,9 +106,6 @@ ErrorCode ConnectionController::isConnectionSupported(const QString &serverId) c
     }
 
     if (container == DockerContainer::None) {
-        if (serverConfigUtils::isApiV2Subscription(kind)) {
-            return ErrorCode::NoError;
-        }
         return ErrorCode::NoInstalledContainersError;
     }
 
@@ -177,23 +165,7 @@ ErrorCode ConnectionController::prepareConnection(const QString &serverId,
         description = cfg->description;
         break;
     }
-    case serverConfigUtils::ConfigType::AmneziaPremiumV2:
-    case serverConfigUtils::ConfigType::AmneziaFreeV3:
-    case serverConfigUtils::ConfigType::ExternalPremium: {
-        const auto cfg = m_serversRepository->apiV2Config(serverId);
-        if (!cfg.has_value()) return ErrorCode::InternalError;
-        container = cfg->defaultContainer;
-        containerConfigModel = cfg->containerConfig(container);
-        dns = cfg->getDnsPair(primaryDns, secondaryDns);
-        hostName = cfg->hostName;
-        description = cfg->description;
-        configVersion = serverConfigUtils::ConfigSource::AmneziaGateway;
-        isApiConfig = true;
-        break;
-    }
-    case serverConfigUtils::ConfigType::AmneziaPremiumV1:
-    case serverConfigUtils::ConfigType::AmneziaFreeV2:
-        return ErrorCode::InternalError;
+    case serverConfigUtils::ConfigType::UnsupportedSubscription:
     case serverConfigUtils::ConfigType::Invalid:
     default:
         return ErrorCode::InternalError;

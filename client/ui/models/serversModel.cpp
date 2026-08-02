@@ -7,8 +7,6 @@
 #include <QJsonDocument>
 
 #include "core/utils/serverConfigUtils.h"
-#include "core/utils/constants/apiKeys.h"
-#include "core/utils/constants/apiConstants.h"
 #include "core/utils/selfhosted/sshSession.h"
 #include "core/utils/networkUtilities.h"
 
@@ -16,7 +14,6 @@
     #include <AmneziaVPN-Swift.h>
 #endif
 
-#include "core/utils/api/apiUtils.h"
 
 using namespace amnezia;
 
