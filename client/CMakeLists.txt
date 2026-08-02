@@ -23,6 +23,10 @@ execute_process(
 
 add_definitions(-DGIT_COMMIT_HASH="${GIT_COMMIT_HASH}")
 
+# Where the update check looks for releases. Kept out of the source so a fork
+# points itself somewhere else without touching C++.
+add_definitions(-DUPDATE_REPO_SLUG="FFriends/AbstractumVPN")
+
 add_definitions(-DPROD_AGW_PUBLIC_KEY="$ENV{PROD_AGW_PUBLIC_KEY}")
 add_definitions(-DPROD_S3_ENDPOINT="$ENV{PROD_S3_ENDPOINT}")
 add_definitions(-DFALLBACK_S3_ENDPOINT="$ENV{FALLBACK_S3_ENDPOINT}")

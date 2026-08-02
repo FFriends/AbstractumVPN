@@ -34,34 +34,12 @@ QString UpdateUiController::getChangelogText() const
         return tr("Failed to load changelog text");
     }
 
-    QStringList lines = rawChangelog.split("\n");
-    QStringList filteredChangeLogText;
-    bool add = false;
-    QString osSection;
-
-#ifdef Q_OS_WINDOWS
-    osSection = "### Windows";
-#elif defined(Q_OS_MACOS)
-    osSection = "### macOS";
-#elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
-    osSection = "### Linux";
-#endif
-
-    for (const QString &line : lines) {
-        if (line.startsWith("### General")) {
-            add = true;
-        } else if (line.startsWith("### ") && line != osSection) {
-            add = false;
-        } else if (line == osSection) {
-            add = true;
-        }
-
-        if (add) {
-            filteredChangeLogText.append(line);
-        }
-    }
-
-    return filteredChangeLogText.join("\n");
+    // Shown as published. There used to be a filter here that kept only the
+    // lines under "### General" and the section for the current OS - a shape
+    // the upstream project maintained by hand. Our release notes are generated
+    // from commit subjects and have no such headings, so the filter matched
+    // nothing and the drawer came up empty.
+    return rawChangelog;
 }
 
 QString UpdateUiController::getVersion() const

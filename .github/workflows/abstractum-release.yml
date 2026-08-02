@@ -54,6 +54,8 @@ jobs:
       should_release: ${{ steps.decide.outputs.should_release }}
       tag: ${{ steps.decide.outputs.tag }}
       base_version: ${{ steps.decide.outputs.base_version }}
+      build_number: ${{ steps.decide.outputs.build_number }}
+      full_version: ${{ steps.decide.outputs.full_version }}
       commit_count: ${{ steps.decide.outputs.commit_count }}
       previous_tag: ${{ steps.decide.outputs.previous_tag }}
 
@@ -73,7 +75,7 @@ jobs:
 
           # Базовая версия — единственный источник правды, из CMakeLists.txt.
           # Руками её здесь не дублируем.
-          base_version=$(sed -n 's/^set(AMNEZIAVPN_VERSION \([0-9.]*\)).*/\1/p' CMakeLists.txt)
+          base_version=$(sed -n 's/^[[:space:]]*set(AMNEZIAVPN_VERSION \([0-9.]*\)).*/\1/p' CMakeLists.txt | head -1)
           if [ -z "$base_version" ]; then
             echo "::error file=CMakeLists.txt::Не удалось извлечь AMNEZIAVPN_VERSION"
             exit 1
@@ -112,10 +114,19 @@ jobs:
           echo "commit_count=$commit_count" >> "$GITHUB_OUTPUT"
           echo "should_release=$should_release" >> "$GITHUB_OUTPUT"
 
-          # Тег: <версия из CMake>-<ISO-год>w<ISO-неделя>, напр. v5.0.0.5-2026w31.
-          # ISO-неделя (%G/%V), а не %Y/%W — иначе на стыке года неделя уезжает.
-          week=$(date -u +%Gw%V)
-          tag="v${base_version}-${week}"
+          # Номер сборки — двузначный ISO-год и ISO-неделя: 2026, неделя 31 → 2631.
+          # ISO-пара (%g/%V), а не %y/%W: на стыке года они согласованы между
+          # собой, а календарные — нет.
+          #
+          # Он уезжает в CMake четвёртым компонентом версии, поэтому каждый
+          # недельный релиз строго больше предыдущего. Без этого клиент сравнивает
+          # QVersionNumber и всегда получает «новее ничего нет».
+          build_number=$(date -u +%g%V)
+          full_version="${base_version}.${build_number}"
+          tag="v${full_version}"
+
+          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
+          echo "full_version=$full_version" >> "$GITHUB_OUTPUT"
 
           # Повторный запуск на той же неделе не должен падать на занятом теге.
           if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
@@ -124,6 +135,12 @@ jobs:
               n=$((n + 1))
             done
             tag="${tag}.${n}"
+
+            # Версия при этом не меняется: четыре компонента — предел и CMake, и
+            # ресурса Windows. Значит установленный клиент такой релиз обновлением
+            # не посчитает. Если он должен доехать до пользователей — поднять
+            # базовую версию в CMakeLists.txt руками, это и есть хотфикс.
+            echo "::warning::Второй релиз на неделе (${tag}). Версия остаётся ${full_version}, обновление предложено не будет."
           fi
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
@@ -181,6 +198,10 @@ jobs:
         shell: bash
         env:
           QT_INSTALL_DIR: ${{ runner.temp }}
+          # Уезжает в CMakeLists.txt четвёртым компонентом версии. Скрипты сборки
+          # апстрима своих аргументов в cmake не пробрасывают, поэтому через
+          # окружение, а не через -D.
+          ABSTRACTUM_BUILD_NUMBER: ${{ needs.Check.outputs.build_number }}
         run: bash deploy/build.sh --installer all
 
       - name: 'Артефакты'
@@ -244,6 +265,7 @@ jobs:
         shell: cmd
         env:
           QT_INSTALL_DIR: ${{ runner.temp }}
+          ABSTRACTUM_BUILD_NUMBER: ${{ needs.Check.outputs.build_number }}
         run: deploy\build.bat --installer ifw
 
       - name: 'Артефакты'
@@ -290,6 +312,7 @@ jobs:
           PREVIOUS_TAG: ${{ needs.Check.outputs.previous_tag }}
           COMMIT_COUNT: ${{ needs.Check.outputs.commit_count }}
           BASE_VERSION: ${{ needs.Check.outputs.base_version }}
+          FULL_VERSION: ${{ needs.Check.outputs.full_version }}
           PRERELEASE: ${{ inputs.prerelease == null && 'true' || inputs.prerelease }}
         shell: bash
         run: |
@@ -299,7 +322,7 @@ jobs:
           {
             echo "Автоматическая еженедельная сборка AbstractumVPN."
             echo ""
-            echo "* Базовая версия: \`${BASE_VERSION}\` (из \`CMakeLists.txt\`)"
+            echo "* Версия сборки: \`${FULL_VERSION}\` (база \`${BASE_VERSION}\` из \`CMakeLists.txt\`)"
             echo "* Коммитов с прошлого релиза: **${COMMIT_COUNT}**"
             echo "* Собрано из: \`${GITHUB_SHA}\`"
             echo ""

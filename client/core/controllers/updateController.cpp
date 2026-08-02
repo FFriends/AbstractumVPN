@@ -1,33 +1,44 @@
 #include "updateController.h"
 
-#include <QNetworkReply>
-#include <QVersionNumber>
-#include <QUrl>
+#include <QCryptographicHash>
+#include <QDateTime>
+#include <QFile>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QSysInfo>
-#include <QTimer>
+#include <QNetworkReply>
+#include <QProcess>
+#include <QStandardPaths>
+#include <QUrl>
+#include <QVersionNumber>
 
 #include "amneziaApplication.h"
 #include "logger.h"
 #include "version.h"
-#include "core/controllers/gatewayController.h"
-#include "core/utils/constants/apiKeys.h"
-#include "core/utils/selfhosted/scriptsRegistry.h"
+#include "core/utils/networkUtilities.h"
+
+#ifdef AMNEZIA_DESKTOP
+    #include "core/utils/ipcClient.h"
+#endif
 
 namespace
 {
     Logger logger("UpdateController");
 
+    constexpr int kRequestTimeoutMsecs = 7000;
+
+    // Installers are told apart by extension, not by name. CPack builds the file
+    // name out of the target name, so it already changed once with the rebrand
+    // and a hardcoded mask stopped matching without anyone noticing.
 #if defined(Q_OS_WINDOWS)
-    const QLatin1String kInstallerRemoteFileNamePattern("AmneziaVPN_%1_windows_x64.exe");
-    const QString kInstallerLocalPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/AmneziaVPN_installer.exe";
+    const QLatin1String kInstallerSuffix(".exe");
+    const QString kInstallerLocalPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/" APPLICATION_NAME "_installer.exe";
 #elif defined(Q_OS_MACOS) && !defined(MACOS_NE)
-    const QLatin1String kInstallerRemoteFileNamePattern("AmneziaVPN_%1_macos_x64.pkg");
-    const QString kInstallerLocalPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/AmneziaVPN.pkg";
+    const QLatin1String kInstallerSuffix(".pkg");
+    const QString kInstallerLocalPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/" APPLICATION_NAME ".pkg";
 #elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
-    const QLatin1String kInstallerRemoteFileNamePattern("AmneziaVPN_%1_linux_x64.run");
-    const QString kInstallerLocalPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/AmneziaVPN.run";
+    const QLatin1String kInstallerSuffix(".run");
+    const QString kInstallerLocalPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/" APPLICATION_NAME ".run";
 #endif
 }
 
@@ -58,7 +69,7 @@ void UpdateController::checkForUpdates()
     }
     m_updateCheckRunning = true;
 
-    fetchGatewayUrl();
+    fetchLatestRelease();
 }
 
 void UpdateController::finishUpdateCheck()
@@ -66,109 +77,155 @@ void UpdateController::finishUpdateCheck()
     m_updateCheckRunning = false;
 }
 
-void UpdateController::doGetAsync(const QString &endpoint, std::function<void(bool, QByteArray)> onDone)
+void UpdateController::allowHostThroughKillSwitch(const QUrl &url)
 {
-    QString fullUrl = m_baseUrl + endpoint;
-    
-    QNetworkRequest req;
-    req.setTransferTimeout(7000);
-    req.setUrl(QUrl(fullUrl));
+#ifdef AMNEZIA_DESKTOP
+    if (!m_appSettingsRepository || !m_appSettingsRepository->isStrictKillSwitchEnabled()) {
+        return;
+    }
 
-    QNetworkReply *reply = amnApp->networkManager()->get(req);
-    setupNetworkErrorHandling(reply, endpoint);
+    const QString ip = NetworkUtilities::getIPAddress(url.host());
+    if (ip.isEmpty()) {
+        return;
+    }
 
-    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, endpoint, onDone]() {
-        const bool ok = (reply->error() == QNetworkReply::NoError);
-        QByteArray data;
-        if (ok) {
-            data = reply->readAll();
-        } else {
-            handleNetworkError(reply, endpoint);
+    IpcClient::withInterface([&ip](QSharedPointer<IpcInterfaceReplica> iface) {
+        QRemoteObjectPendingReply<bool> reply = iface->addKillSwitchAllowedRange(QStringList { ip });
+        if (!reply.waitForFinished(1000) || !reply.returnValue()) {
+            logger.warning() << "Failed to allow" << ip << "through the kill switch";
+        }
+    });
+#else
+    Q_UNUSED(url)
+#endif
+}
+
+void UpdateController::fetchLatestRelease()
+{
+    // The list, not /releases/latest: our releases are published as
+    // pre-releases, and /latest skips those and answers 404.
+    const QUrl url(QStringLiteral("https://api.github.com/repos/%1/releases?per_page=10")
+                           .arg(QLatin1String(UPDATE_REPO_SLUG)));
+
+    allowHostThroughKillSwitch(url);
+
+    QNetworkRequest request;
+    request.setTransferTimeout(kRequestTimeoutMsecs);
+    request.setUrl(url);
+    request.setRawHeader("Accept", "application/vnd.github+json");
+    request.setRawHeader("X-GitHub-Api-Version", "2022-11-28");
+    // GitHub refuses requests without a User-Agent. Product name and version
+    // only - this request must not say anything about who is asking.
+    request.setRawHeader("User-Agent", QByteArray(APPLICATION_NAME "/" APP_VERSION));
+
+    QNetworkReply *reply = amnApp->networkManager()->get(request);
+    setupNetworkErrorHandling(reply, QStringLiteral("releases"));
+
+    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        const int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        const bool rateLimited = (status == 403 || status == 429) && reply->rawHeader("X-RateLimit-Remaining") == "0";
+        const QNetworkReply::NetworkError error = reply->error();
+        const QByteArray body = reply->readAll();
+
+        if (error != QNetworkReply::NoError && !rateLimited) {
+            handleNetworkError(reply, QStringLiteral("releases"));
         }
         reply->deleteLater();
-        onDone(ok, data);
-    });
-}
 
-void UpdateController::fetchGatewayUrl()
-{
-    auto gatewayController = QSharedPointer<GatewayController>::create(m_appSettingsRepository->getGatewayEndpoint(),
-                                                                       m_appSettingsRepository->isDevGatewayEnv(),
-                                                                       7000,
-                                                                       m_appSettingsRepository->isStrictKillSwitchEnabled(),
-                                                                       m_appSettingsRepository);
-
-    QJsonObject apiPayload;
-    apiPayload[apiDefs::key::cliVersion] = QString(APP_VERSION);
-    apiPayload[apiDefs::key::osVersion] = QSysInfo::productType();
-    apiPayload[apiDefs::key::installationUuid] = m_appSettingsRepository->getInstallationUuid(true);
-
-    // Workaround: wait before contacting gateway to avoid rate limit triggered by other requests (news etc.)
-    QTimer::singleShot(1000, this, [this, gatewayController, apiPayload]() {
-        gatewayController->postAsync(QStringLiteral("%1v1/updater_endpoint"), apiPayload)
-            .then(this, [this, gatewayController](QPair<ErrorCode, QByteArray> result) {
-                auto [err, gatewayResponse] = result;
-                if (err != ErrorCode::NoError) {
-                    logger.error() << "Gateway request failed, error code:" << static_cast<int>(err);
-                    finishUpdateCheck();
-                    return;
-                }
-
-                QJsonObject gatewayData = QJsonDocument::fromJson(gatewayResponse).object();
-
-                QString baseUrl = gatewayData.value("url").toString();
-                if (baseUrl.endsWith('/')) {
-                    baseUrl.chop(1);
-                }
-                m_baseUrl = baseUrl;
-
-                fetchVersionInfo();
-            });
-    });
-}
-
-void UpdateController::fetchVersionInfo()
-{
-    doGetAsync("/VERSION", [this](bool ok, QByteArray data) {
-        if (!ok) {
+        if (rateLimited) {
+            // Anonymous requests share an hourly budget per address, so several
+            // clients behind one address can exhaust it. Not a failure worth
+            // showing anyone - the next check will go through.
+            logger.info() << "GitHub rate limit reached, skipping this update check";
             finishUpdateCheck();
             return;
         }
-        m_version = QString::fromUtf8(data).trimmed();
-        
-        if (!isNewVersionAvailable()) {
+
+        if (error != QNetworkReply::NoError || !parseRelease(body) || !isNewVersionAvailable()) {
             finishUpdateCheck();
             return;
         }
-        fetchChangelog();
-    });
-}
 
-void UpdateController::fetchChangelog()
-{
-    doGetAsync("/CHANGELOG", [this](bool ok, QByteArray data) {
-        if (!ok) {
-            m_changelogText.clear();
-        } else {
-            m_changelogText = QString::fromUtf8(data);
-        }
-        fetchReleaseDate();
-    });
-}
-
-void UpdateController::fetchReleaseDate()
-{
-    doGetAsync("/RELEASE_DATE", [this](bool ok, QByteArray data) {
-        if (ok) {
-            m_releaseDate = QString::fromUtf8(data).trimmed();
-        } else {
-            m_releaseDate = QString();
-        }
-
-        m_downloadUrl = composeDownloadUrl();
         emit updateFound();
         finishUpdateCheck();
     });
+}
+
+QString UpdateController::normalizedVersion(const QString &tagName)
+{
+    QString version = tagName;
+    if (version.startsWith(QLatin1Char('v'))) {
+        version.remove(0, 1);
+    }
+
+    // Tags published before the version scheme changed look like
+    // "5.0.0.5-2026w31"; everything from the dash on is not part of a version.
+    const qsizetype dash = version.indexOf(QLatin1Char('-'));
+    if (dash != -1) {
+        version.truncate(dash);
+    }
+
+    return QVersionNumber::fromString(version).isNull() ? QString() : version;
+}
+
+bool UpdateController::pickInstallerAsset(const QJsonArray &assets)
+{
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS) || defined(MACOS_NE)
+    Q_UNUSED(assets)
+    return false;
+#else
+    for (const QJsonValue &value : assets) {
+        const QJsonObject asset = value.toObject();
+        const QString name = asset.value(QStringLiteral("name")).toString();
+        if (!name.endsWith(kInstallerSuffix, Qt::CaseInsensitive)) {
+            continue;
+        }
+
+        m_downloadUrl = asset.value(QStringLiteral("browser_download_url")).toString();
+        m_downloadSize = static_cast<qint64>(asset.value(QStringLiteral("size")).toDouble());
+        // GitHub started returning this as "sha256:<hex>"; absent on older releases.
+        m_downloadDigest = asset.value(QStringLiteral("digest")).toString();
+
+        return !m_downloadUrl.isEmpty();
+    }
+
+    return false;
+#endif
+}
+
+bool UpdateController::parseRelease(const QByteArray &json)
+{
+    const QJsonArray releases = QJsonDocument::fromJson(json).array();
+
+    for (const QJsonValue &value : releases) {
+        const QJsonObject release = value.toObject();
+        if (release.value(QStringLiteral("draft")).toBool()) {
+            continue;
+        }
+
+        const QString version = normalizedVersion(release.value(QStringLiteral("tag_name")).toString());
+        if (version.isEmpty()) {
+            continue;
+        }
+
+        // A release without an installer for this platform is not an update for
+        // us - keep looking at older ones.
+        if (!pickInstallerAsset(release.value(QStringLiteral("assets")).toArray())) {
+            continue;
+        }
+
+        m_version = version;
+        m_changelogText = release.value(QStringLiteral("body")).toString();
+
+        const QDateTime published =
+                QDateTime::fromString(release.value(QStringLiteral("published_at")).toString(), Qt::ISODate);
+        m_releaseDate = published.isValid() ? published.toLocalTime().date().toString(Qt::ISODate) : QString();
+
+        return true;
+    }
+
+    logger.info() << "No published release with an installer for this platform";
+    return false;
 }
 
 bool UpdateController::isNewVersionAvailable() const
@@ -200,16 +257,6 @@ void UpdateController::handleNetworkError(QNetworkReply* reply, const QString& o
     logger.error() << "HTTP status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 }
 
-QString UpdateController::composeDownloadUrl() const
-{
-#if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS) && !defined(MACOS_NE)
-    const QString fileName = QString(kInstallerRemoteFileNamePattern).arg(m_version);
-    return m_baseUrl + "/" + fileName;
-#else
-    return QString();
-#endif
-}
-
 void UpdateController::runInstaller()
 {
 #if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS) && !defined(MACOS_NE)
@@ -218,14 +265,42 @@ void UpdateController::runInstaller()
         return;
     }
 
+    const QUrl downloadUrl(m_downloadUrl);
+
+    // The download lands on a different host than the API call: GitHub answers
+    // browser_download_url with a redirect to its object storage.
+    allowHostThroughKillSwitch(downloadUrl);
+
     QNetworkRequest request;
     request.setTransferTimeout(30000);
-    request.setUrl(m_downloadUrl);
+    request.setUrl(downloadUrl);
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
 
     QNetworkReply *reply = amnApp->networkManager()->get(request);
 
     QObject::connect(reply, &QNetworkReply::finished, [this, reply]() {
         if (reply->error() == QNetworkReply::NoError) {
+            const QByteArray payload = reply->readAll();
+
+            // Artifacts are unsigned so far, so this is all the integrity we
+            // have. Refuse rather than run something that does not match what
+            // the release says it published.
+            if (m_downloadSize > 0 && payload.size() != m_downloadSize) {
+                logger.error() << "Installer size mismatch: expected" << m_downloadSize << "got" << payload.size();
+                reply->deleteLater();
+                return;
+            }
+
+            if (m_downloadDigest.startsWith(QLatin1String("sha256:"))) {
+                const QString actual = QString::fromLatin1(
+                        QCryptographicHash::hash(payload, QCryptographicHash::Sha256).toHex());
+                if (actual != QStringView(m_downloadDigest).mid(7)) {
+                    logger.error() << "Installer digest mismatch, refusing to run it";
+                    reply->deleteLater();
+                    return;
+                }
+            }
+
             QFile file(kInstallerLocalPath);
             if (!file.open(QIODevice::WriteOnly)) {
                 logger.error() << "Failed to open installer file for writing:" << kInstallerLocalPath << "Error:" << file.errorString();
@@ -233,7 +308,7 @@ void UpdateController::runInstaller()
                 return;
             }
 
-            if (file.write(reply->readAll()) == -1) {
+            if (file.write(payload) == -1) {
                 logger.error() << "Failed to write installer data to file:" << kInstallerLocalPath << "Error:" << file.errorString();
                 file.close();
                 reply->deleteLater();

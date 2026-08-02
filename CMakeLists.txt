@@ -4,7 +4,23 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(PROJECT AbstractumVPN)
-set(AMNEZIAVPN_VERSION 5.0.0.5)
+
+# Base version of the product. The release workflow exports
+# ABSTRACTUM_BUILD_NUMBER - the two-digit ISO year followed by the ISO week,
+# e.g. 2631 - and it becomes the fourth component, so each weekly release
+# compares as strictly newer than the one before it. Update checks rely on that
+# comparison; a frozen version means no update is ever offered.
+#
+# Without the variable - local builds, the nightly build check - the fourth
+# component stays 0, so a development build never claims to be newer than a
+# published release. It must stay a number either way: the Windows resource
+# below expands VERSION_TWEAK into FILEVERSION, which needs four of them.
+set(AMNEZIAVPN_VERSION 5.0.0)
+if(DEFINED ENV{ABSTRACTUM_BUILD_NUMBER} AND NOT "$ENV{ABSTRACTUM_BUILD_NUMBER}" STREQUAL "")
+    set(AMNEZIAVPN_VERSION ${AMNEZIAVPN_VERSION}.$ENV{ABSTRACTUM_BUILD_NUMBER})
+else()
+    set(AMNEZIAVPN_VERSION ${AMNEZIAVPN_VERSION}.0)
+endif()
 
 set(QT_CREATOR_SKIP_PACKAGE_MANAGER_SETUP ON CACHE BOOL "" FORCE)
 set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES
