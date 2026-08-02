@@ -188,11 +188,13 @@ jobs:
         with:
           name: abstractum-linux
           # if-no-files-found: error — молчаливый пустой релиз хуже красной сборки.
-          # Пути проверить на первом прогоне и при расхождении поправить здесь.
+          # Маски НЕ содержат имя продукта: оно уже один раз поменялось при
+          # ребрендинге, и прибитая гвоздями маска AmneziaVPN*.run уронила
+          # выгрузку, хотя сборка прошла.
           if-no-files-found: error
           retention-days: 7
           path: |
-            deploy/build/AmneziaVPN*.run
+            deploy/build/*.run
             deploy/build/*.deb
             deploy/build/*.rpm
             deploy/build/*.tar.gz

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP_NAME=AmneziaVPN
+APP_NAME=AbstractumVPN
 SERVICE_GROUP=amnvpn
 PLIST_NAME=$APP_NAME.plist
 LAUNCH_DAEMONS_PLIST_NAME=/Library/LaunchDaemons/$PLIST_NAME
@@ -52,7 +52,7 @@ run_cmd sudo chown -R root "$APP_PATH/"
 run_cmd sudo chgrp -R wheel "$APP_PATH/"
 
 log "Requesting ${APP_NAME} to quit gracefully"
-run_cmd osascript -e 'tell application "AmneziaVPN" to quit' || true
+run_cmd osascript -e 'tell application "AbstractumVPN" to quit' || true
 
 PLIST_SOURCE="$APP_PATH/Contents/Resources/$PLIST_NAME"
 if [ -f "$PLIST_SOURCE" ]; then

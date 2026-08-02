@@ -2,10 +2,10 @@ set AmneziaPath=%~dp0
 echo %AmneziaPath%
 
 rem Define directories for logs
-set "ORG_DIR=%AppData%\AmneziaVPN.ORG"
-set "USER_APP_DIR=%ORG_DIR%\AmneziaVPN"
+set "ORG_DIR=%AppData%\AbstractumVPN"
+set "USER_APP_DIR=%ORG_DIR%\AbstractumVPN"
 set "USER_LOG_DIR=%USER_APP_DIR%\log"
-set "SYS_APP_DIR=%ProgramData%\AmneziaVPN"
+set "SYS_APP_DIR=%ProgramData%\AbstractumVPN"
 set "SYS_LOG_DIR=%SYS_APP_DIR%\log"
 set "SYS_LOG_FILE=%SYS_LOG_DIR%\AbstractumVPN-service.log"
 
