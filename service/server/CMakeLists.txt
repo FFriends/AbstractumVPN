@@ -13,6 +13,13 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(WIN32)
+    # Same reason as in client/CMakeLists.txt: windows.h defines min and max as
+    # macros and breaks Qt templates in whatever translation unit happens to
+    # include it first. The service builds today only because of include order.
+    add_definitions(-DNOMINMAX)
+endif()
+
 find_package(Qt6 REQUIRED COMPONENTS DBus Core Network Widgets RemoteObjects Core5Compat Concurrent)
 qt_standard_project_setup()
 

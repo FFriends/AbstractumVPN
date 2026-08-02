@@ -27,6 +27,20 @@ add_definitions(-DGIT_COMMIT_HASH="${GIT_COMMIT_HASH}")
 # points itself somewhere else without touching C++.
 add_definitions(-DUPDATE_REPO_SLUG="FFriends/AbstractumVPN")
 
+if(WIN32)
+    # <windows.h> defines min and max as macros, and core/utils/utilities.h pulls
+    # it into a large part of the tree. MSVC parses template bodies at
+    # instantiation, so any translation unit that reaches windows.h before it
+    # instantiates a Qt template gets std::max rewritten into nonsense - which
+    # shows up as "C2589: illegal token on right side of '::'" pointing inside a
+    # Qt header, with nothing wrong at the reported line.
+    #
+    # The upstream tree survives on include order alone. That is not a property
+    # worth preserving: it turns removing an unrelated #include into a build
+    # break somewhere else entirely, which is exactly how this was found.
+    add_definitions(-DNOMINMAX)
+endif()
+
 add_definitions(-DPROD_AGW_PUBLIC_KEY="$ENV{PROD_AGW_PUBLIC_KEY}")
 add_definitions(-DPROD_S3_ENDPOINT="$ENV{PROD_S3_ENDPOINT}")
 add_definitions(-DFALLBACK_S3_ENDPOINT="$ENV{FALLBACK_S3_ENDPOINT}")
