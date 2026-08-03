@@ -87,27 +87,6 @@ namespace amnezia
         AndroidError = 1000,
 
         // Api errors
-        ApiConfigDownloadError = 1100,
-        ApiConfigAlreadyAdded = 1101,
-        ApiConfigEmptyError = 1102,
-        ApiConfigTimeoutError = 1103,
-        ApiConfigSslError = 1104,
-        ApiMissingAgwPublicKey = 1105,
-        ApiConfigDecryptionError = 1106,
-        ApiServicesMissingError = 1107,
-        ApiConfigLimitError = 1108,
-        ApiNotFoundError = 1109,
-        ApiMigrationError = 1110,
-        ApiUpdateRequestError = 1111,
-        ApiSubscriptionExpiredError = 1112,
-        ApiPurchaseError = 1113,
-        ApiSubscriptionNotActiveError = 1114,
-        ApiNoPurchasedSubscriptionsError = 1115,
-        ApiTrialAlreadyUsedError = 1116,
-        ApiCaptchaRequiredError = 1117,
-        ApiCaptchaInvalidError = 1118,
-        ApiCaptchaRefreshError = 1119,
-        ApiRateLimitError = 1120,
 
         // QFile errors
         OpenError = 1200,
