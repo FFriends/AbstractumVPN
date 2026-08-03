@@ -87,19 +87,20 @@ actually deployed.
 
 ## Other things it can install
 
-The same one-button flow puts these on your server as well:
+**None of these are installed by default.** Pick a protocol and you get that protocol and
+nothing else. The list below is what you *may* add afterwards, one at a time, if you happen to
+want it — open the server in Settings, go to its **Services** tab, choose one, and the client
+installs it over the same SSH session. Removing it is the same button.
 
 | | |
 |---|---|
 | **AmneziaDNS** | An `unbound` resolver reachable only inside the tunnel, forwarding over DNS-over-TLS. Your DNS stops going to your provider |
 | **SFTP storage** | A private file share on the server |
 | **SOCKS5 proxy** | For applications that speak SOCKS but not VPN |
-| **MTProxy** | Telegram proxy |
-| **Website in Tor** | Publishes a site as an onion service |
+| **MTProxy** | A Telegram proxy running on your server, for handing access to other people |
+| **Website in Tor** | Publishes a site of yours as an onion service |
 
-There is no manual setup guide for these, because there is nothing to set up manually. Open
-the server in Settings, go to its **Services** tab, pick one, and the client installs it over
-the same SSH session. Removing it is the same button.
+There is no manual setup guide for any of them, because there is nothing to set up manually.
 
 ## Install
 
@@ -110,23 +111,31 @@ Grab a build from [Releases](https://github.com/FFriends/AbstractumVPN/releases/
 | **Windows** | `AbstractumVPN_*_windows_x64.exe` |
 | **Linux** | `AbstractumVPN_*_linux_x64.run` |
 
+Releases are published as pre-releases while the project is young, so the release page is the
+place to look rather than a "latest stable" link.
+
 Builds are not code-signed yet, so Windows SmartScreen will warn about an unknown publisher.
 macOS, Android and iOS are not built at the moment: the code supports them, the signing
-certificates do not exist.
+certificates and store accounts do not exist.
+
+Once installed, the client checks this repository's releases for a newer version and offers to
+download it. The check sends no request body and carries nothing that identifies your
+installation.
 
 ## Building
 
-**There is no local build.** Everything compiles in GitHub Actions, and that is deliberate:
-Qt 6.10 plus nineteen Conan dependencies built from source is not a toolchain worth
-reproducing on every machine.
+**There is no local build, by choice.** Everything compiles in GitHub Actions: Qt 6.10 plus
+nineteen Conan dependencies built from source is not a toolchain worth reproducing on every
+machine that touches this code.
 
 Push, then watch [Actions](https://github.com/FFriends/AbstractumVPN/actions). A daily job at
-03:00 UTC builds anything new; the weekly job publishes a release when there is something to
-release.
+03:00 UTC builds anything new; a weekly job on Sunday at 09:00 UTC publishes a release, and
+only when there are commits since the last one.
 
-If you do want a local toolchain anyway: CMake 3.25+, Conan 2.x, Qt 6.10+ **with Qt Remote
-Objects** (not in the default Qt install; without it the privileged service will not build).
-Then `deploy/build.sh` or `deploy\build.bat`.
+A local toolchain is still possible if you want a debugger: CMake 3.25+, Conan 2.x, Qt 6.10+
+**with Qt Remote Objects** — that module is not in the default Qt install, and without it the
+privileged service will not build at all. Then `deploy/build.sh` or `deploy\build.bat`. Nothing
+in the project depends on you doing this.
 
 ## Security
 
@@ -135,15 +144,21 @@ Report vulnerabilities through
 It keeps the discussion private until a fix ships, and it stays open even while the issue
 tracker is closed. Scope, timelines and what counts as ours are in [SECURITY.md](SECURITY.md).
 
-Two things worth knowing before you rely on this:
+The client is split in two: an ordinary application, and a service running with system
+privileges that owns the routing, the tunnel interface and the kill switch. That boundary is
+the part worth scrutinising, and it is where the work has gone:
+
+- the privileged channels serve the client installed next to the service and refuse everyone
+  else, which is checked per connection rather than assumed;
+- arguments handed to processes started with system privileges go through a whitelist per
+  process, and an unrecognised option refuses the whole launch rather than being quietly
+  dropped.
+
+One thing to know before you rely on this, because it is not fixed:
 
 - **On Linux the stored server list is not encrypted.** Upstream disabled it because the
-  keychain backend is unreliable there. Your server addresses and keys sit in plain
-  `QSettings`.
-- Arguments passed to the privileged helper are validated for one of the four processes it
-  can launch. The other three inherit an upstream `FIXME`.
-
-Neither is a secret and neither is fixed yet.
+  keychain backend is unreliable there, and we have not replaced it. Your server addresses and
+  keys sit in plain `QSettings`.
 
 ## Contributing
 
@@ -168,8 +183,9 @@ AbstractumVPN is derived from
 chosen: GPLv3 requires it.
 
 This is an independent project. It is not affiliated with or endorsed by Amnezia. **Report
-problems with AbstractumVPN here, not to them.** What differs so far: no subscriptions, no
-paid hosting, no advertising, and no calls to anyone else's infrastructure.
+problems with AbstractumVPN here, not to them.** What differs: no subscriptions, no paid
+hosting, no advertising, no account, and no request to anyone else's servers — the update
+check goes to this repository, everything else goes to the machine you provisioned yourself.
 
 Third-party components and their licences are listed in
 [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
