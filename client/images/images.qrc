@@ -5,8 +5,8 @@
     <qresource prefix="/images">
         <file>AbstractumBigLogo.png</file>
         <file>AbstractumVPN.png</file>
+        <file>controls/abstractum.svg</file>
         <file>controls/alert-circle.svg</file>
-        <file>controls/amnezia.svg</file>
         <file>controls/app.svg</file>
         <file>controls/archive-restore.svg</file>
         <file>controls/arrow-left.svg</file>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" role="img" aria-label="AbstractumVPN">
+<!--
+  The product mark at control-icon size. Same three bars as
+  client/images/AbstractumVPN_logo.svg, the geometry scaled from the 64 box by
+  24/64, so the shape is identical - this is the mark, not a second drawing.
+
+  It exists as its own file because LabelWithButtonType renders leftImageSource
+  through a plain Image with no sourceSize: an SVG is drawn at its intrinsic
+  size, and the 64 px logo would overflow the 56 px slot it sits in. Every
+  neighbour in client/images/controls is authored at 24.
+-->
+<rect x="2.25" y="6" width="15" height="3" rx="1.5" fill="#9BBFDE"/>
+<rect x="6.75" y="10.5" width="15" height="3" rx="1.5" fill="#3E5D75"/>
+<rect x="2.25" y="15" width="15" height="3" rx="1.5" fill="#9BBFDE"/>
+</svg>

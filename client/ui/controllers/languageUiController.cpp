@@ -69,22 +69,24 @@ LanguageSettings::AvailableLanguageEnum LanguageUiController::getSystemLanguageE
     }
 }
 
+// The project has no website and no documentation site of its own, so both of
+// these point at the Telegram channel, where the linked chat answers questions
+// in Russian and English. There is nothing to select a locale by: it is one
+// address for every language.
+//
+// "path" is kept only so the QML call sites need not change, and is ignored -
+// there are no sections to address. Should a documentation site ever appear,
+// this is the single place that has to learn about it.
 QString LanguageUiController::getCurrentSiteUrl(const QString &path) const
 {
-    auto locale = m_settingsController->getAppLanguage();
-    if (locale.language() == QLocale::Russian) {
-        return "https://storage.googleapis.com/amnezia/amnezia.org" + (path.isEmpty() ? "" : (QString("?m-path=/%1").arg(path)));
-    }
-    return QString("https://amnezia.org") + (path.isEmpty() ? "" : (QString("/%1").arg(path)));
+    Q_UNUSED(path)
+    return QStringLiteral("https://t.me/AbstractumMind");
 }
 
 QString LanguageUiController::getCurrentDocsUrl(const QString &path) const
 {
-    auto locale = m_settingsController->getAppLanguage();
-    if (locale.language() == QLocale::Russian) {
-        return "https://storage.googleapis.com/amnezia/docs" + (path.isEmpty() ? "" : (QString("?m-path=/%1").arg(path)));
-    }
-    return QString("https://docs.amnezia.org") + (path.isEmpty() ? "" : (QString("/%1").arg(path)));
+    Q_UNUSED(path)
+    return QStringLiteral("https://t.me/AbstractumMind");
 }
 
 QString LanguageUiController::getLocalLanguageName(const LanguageSettings::AvailableLanguageEnum language) const

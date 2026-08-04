@@ -166,12 +166,17 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Short version: commits follow `type: sum
 happens on `dev`, and the build only runs in CI.
 
 The issue tracker is closed for now. Security reports still go through the advisories link
-above; for anything else, open a pull request.
+above; a change is best sent as a pull request, and a question is best asked in the Telegram
+chat below.
 
 ## Where this gets written about
 
 [**@AbstractumMind**](https://t.me/AbstractumMind) on Telegram: what is being built, what broke
-on the way, and whatever else seems worth writing down. Not a support desk.
+on the way, and whatever else seems worth writing down. Posts are in Russian.
+
+The channel has a chat attached, and you are welcome to write there about anything — help with
+the client included — in Russian or English. Other languages work as well, though a translator
+sits in between and some of the meaning does not survive the trip.
 
 ## Licence and origin
 
