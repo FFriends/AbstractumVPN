@@ -99,7 +99,7 @@ jobs:
     if: needs.Check.outputs.should_build == 'true'
     runs-on: ubuntu-22.04
     steps:
-      - uses: jurplel/install-qt-action@b7840a6733f49e2a39c4355260d2375063d39b61 # v3
+      - uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730 # v4.3.1
         with:
           version: ${{ env.QT_VERSION }}
           host: 'linux'
@@ -137,7 +137,7 @@ jobs:
     if: needs.Check.outputs.should_build == 'true'
     runs-on: windows-2022
     steps:
-      - uses: jurplel/install-qt-action@b7840a6733f49e2a39c4355260d2375063d39b61 # v3
+      - uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730 # v4.3.1
         with:
           version: ${{ env.QT_VERSION }}
           host: 'windows'
