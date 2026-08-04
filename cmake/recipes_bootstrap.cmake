@@ -21,6 +21,10 @@ execute_process(
     COMMAND ${CONAN_COMMAND} export "${CMAKE_SOURCE_DIR}/recipes/go" --version 1.23.12
 )
 
-execute_process(
-    COMMAND ${CONAN_COMMAND} remote add amnezia "https://artifactory.amnezia.org/artifactory/api/conan/client-prebuilts" --force
-)
+# There used to be a `conan remote add` for a third-party binary repository here.
+# It is gone on purpose: the prebuilt binaries it served now come from our own
+# mirror, published by .github/workflows/abstractum-deps.yml and restored before
+# the build. Sources are still fetched by the recipes themselves.
+#
+# Nothing breaks if the mirror misses: CONAN_INSTALL_ARGS carries --build=missing
+# (cmake/conan_provider.cmake), so a miss makes the build slow, not red.

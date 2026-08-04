@@ -1,27 +1,30 @@
 name: 'Abstractum — зеркало зависимостей'
 
-# Собирает conan-зависимости и кладёт кеш в релиз `deps-cache` нашего же
-# репозитория. Сборка потом достаёт его оттуда вместо чужого conan-ремоута.
+# Собирает conan-зависимости из исходников и кладёт кеш в релиз `deps-cache`
+# нашего же репозитория. Сборка потом достаёт его оттуда.
 #
 # ЗАЧЕМ. Раньше готовые бинарники openssl, libssh, awg-go, tun2socks и прочего
-# приезжали с artifactory.amnezia.org - его прописывал recipes_bootstrap.cmake
+# приезжали с чужого conan-ремоута, который прописывал recipes_bootstrap.cmake
 # при каждой конфигурации. Рецепты у нас свои и лежат в recipes/, но рецепт это
-# инструкция, а не результат: без ремоута раннер собирал бы всё из исходников
-# каждый раз. Зеркало снимает зависимость от чужой инфраструктуры, не платя за
-# это временем сборки.
+# инструкция, а не результат: без замены раннер собирал бы всё заново на каждом
+# прогоне.
 #
-# ЧТО ЭТО НЕ МЕНЯЕТ. Исходники зависимостей по-прежнему качаются с github.com,
-# go.dev, openssl.org и wintun.net - рецепты так написаны. Зеркалим только то,
-# что собрано, то есть ровно то, что раньше брали у Amnezia.
+# СОБИРАЕМ САМИ, А НЕ КОПИРУЕМ ЧУЖОЕ. Решение владельца 05.08.2026. Зеркало из
+# чужих бинарников было бы быстрее печь, но оставило бы происхождение прежним, а
+# наши 19 рецептов - ни разу не проверенными. Здесь они проверяются каждой
+# печатью: не собрались - прогон красный, и мы знаем об этом сразу.
 #
-# ЗАПУСКАТЬ РУКАМИ, когда поменялись recipes/, conanfile.py или cmake-файлы
-# из .github/deps-key.sh:
+# ЧТО ЭТО НЕ МЕНЯЕТ. Исходники по-прежнему качаются с github.com, go.dev,
+# openssl.org и wintun.net - так написаны рецепты. Уровень вендоринга первый.
+#
+# ЗАПУСКАЕТСЯ САМ, когда меняется то, из чего считается ключ - см. `paths` ниже и
+# список в .github/deps-key.sh. Руками нужно только если поменялась логика самой
+# печати: содержимое зависимостей от этого не зависит, ключ не меняется.
 #
 #   gh workflow run abstractum-deps.yml -R FFriends/AbstractumVPN
 #
-# Забыть не страшно: имя ассета содержит ключ содержимого, и при промахе сборка
-# просто соберёт зависимости сама (в conan_provider.cmake стоит --build=missing).
-# Она станет долгой, но не красной.
+# ПОВТОРНО НЕ ПЕРЕПЕКАЕТ. Если оба архива под текущий ключ уже лежат в релизе,
+# джоб `Key` гасит сборку. Перепечь принудительно - `force` у ручного запуска.
 #
 # ТЕГ ОДИН И ТОТ ЖЕ, ассеты в нём перезаписываются. Причина не в аккуратности:
 # UpdateController запрашивает releases?per_page=10 и ищет обновление среди
@@ -31,10 +34,25 @@ name: 'Abstractum — зеркало зависимостей'
 # получает `deps`, QVersionNumber такое не разбирает.
 
 on:
+  push:
+    branches:
+      - dev
+    paths:
+      - 'recipes/**'
+      - 'conanfile.py'
+      - 'cmake/conan_provider.cmake'
+      - 'cmake/platform_settings.cmake'
+      - 'cmake/recipes_bootstrap.cmake'
   workflow_dispatch:
+    inputs:
+      force:
+        description: 'Перепечь, даже если архивы под этот ключ уже есть'
+        type: boolean
+        default: false
 
+# Читать хватает всем, кроме публикации: ей право записи выдано точечно.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: deps-mirror
@@ -47,32 +65,66 @@ env:
 
 jobs:
   Key:
-    name: 'Ключ зеркала'
+    name: 'Ключ зеркала и нужно ли печь'
     runs-on: ubuntu-latest
     outputs:
       key: ${{ steps.key.outputs.key }}
+      should_bake: ${{ steps.key.outputs.should_bake }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 1
 
-      - name: 'Посчитать ключ'
+      - name: 'Решение'
         id: key
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE: ${{ inputs.force }}
         shell: bash
         run: |
           set -euo pipefail
+
           key=$(.github/deps-key.sh "${CONAN_VERSION}")
           echo "key=${key}" >> "$GITHUB_OUTPUT"
           echo "Ключ зеркала: ${key}"
 
-  # Раннеры обязаны совпадать с теми, на которых идёт настоящая сборка:
-  # package_id зависит от версии компилятора. Разъедутся - кеш будет собираться
-  # впустую и никогда не попадать.
+          if [ "${FORCE}" = "true" ]; then
+            echo "should_bake=true" >> "$GITHUB_OUTPUT"
+            echo "Запрошена принудительная перепечка."
+            exit 0
+          fi
+
+          # Отсутствие релиза - не ошибка: первый прогон его и создаст.
+          have=$(gh release view "$DEPS_TAG" --json assets --jq '.assets[].name' 2>/dev/null || true)
+
+          missing=0
+          for os in linux windows; do
+            name="conan-cache-${os}-${key}.tgz"
+            if printf '%s\n' "$have" | grep -qxF "$name"; then
+              echo "Уже в зеркале: $name"
+            else
+              echo "Нет в зеркале: $name"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -eq 0 ]; then
+            echo "should_bake=false" >> "$GITHUB_OUTPUT"
+            echo "Зеркало актуально, печь нечего."
+          else
+            echo "should_bake=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  # Раннеры обязаны совпадать с теми, где идёт настоящая сборка: версия
+  # компилятора входит в package_id. Разъедутся - кеш будет печься впустую и
+  # никогда не попадать, причём молча (гоча CI-14).
   Bake-Linux:
     name: 'Зависимости Linux'
     needs: Key
+    if: needs.Key.outputs.should_bake == 'true'
     runs-on: ubuntu-22.04
+    timeout-minutes: 180
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -89,8 +141,8 @@ jobs:
       # find_package(OpenSSL), которым запускается conan install на весь
       # conanfile.py, и выходит до сборки приложения. Поэтому Qt здесь не нужен.
       #
-      # CMAKE_BUILD_TYPE=Release обязателен и задан явно: build_type входит в
-      # package_id, а настоящие сборки идут только в Release.
+      # CMAKE_BUILD_TYPE=Release задан явно: build_type входит в package_id, а
+      # настоящие сборки идут только в Release.
       - name: 'Собрать зависимости'
         shell: bash
         run: cmake -S . -B build -DPREBUILTS_ONLY=1 -DCMAKE_BUILD_TYPE=Release
@@ -112,7 +164,9 @@ jobs:
   Bake-Windows:
     name: 'Зависимости Windows'
     needs: Key
+    if: needs.Key.outputs.should_bake == 'true'
     runs-on: windows-2022
+    timeout-minutes: 180
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -128,12 +182,17 @@ jobs:
       # Окружение MSVC поднимается тем же способом, что и в deploy/build.bat:
       # vswhere находит установку, vcvarsall её включает. Стороннее действие для
       # этого не берём - лишняя зависимость ради двух строк.
+      #
+      # Путь к vswhere сперва кладётся в переменную, и это не косметика: cmd
+      # разбирает блок `in (...)` по парности скобок, а в %ProgramFiles(x86)%
+      # скобки есть, и разбор ломается прямо на них.
       - name: 'Собрать зависимости'
         shell: cmd
         run: |
-          for /f "usebackq tokens=*" %%I in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -products * -latest -property resolvedInstallationPath`) do (
-            call "%%I\VC\Auxiliary\Build\vcvarsall.bat" amd64 || exit /b 1
-          )
+          set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+          if not exist "%VSWHERE%" (echo ERROR: vswhere not found & exit /b 1)
+          for /f "usebackq tokens=*" %%I in (`"%VSWHERE%" -products * -latest -property resolvedInstallationPath`) do call "%%I\VC\Auxiliary\Build\vcvarsall.bat" amd64
+          if errorlevel 1 exit /b 1
           cmake -S . -B build -DPREBUILTS_ONLY=1 -DCMAKE_BUILD_TYPE=Release || exit /b 1
 
       - name: 'Упаковать кеш'
@@ -153,13 +212,14 @@ jobs:
   Publish:
     name: 'Обновить зеркало'
     needs: [Key, Bake-Linux, Bake-Windows]
+    if: needs.Key.outputs.should_bake == 'true'
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 1
+    # Единственный джоб, которому нужна запись.
+    permissions:
+      contents: write
 
+    steps:
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           path: mirror
@@ -172,11 +232,19 @@ jobs:
         run: |
           set -euo pipefail
           ls -lhR mirror
+
+          shopt -s nullglob
+          files=(mirror/*.tgz)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::error::Архивов нет - печь было нечего или артефакты не доехали."
+            exit 1
+          fi
+
           limit=$((2 * 1024 * 1024 * 1024))
           fail=0
-          for f in mirror/*.tgz; do
+          for f in "${files[@]}"; do
             size=$(stat -c%s "$f")
-            echo "$f — $size байт"
+            echo "$f - $size байт"
             if [ "$size" -ge "$limit" ]; then
               echo "::error::$f не влезает в лимит ассета GitHub (2 ГБ)."
               fail=1
@@ -192,13 +260,23 @@ jobs:
         run: |
           set -euo pipefail
 
-          if ! gh release view "$DEPS_TAG" >/dev/null 2>&1; then
-            gh release create "$DEPS_TAG" \
+          if ! gh release view "$DEPS_TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$DEPS_TAG" -R "$GITHUB_REPOSITORY" \
               --prerelease \
               --title 'Зеркало conan-зависимостей' \
               --notes 'Служебный релиз. Не сборка продукта и не обновление: здесь лежит кеш conan, из которого сборка берёт готовые зависимости. Имя ассета содержит ключ содержимого recipes/.'
           fi
 
-          gh release upload "$DEPS_TAG" mirror/*.tgz --clobber
+          gh release upload "$DEPS_TAG" -R "$GITHUB_REPOSITORY" mirror/*.tgz --clobber
 
           echo "Зеркало обновлено, ключ ${KEY}."
+
+  Skipped:
+    name: 'Зеркало актуально — печь нечего'
+    needs: Key
+    if: needs.Key.outputs.should_bake == 'false'
+    runs-on: ubuntu-latest
+
+    steps:
+      - shell: bash
+        run: echo "Архивы под ключ ${{ needs.Key.outputs.key }} уже в релизе ${DEPS_TAG}."
