@@ -189,6 +189,15 @@ PageType {
                 readonly property string macosFirstLink: "<a href=\"https://osxfuse.github.io/\" style=\"color: " + AmneziaStyle.color.goldenApricotString + ";\">macFUSE</a>"
                 readonly property string macosSecondLink: "<a href=\"https://osxfuse.github.io/\" style=\"color: " + AmneziaStyle.color.goldenApricotString + ";\">SSHFS</a>"
 
+                readonly property string linuxLink: "<a href=\"https://github.com/libfuse/sshfs\" style=\"color: " + AmneziaStyle.color.goldenApricotString + ";\">sshfs</a>"
+
+                // Ready to paste, because the values are already on this page in plain
+                // text right above. The password is deliberately left out: it is the one
+                // field here that is hidden behind a toggle.
+                readonly property string linuxMountCommand: "sshfs -p " + port + " " + username
+                        + "@" + ServersUiController.serverHostName(ServersUiController.processedServerId)
+                        + ":/ ~/sftp"
+
                 onLinkActivated: function(link) {
                     Qt.openUrlExternally(link)
                 }
@@ -202,7 +211,10 @@ PageType {
                         str += qsTr("<br>1. Install the latest version of ") + macosFirstLink + "\n"
                         str += qsTr("<br>2. Install the latest version of ") + macosSecondLink + "\n"
                     } else if (Qt.platform.os === "linux") {
-                        return ""
+                        str += qsTr("<br>1. Install the ") + linuxLink + qsTr(" package from your distribution repository.") + "\n"
+                        str += qsTr("<br>2. Create a mount point: ") + "<b>mkdir -p ~/sftp</b>\n"
+                        str += qsTr("<br>3. Mount the folder and enter the password shown above when asked:") + "\n"
+                        str += "<br><b>" + linuxMountCommand + "</b>\n"
                     } else return ""
 
                     return str
@@ -212,27 +224,6 @@ PageType {
                     anchors.fill: parent
                     acceptedButtons: Qt.NoButton
                     cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
-                }
-            }
-
-            BasicButtonType {
-                id: detailedInstructionsButton
-
-                Layout.topMargin: 16
-                Layout.bottomMargin: 16
-                Layout.leftMargin: 8
-                implicitHeight: 32
-
-                defaultColor: AmneziaStyle.color.transparent
-                hoveredColor: AmneziaStyle.color.translucentWhite
-                pressedColor: AmneziaStyle.color.sheerWhite
-                disabledColor: AmneziaStyle.color.mutedGray
-                textColor: AmneziaStyle.color.goldenApricot
-
-                text: qsTr("Detailed instructions")
-
-                clickedFunc: function() {
-                    // Qt.openUrlExternally("https://github.com/amnezia-vpn/desktop-client/releases/latest")
                 }
             }
         }
