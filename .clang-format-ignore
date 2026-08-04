@@ -1,5 +1,4 @@
 /client/3rd
-/client/3rd-prebuild
 /client/android
 /client/cmake
 /client/core/utils/serialization
@@ -15,6 +14,5 @@
 /client/server_scripts
 /client/translations
 /deploy
-/docs
 /metadata
 /service/src
