@@ -1,0 +1,204 @@
+name: 'Abstractum — зеркало зависимостей'
+
+# Собирает conan-зависимости и кладёт кеш в релиз `deps-cache` нашего же
+# репозитория. Сборка потом достаёт его оттуда вместо чужого conan-ремоута.
+#
+# ЗАЧЕМ. Раньше готовые бинарники openssl, libssh, awg-go, tun2socks и прочего
+# приезжали с artifactory.amnezia.org - его прописывал recipes_bootstrap.cmake
+# при каждой конфигурации. Рецепты у нас свои и лежат в recipes/, но рецепт это
+# инструкция, а не результат: без ремоута раннер собирал бы всё из исходников
+# каждый раз. Зеркало снимает зависимость от чужой инфраструктуры, не платя за
+# это временем сборки.
+#
+# ЧТО ЭТО НЕ МЕНЯЕТ. Исходники зависимостей по-прежнему качаются с github.com,
+# go.dev, openssl.org и wintun.net - рецепты так написаны. Зеркалим только то,
+# что собрано, то есть ровно то, что раньше брали у Amnezia.
+#
+# ЗАПУСКАТЬ РУКАМИ, когда поменялись recipes/, conanfile.py или cmake-файлы
+# из .github/deps-key.sh:
+#
+#   gh workflow run abstractum-deps.yml -R FFriends/AbstractumVPN
+#
+# Забыть не страшно: имя ассета содержит ключ содержимого, и при промахе сборка
+# просто соберёт зависимости сама (в conan_provider.cmake стоит --build=missing).
+# Она станет долгой, но не красной.
+#
+# ТЕГ ОДИН И ТОТ ЖЕ, ассеты в нём перезаписываются. Причина не в аккуратности:
+# UpdateController запрашивает releases?per_page=10 и ищет обновление среди
+# последних десяти. Плодить релизы `deps-*` значит вытеснять оттуда настоящие.
+# Один фиксированный тег занимает ровно одну позицию навсегда. Сам он за
+# обновление принят не будет - normalizedVersion обрезает тег по дефису и
+# получает `deps`, QVersionNumber такое не разбирает.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deps-mirror
+  cancel-in-progress: false
+
+env:
+  CONAN_VERSION: 2.28.0
+  PYTHON_VERSION: '3.14'
+  DEPS_TAG: deps-cache
+
+jobs:
+  Key:
+    name: 'Ключ зеркала'
+    runs-on: ubuntu-latest
+    outputs:
+      key: ${{ steps.key.outputs.key }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+
+      - name: 'Посчитать ключ'
+        id: key
+        shell: bash
+        run: |
+          set -euo pipefail
+          key=$(.github/deps-key.sh "${CONAN_VERSION}")
+          echo "key=${key}" >> "$GITHUB_OUTPUT"
+          echo "Ключ зеркала: ${key}"
+
+  # Раннеры обязаны совпадать с теми, на которых идёт настоящая сборка:
+  # package_id зависит от версии компилятора. Разъедутся - кеш будет собираться
+  # впустую и никогда не попадать.
+  Bake-Linux:
+    name: 'Зависимости Linux'
+    needs: Key
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - run: pip install "conan==${{ env.CONAN_VERSION }}"
+
+      # PREBUILTS_ONLY - крючок в CMakeLists.txt: конфигурация доходит до
+      # find_package(OpenSSL), которым запускается conan install на весь
+      # conanfile.py, и выходит до сборки приложения. Поэтому Qt здесь не нужен.
+      #
+      # CMAKE_BUILD_TYPE=Release обязателен и задан явно: build_type входит в
+      # package_id, а настоящие сборки идут только в Release.
+      - name: 'Собрать зависимости'
+        shell: bash
+        run: cmake -S . -B build -DPREBUILTS_ONLY=1 -DCMAKE_BUILD_TYPE=Release
+
+      - name: 'Упаковать кеш'
+        shell: bash
+        run: |
+          set -euo pipefail
+          conan cache save "*:*" --no-source --file "conan-cache-linux-${{ needs.Key.outputs.key }}.tgz"
+          ls -lh conan-cache-linux-*.tgz
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: deps-linux
+          if-no-files-found: error
+          retention-days: 1
+          path: conan-cache-linux-*.tgz
+
+  Bake-Windows:
+    name: 'Зависимости Windows'
+    needs: Key
+    runs-on: windows-2022
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - run: pip install "conan==${{ env.CONAN_VERSION }}"
+
+      # Окружение MSVC поднимается тем же способом, что и в deploy/build.bat:
+      # vswhere находит установку, vcvarsall её включает. Стороннее действие для
+      # этого не берём - лишняя зависимость ради двух строк.
+      - name: 'Собрать зависимости'
+        shell: cmd
+        run: |
+          for /f "usebackq tokens=*" %%I in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -products * -latest -property resolvedInstallationPath`) do (
+            call "%%I\VC\Auxiliary\Build\vcvarsall.bat" amd64 || exit /b 1
+          )
+          cmake -S . -B build -DPREBUILTS_ONLY=1 -DCMAKE_BUILD_TYPE=Release || exit /b 1
+
+      - name: 'Упаковать кеш'
+        shell: bash
+        run: |
+          set -euo pipefail
+          conan cache save "*:*" --no-source --file "conan-cache-windows-${{ needs.Key.outputs.key }}.tgz"
+          ls -lh conan-cache-windows-*.tgz
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: deps-windows
+          if-no-files-found: error
+          retention-days: 1
+          path: conan-cache-windows-*.tgz
+
+  Publish:
+    name: 'Обновить зеркало'
+    needs: [Key, Bake-Linux, Bake-Windows]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: mirror
+          merge-multiple: true
+
+      # Лимит ассета GitHub - 2 ГБ. Упереться в него на выгрузке значит потерять
+      # весь прогон, поэтому проверяем заранее и говорим прямо.
+      - name: 'Проверить размер'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ls -lhR mirror
+          limit=$((2 * 1024 * 1024 * 1024))
+          fail=0
+          for f in mirror/*.tgz; do
+            size=$(stat -c%s "$f")
+            echo "$f — $size байт"
+            if [ "$size" -ge "$limit" ]; then
+              echo "::error::$f не влезает в лимит ассета GitHub (2 ГБ)."
+              fail=1
+            fi
+          done
+          [ "$fail" -eq 0 ]
+
+      - name: 'Выложить в релиз'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEY: ${{ needs.Key.outputs.key }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if ! gh release view "$DEPS_TAG" >/dev/null 2>&1; then
+            gh release create "$DEPS_TAG" \
+              --prerelease \
+              --title 'Зеркало conan-зависимостей' \
+              --notes 'Служебный релиз. Не сборка продукта и не обновление: здесь лежит кеш conan, из которого сборка берёт готовые зависимости. Имя ассета содержит ключ содержимого recipes/.'
+          fi
+
+          gh release upload "$DEPS_TAG" mirror/*.tgz --clobber
+
+          echo "Зеркало обновлено, ключ ${KEY}."
