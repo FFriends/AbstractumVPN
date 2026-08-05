@@ -1,5 +1,9 @@
 name: 'Abstractum — зеркало зависимостей'
 
+# Иначе GitHub подписал бы прогон первой строкой сообщения коммита, и печь
+# зависимостей называлась бы по правке, которая её задела.
+run-name: 'Зеркало зависимостей'
+
 # Собирает conan-зависимости из исходников и кладёт кеш в релиз `deps-cache`
 # нашего же репозитория. Сборка потом достаёт его оттуда.
 #
@@ -65,7 +69,7 @@ env:
 
 jobs:
   Key:
-    name: 'Ключ зеркала и нужно ли печь'
+    name: 'Ключ зеркала и нужно ли пересобирать'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
@@ -121,7 +125,7 @@ jobs:
   # компилятора входит в package_id. Разъедутся - кеш будет печься впустую и
   # никогда не попадать, причём молча (гоча CI-14).
   Bake-Linux:
-    name: 'Зависимости Linux'
+    name: 'Сборка зависимостей: Linux'
     needs: Key
     if: needs.Key.outputs.should_bake == 'true'
     runs-on: ubuntu-22.04
@@ -163,7 +167,7 @@ jobs:
           path: conan-cache-linux-*.tgz
 
   Bake-Windows:
-    name: 'Зависимости Windows'
+    name: 'Сборка зависимостей: Windows'
     needs: Key
     if: needs.Key.outputs.should_bake == 'true'
     runs-on: windows-2022
@@ -211,7 +215,7 @@ jobs:
           path: conan-cache-windows-*.tgz
 
   Publish:
-    name: 'Обновить зеркало'
+    name: 'Публикация зеркала'
     needs: [Key, Bake-Linux, Bake-Windows]
     if: needs.Key.outputs.should_bake == 'true'
     runs-on: ubuntu-latest
@@ -274,7 +278,7 @@ jobs:
           echo "Зеркало обновлено, ключ ${KEY}."
 
   Skipped:
-    name: 'Зеркало актуально — печь нечего'
+    name: 'Зеркало актуально — пересборка пропущена'
     needs: Key
     if: needs.Key.outputs.should_bake == 'false'
     runs-on: ubuntu-latest
