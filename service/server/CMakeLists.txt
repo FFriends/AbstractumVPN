@@ -391,7 +391,10 @@ if(LINUX)
 elseif(APPLE)
     file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/set_openvpn_rpath.cmake CONTENT
 [=[
-set(ovpn "$<TARGET_FILE_DIR:AmneziaVPN-service>/openvpn")
+# The target name is spelled out because a bracket argument expands no
+# variables: ${PROJECT} would reach the generator expression verbatim and fail
+# to name a target. Keep it in sync with set(PROJECT ...) at the top.
+set(ovpn "$<TARGET_FILE_DIR:AbstractumVPN-service>/openvpn")
 set(dir "$<TARGET_FILE_DIR:OpenSSL::SSL>")
 execute_process(COMMAND install_name_tool -delete_rpath "${dir}" "${ovpn}" ERROR_QUIET)
 execute_process(COMMAND install_name_tool -add_rpath "${dir}" "${ovpn}")
@@ -437,7 +440,7 @@ if(LINUX)
             OWNER_READ OWNER_EXECUTE
             GROUP_READ GROUP_EXECUTE
             WORLD_READ WORLD_EXECUTE
-        COMPONENT AmneziaVPN
+        COMPONENT AbstractumVPN
     )
     install(CODE "
         set(_ovpn \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/openvpn\")
@@ -447,7 +450,7 @@ if(LINUX)
         file(CHMOD \"\${_ovpn}\" PERMISSIONS
             OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
     "
-        COMPONENT AmneziaVPN
+        COMPONENT AbstractumVPN
     )
 elseif(APPLE)
     install(CODE "
@@ -455,7 +458,7 @@ elseif(APPLE)
         execute_process(COMMAND install_name_tool -delete_rpath \"$<TARGET_FILE_DIR:OpenSSL::SSL>\" \"\${_ovpn}\" ERROR_QUIET)
         execute_process(COMMAND install_name_tool -add_rpath \"@executable_path/../Frameworks\" \"\${_ovpn}\")
     "
-        COMPONENT AmneziaVPN
+        COMPONENT AbstractumVPN
     )
 endif()
 
