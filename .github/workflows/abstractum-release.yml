@@ -94,7 +94,14 @@ jobs:
 
           # Прошлый релиз берём из релизов, а не из тегов: тег может быть создан
           # руками и не соответствовать опубликованному.
-          previous_tag=$(gh release list --limit 1 --json tagName --jq '.[0].tagName // ""')
+          #
+          # Продуктовые теги начинаются с `v`, и отбор идёт по этому признаку.
+          # Служебный релиз зеркала зависимостей живёт под тегом `deps-cache` и
+          # свежее любого продуктового: без фильтра он забирал бы на себя и
+          # диапазон changelog, и гейт «есть ли изменения» — а гейт при этом не
+          # краснеет, он просто пропускает релиз.
+          previous_tag=$(gh release list --limit 20 --json tagName \
+                           --jq '[.[] | select(.tagName | startswith("v"))] | .[0].tagName // ""')
           echo "previous_tag=$previous_tag" >> "$GITHUB_OUTPUT"
 
           if [ -z "$previous_tag" ]; then
