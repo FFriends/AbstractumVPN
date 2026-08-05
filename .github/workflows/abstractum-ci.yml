@@ -40,11 +40,25 @@ jobs:
   Check:
     name: 'Есть ли новые коммиты с прошлой проверки'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     outputs:
       should_build: ${{ steps.decide.outputs.should_build }}
       last_checked: ${{ steps.decide.outputs.last_checked }}
+      deps_key: ${{ steps.deps.outputs.key }}
 
     steps:
+      # Ключ зеркала зависимостей считается ЗДЕСЬ, а не в сборочных джобах, и это
+      # не про экономию: образы Windows идут с core.autocrlf=true, скрипт приехал
+      # бы туда с CRLF, а bash спотыкается о \r. На Linux этой проблемы нет.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+
+      - name: 'Ключ зеркала зависимостей'
+        id: deps
+        shell: bash
+        run: echo "key=$(.github/deps-key.sh "${CONAN_VERSION}")" >> "$GITHUB_OUTPUT"
+
       - name: 'Решение'
         id: decide
         env:
@@ -98,6 +112,9 @@ jobs:
     needs: Check
     if: needs.Check.outputs.should_build == 'true'
     runs-on: ubuntu-22.04
+    # Обычно 11 минут. Запас на случай промаха мимо зеркала: тогда зависимости
+    # собираются из исходников и это надолго.
+    timeout-minutes: 90
     steps:
       - uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730 # v4.3.1
         with:
@@ -121,6 +138,23 @@ jobs:
 
       - run: sudo apt-get update && sudo apt-get install -y libxkbcommon-x11-0 libsecret-1-dev
 
+      # Качаем в RUNNER_TEMP, а не в рабочий каталог: следом идёт checkout, а он
+      # чистит рабочее дерево. Сам кеш при этом лежит в ~/.conan2 и переживёт.
+      - name: 'Зависимости из зеркала'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEY: ${{ needs.Check.outputs.deps_key }}
+        run: |
+          set -euo pipefail
+          asset="conan-cache-linux-${KEY}.tgz"
+          if gh release download deps-cache -R "$GITHUB_REPOSITORY" -p "$asset" -D "$RUNNER_TEMP" --clobber; then
+            conan cache restore "$RUNNER_TEMP/$asset"
+            echo "Зеркало попало: $asset"
+          else
+            echo "::warning::Зеркала под ключ ${KEY} нет — зависимости соберутся из исходников, это надолго."
+          fi
+
       # Зависимости client/3rd/ вендорены в дерево — submodules не нужны.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -136,6 +170,9 @@ jobs:
     needs: Check
     if: needs.Check.outputs.should_build == 'true'
     runs-on: windows-2022
+    # Обычно 38 минут. Запас на случай промаха мимо зеркала: тогда зависимости
+    # собираются из исходников и это надолго.
+    timeout-minutes: 180
     steps:
       - uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730 # v4.3.1
         with:
@@ -157,6 +194,23 @@ jobs:
 
       - run: pip install "conan==${{ env.CONAN_VERSION }}"
 
+      # Качаем в RUNNER_TEMP, а не в рабочий каталог: следом идёт checkout, а он
+      # чистит рабочее дерево. Сам кеш при этом лежит в ~/.conan2 и переживёт.
+      - name: 'Зависимости из зеркала'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEY: ${{ needs.Check.outputs.deps_key }}
+        run: |
+          set -euo pipefail
+          asset="conan-cache-windows-${KEY}.tgz"
+          if gh release download deps-cache -R "$GITHUB_REPOSITORY" -p "$asset" -D "$RUNNER_TEMP" --clobber; then
+            conan cache restore "$RUNNER_TEMP/$asset"
+            echo "Зеркало попало: $asset"
+          else
+            echo "::warning::Зеркала под ключ ${KEY} нет — зависимости соберутся из исходников, это надолго."
+          fi
+
       # Зависимости client/3rd/ вендорены в дерево — submodules не нужны.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -173,6 +227,7 @@ jobs:
     needs: Check
     if: needs.Check.outputs.should_build == 'false'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - run: |
           echo "С коммита ${{ needs.Check.outputs.last_checked }} изменений не было."

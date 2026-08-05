@@ -67,6 +67,7 @@ jobs:
   Key:
     name: 'Ключ зеркала и нужно ли печь'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     outputs:
       key: ${{ steps.key.outputs.key }}
       should_bake: ${{ steps.key.outputs.should_bake }}
@@ -214,6 +215,7 @@ jobs:
     needs: [Key, Bake-Linux, Bake-Windows]
     if: needs.Key.outputs.should_bake == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     # Единственный джоб, которому нужна запись.
     permissions:
@@ -276,6 +278,7 @@ jobs:
     needs: Key
     if: needs.Key.outputs.should_bake == 'false'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - shell: bash

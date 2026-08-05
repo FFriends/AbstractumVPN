@@ -50,6 +50,7 @@ jobs:
   Check:
     name: 'Проверка изменений и расчёт версии'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     outputs:
       should_release: ${{ steps.decide.outputs.should_release }}
       tag: ${{ steps.decide.outputs.tag }}
@@ -58,11 +59,20 @@ jobs:
       full_version: ${{ steps.decide.outputs.full_version }}
       commit_count: ${{ steps.decide.outputs.commit_count }}
       previous_tag: ${{ steps.decide.outputs.previous_tag }}
+      deps_key: ${{ steps.deps.outputs.key }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+
+      # Ключ зеркала зависимостей считается ЗДЕСЬ, а не в сборочных джобах:
+      # образы Windows идут с core.autocrlf=true, скрипт приехал бы туда с CRLF,
+      # а bash спотыкается о \r. На Linux этой проблемы нет.
+      - name: 'Ключ зеркала зависимостей'
+        id: deps
+        shell: bash
+        run: echo "key=$(.github/deps-key.sh "${CONAN_VERSION}")" >> "$GITHUB_OUTPUT"
 
       - name: 'Решение: релизить или нет'
         id: decide
@@ -161,6 +171,8 @@ jobs:
     needs: Check
     if: needs.Check.outputs.should_release == 'true'
     runs-on: ubuntu-22.04
+    # Обычно около 12 минут вместе с инсталлятором. Запас на промах мимо зеркала.
+    timeout-minutes: 120
 
     steps:
       - name: 'Установка Qt'
@@ -188,6 +200,23 @@ jobs:
 
       - name: 'Системные пакеты'
         run: sudo apt-get update && sudo apt-get install -y libxkbcommon-x11-0 libsecret-1-dev
+
+      # Качаем в RUNNER_TEMP, а не в рабочий каталог: следом идёт checkout, а он
+      # чистит рабочее дерево. Сам кеш при этом лежит в ~/.conan2 и переживёт.
+      - name: 'Зависимости из зеркала'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEY: ${{ needs.Check.outputs.deps_key }}
+        run: |
+          set -euo pipefail
+          asset="conan-cache-linux-${KEY}.tgz"
+          if gh release download deps-cache -R "$GITHUB_REPOSITORY" -p "$asset" -D "$RUNNER_TEMP" --clobber; then
+            conan cache restore "$RUNNER_TEMP/$asset"
+            echo "Зеркало попало: $asset"
+          else
+            echo "::warning::Зеркала под ключ ${KEY} нет — зависимости соберутся из исходников, это надолго."
+          fi
 
       # Зависимости client/3rd/ вендорены в дерево — submodules не нужны.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -226,6 +255,8 @@ jobs:
     needs: Check
     if: needs.Check.outputs.should_release == 'true'
     runs-on: windows-2022
+    # Обычно около 41 минуты вместе с инсталлятором. Запас на промах мимо зеркала.
+    timeout-minutes: 210
 
     steps:
       - name: 'Установка Qt'
@@ -250,6 +281,23 @@ jobs:
 
       - name: 'Установка Conan'
         run: pip install "conan==${{ env.CONAN_VERSION }}"
+
+      # Качаем в RUNNER_TEMP, а не в рабочий каталог: следом идёт checkout, а он
+      # чистит рабочее дерево. Сам кеш при этом лежит в ~/.conan2 и переживёт.
+      - name: 'Зависимости из зеркала'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEY: ${{ needs.Check.outputs.deps_key }}
+        run: |
+          set -euo pipefail
+          asset="conan-cache-windows-${KEY}.tgz"
+          if gh release download deps-cache -R "$GITHUB_REPOSITORY" -p "$asset" -D "$RUNNER_TEMP" --clobber; then
+            conan cache restore "$RUNNER_TEMP/$asset"
+            echo "Зеркало попало: $asset"
+          else
+            echo "::warning::Зеркала под ключ ${KEY} нет — зависимости соберутся из исходников, это надолго."
+          fi
 
       # Зависимости client/3rd/ вендорены в дерево — submodules не нужны.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -283,6 +331,7 @@ jobs:
     needs: [Check, Build-Linux, Build-Windows]
     if: needs.Check.outputs.should_release == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -355,6 +404,7 @@ jobs:
     needs: Check
     if: needs.Check.outputs.should_release == 'false'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - run: |
           echo "С релиза ${{ needs.Check.outputs.previous_tag }} новых коммитов нет. Сборка не запускалась."
