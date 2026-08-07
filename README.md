@@ -16,7 +16,7 @@ No accounts, no subscriptions, no operator in the middle.
 [![Release](https://img.shields.io/github/v/release/FFriends/AbstractumVPN?include_prereleases&label=release)](https://github.com/FFriends/AbstractumVPN/releases)
 [![Licence](https://img.shields.io/badge/licence-GPL--3.0-blue)](LICENSE)
 
-[Download](https://github.com/FFriends/AbstractumVPN/releases/latest) ·
+[Download](https://github.com/FFriends/AbstractumVPN/releases) ·
 [How it works](#how-it-works) ·
 [Build from source](#building)
 
@@ -67,7 +67,9 @@ Any Linux machine you control, reachable over SSH. Nothing is pre-configured by 
 | **Ports** | Opened for you through the host firewall. Defaults: OpenVPN `1194`, WireGuard `51820`, AmneziaWG `55424`, XRay and Cloak `443`, IKEv2 `500` and `4500` UDP |
 
 Before installing anything the client looks at the package manager's lock file. If the machine
-is already busy, it says so instead of starting a second install on top.
+is already busy, the client waits for that install to finish rather than starting a second one
+on top. It says what it is waiting for and offers a cancel button; if the lock is still held
+after about five minutes, it stops with an error instead of waiting forever.
 
 ## Protocols
 
@@ -97,22 +99,23 @@ installs it over the same SSH session. Removing it is the same button.
 | **AmneziaDNS** | An `unbound` resolver reachable only inside the tunnel, forwarding over DNS-over-TLS. Your DNS stops going to your provider |
 | **SFTP storage** | A private file share on the server |
 | **SOCKS5 proxy** | For applications that speak SOCKS but not VPN |
-| **MTProxy** | A Telegram proxy running on your server, for handing access to other people |
+| **MTProxy** | A Telegram proxy running on your server, for handing out access to other people |
 | **Website in Tor** | Publishes a site of yours as an onion service |
 
 There is no manual setup guide for any of them, because there is nothing to set up manually.
 
 ## Install
 
-Grab a build from [Releases](https://github.com/FFriends/AbstractumVPN/releases/latest).
+Grab a build from [Releases](https://github.com/FFriends/AbstractumVPN/releases).
 
 | | |
 |---|---|
 | **Windows** | `AbstractumVPN_*_windows_x64.exe` |
 | **Linux** | `AbstractumVPN_*_linux_x64.run` |
 
-Releases are published as pre-releases while the project is young, so the release page is the
-place to look rather than a "latest stable" link.
+Every release is published as a pre-release while the project is young. GitHub's "latest"
+shortcut only ever points at a stable release, so it resolves to nothing here — the releases
+page itself is the place to look.
 
 Builds are not code-signed yet, so Windows SmartScreen will warn about an unknown publisher.
 macOS, Android and iOS are not built at the moment: the code supports them, the signing
