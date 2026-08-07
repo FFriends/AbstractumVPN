@@ -42,6 +42,10 @@ set(CPACK_IFW_PACKAGE_STYLE_SHEET   ${CMAKE_SOURCE_DIR}/deploy/installer/qif/abs
 set(CPACK_IFW_PACKAGE_BANNER        ${CMAKE_SOURCE_DIR}/deploy/installer/qif/images/banner.png)
 set(CPACK_IFW_PACKAGE_LOGO          ${CMAKE_SOURCE_DIR}/deploy/installer/qif/images/logo.png)
 set(CPACK_IFW_PACKAGE_WINDOW_ICON   ${CMAKE_SOURCE_DIR}/deploy/installer/qif/images/window_icon.png)
+# The icon of the installer executable itself, the one Explorer shows before
+# anything is run. WINDOW_ICON above is a different thing - it only dresses the
+# wizard window once it is open, which left the .exe with the stock IFW icon.
+set(CPACK_IFW_PACKAGE_ICON          ${CMAKE_SOURCE_DIR}/client/images/app.ico)
 
 # The column of steps down the left side. IFW owns its layout; the stylesheet
 # only colours it.
