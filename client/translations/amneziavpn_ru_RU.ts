@@ -81,47 +81,36 @@
     </message>
 </context>
 <context>
-    <name>ConnectionController</name>
+    <name>ConnectionUiController</name>
     <message>
-        <location filename="../ui/controllers/connectionController.cpp" line="82"/>
+        <location filename="../ui/controllers/connectionUiController.cpp" line="59"/>
         <source>Connecting...</source>
         <translation>Подключение...</translation>
     </message>
     <message>
-        <location filename="../ui/controllers/connectionController.cpp" line="89"/>
+        <location filename="../ui/controllers/connectionUiController.cpp" line="66"/>
         <source>Connected</source>
         <translation>Подключено</translation>
     </message>
     <message>
-        <location filename="../ui/controllers/connectionController.cpp" line="113"/>
+        <location filename="../ui/controllers/connectionUiController.cpp" line="90"/>
         <source>Preparing...</source>
         <translation>Подготовка...</translation>
     </message>
     <message>
-        <location filename="../ui/controllers/connectionController.cpp" line="135"/>
-        <source>Settings updated successfully, reconnnection...</source>
-        <translation>Настройки успешно обновлены, переподключение...</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/connectionController.cpp" line="138"/>
-        <source>Settings updated successfully</source>
-        <translation>Настройки успешно обновлены</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/connectionController.cpp" line="98"/>
+        <location filename="../ui/controllers/connectionUiController.cpp" line="75"/>
         <source>Reconnecting...</source>
         <translation>Переподключение...</translation>
     </message>
     <message>
-        <location filename="../ui/controllers/connectionController.h" line="70"/>
-        <location filename="../ui/controllers/connectionController.cpp" line="103"/>
-        <location filename="../ui/controllers/connectionController.cpp" line="118"/>
-        <location filename="../ui/controllers/connectionController.cpp" line="124"/>
+        <location filename="../ui/controllers/connectionUiController.cpp" line="80"/>
+        <location filename="../ui/controllers/connectionUiController.cpp" line="95"/>
+        <location filename="../ui/controllers/connectionUiController.cpp" line="101"/>
         <source>Connect</source>
         <translation>Подключиться</translation>
     </message>
     <message>
-        <location filename="../ui/controllers/connectionController.cpp" line="108"/>
+        <location filename="../ui/controllers/connectionUiController.cpp" line="85"/>
         <source>Disconnecting...</source>
         <translation>Отключение...</translation>
     </message>
