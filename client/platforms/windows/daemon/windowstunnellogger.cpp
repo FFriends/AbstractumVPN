@@ -45,6 +45,16 @@ WindowsTunnelLogger::WindowsTunnelLogger(const QString& filename,
   m_startTime = QDateTime::currentMSecsSinceEpoch() * 1000000;
   m_logindex = -1;
 
+  // The ring log belongs to an official WireGuard for Windows installation and
+  // is simply absent without one, in which case tunnelLogFile() hands us an
+  // empty name. Polling it regardless made QFile complain four times a second
+  // for as long as the tunnel was up: on an hour-long session that was 14358
+  // warnings out of 15118 lines, burying everything worth reading.
+  if (filename.isEmpty()) {
+    logger.debug() << "No tunnel ring log to follow";
+    return;
+  }
+
   connect(&m_timer, SIGNAL(timeout()), this, SLOT(timeout()));
   m_timer.start(RINGLOG_POLL_MSEC);
 }
