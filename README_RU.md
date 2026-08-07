@@ -179,8 +179,9 @@ pull request'ом, а с вопросом приходите в чат Telegram 
 GPL-3.0, см. [LICENSE](LICENSE) и [NOTICE](NOTICE).
 
 AbstractumVPN основан на
-[amnezia-vpn/amnezia-client](https://github.com/amnezia-vpn/amnezia-client), срез `e38a2339`.
-Большая часть кода написана ими, и лицензия унаследована, а не выбрана: GPLv3 этого требует.
+[amnezia-vpn/amnezia-client](https://github.com/amnezia-vpn/amnezia-client), влит до среза
+`0d116bfc`. Большая часть кода написана ими, и лицензия унаследована, а не выбрана: GPLv3
+этого требует.
 
 Проект независимый, с Amnezia не связан и ими не поддерживается. **О проблемах с
 AbstractumVPN сообщайте сюда, а не им.** Чем отличается: нет подписок, нет платного хостинга,

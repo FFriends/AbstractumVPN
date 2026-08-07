@@ -50,187 +50,6 @@
     </message>
 </context>
 <context>
-    <name>ApiAccountInfoModel</name>
-    <message>
-        <location filename="../ui/models/api/apiAccountInfoModel.cpp" line="32"/>
-        <location filename="../ui/models/api/apiAccountInfoModel.cpp" line="37"/>
-        <source>Active</source>
-        <translation>Активна</translation>
-    </message>
-    <message>
-        <location filename="../ui/models/api/apiAccountInfoModel.cpp" line="36"/>
-        <source>Inactive</source>
-        <translation>Не активна</translation>
-    </message>
-    <message>
-        <location filename="../ui/models/api/apiAccountInfoModel.cpp" line="50"/>
-        <source>%1 out of %2</source>
-        <translation>%1 из %2</translation>
-    </message>
-</context>
-<context>
-    <name>ApiConfigsController</name>
-    <message>
-        <location filename="../ui/controllers/api/apiConfigsController.cpp" line="859"/>
-        <location filename="../ui/controllers/api/apiConfigsController.cpp" line="929"/>
-        <source>%1 installed successfully.</source>
-        <translation>%1 успешно установлен.</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/api/apiConfigsController.cpp" line="810"/>
-        <source>Subscription restored successfully.</source>
-        <translation>Подписка успешно восстановлена.</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/api/apiConfigsController.cpp" line="391"/>
-        <source>%1/mo</source>
-        <comment>IAP: price per month in plan subtitle</comment>
-        <translation>%1/мес</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/api/apiConfigsController.cpp" line="410"/>
-        <source>from %1 per month</source>
-        <comment>IAP: card footer minimum monthly price from StoreKit</comment>
-        <translation>от %1 в месяц</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/api/apiConfigsController.cpp" line="664"/>
-        <location filename="../ui/controllers/api/apiConfigsController.cpp" line="802"/>
-        <source>This subscription has already been added</source>
-        <translation>Эта подписка уже добавлена</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/api/apiConfigsController.cpp" line="672"/>
-        <source>%1 has been added to the app</source>
-        <translation>%1 добавлено в приложение</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/api/apiConfigsController.cpp" line="897"/>
-        <source>This email address has already been used to activate a trial. If you like the service, you can upgrade to Premium</source>
-        <translation>Этот адрес электронной почты уже использовался для активации пробного периода. Если вам понравился сервис, вы можете оформить подписку Premium</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/api/apiConfigsController.cpp" line="998"/>
-        <source>API config reloaded</source>
-        <translation>Конфигурация API перезагружена</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/api/apiConfigsController.cpp" line="1002"/>
-        <source>Successfully changed the country of connection to %1</source>
-        <translation>Страна подключения изменена на %1</translation>
-    </message>
-</context>
-<context>
-    <name>ApiPremV1MigrationDrawer</name>
-    <message>
-        <source>Switch to the new Amnezia Premium subscription</source>
-        <translation type="vanished">Перейдите на новый тип подписки Amnezia Premium</translation>
-    </message>
-    <message>
-        <source>We&apos;ll preserve all remaining days of your current subscription and give you an extra month as a thank you. </source>
-        <translation type="vanished">Мы сохраним все оставшиеся дни текущей подписки и подарим дополнительный месяц в благодарность за переход. </translation>
-    </message>
-    <message>
-        <source>This new subscription type will be actively developed with more locations and features added regularly. Currently available:</source>
-        <translation type="vanished">Именно новый тип подписки будет активно развиваться и пополняться новыми локациями и функциями. Уже доступны:</translation>
-    </message>
-    <message>
-        <source>&lt;li&gt;20 locations (with more coming soon)&lt;/li&gt;</source>
-        <translation type="vanished">&lt;li&gt;20 локаций (их число будет расти)&lt;/li&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;li&gt;Easier switching between countries in the app&lt;/li&gt;</source>
-        <translation type="vanished">&lt;li&gt;Удобное переключение между странами в приложении&lt;/li&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;li&gt;Personal dashboard to manage your subscription&lt;/li&gt;</source>
-        <translation type="vanished">&lt;li&gt;Личный кабинет для управления подпиской&lt;/li&gt;</translation>
-    </message>
-    <message>
-        <source>Old keys will be deactivated after switching.</source>
-        <translation type="vanished">После перехода старые ключи перестанут работать.</translation>
-    </message>
-    <message>
-        <source>Email</source>
-        <translation type="vanished">Email</translation>
-    </message>
-    <message>
-        <source>mail@example.com</source>
-        <translation type="vanished">mail@example.com</translation>
-    </message>
-    <message>
-        <source>No old format subscriptions for a given email</source>
-        <translation type="vanished">Для указанного адреса электронной почты нет подписок старого типа</translation>
-    </message>
-    <message>
-        <source>Enter the email you used for your current subscription</source>
-        <translation type="vanished">Укажите адрес почты, который использовали при заказе текущей подписки</translation>
-    </message>
-    <message>
-        <source>Continue</source>
-        <translation type="vanished">Продолжить</translation>
-    </message>
-    <message>
-        <source>Remind me later</source>
-        <translation type="vanished">Напомнить позже</translation>
-    </message>
-    <message>
-        <source>Don&apos;t remind me again</source>
-        <translation type="vanished">Больше не напоминать</translation>
-    </message>
-    <message>
-        <source>No more reminders? You can always switch to the new format in the server settings</source>
-        <translation type="vanished">Отключить напоминания? Вы всегда сможете перейти на новый тип подписки в настройках сервера</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">Отменить</translation>
-    </message>
-</context>
-<context>
-    <name>ApiPremV1SubListDrawer</name>
-    <message>
-        <source>Choose Subscription</source>
-        <translation type="vanished">Выбрать подписку</translation>
-    </message>
-    <message>
-        <source>Order ID: </source>
-        <translation type="vanished">ID заказа: </translation>
-    </message>
-    <message>
-        <source>Purchase Date: </source>
-        <translation type="vanished">Дата покупки: </translation>
-    </message>
-</context>
-<context>
-    <name>ApiServicesModel</name>
-    <message>
-        <location filename="../ui/models/api/apiServicesModel.cpp" line="77"/>
-        <source>&lt;p&gt;&lt;a style=&quot;color: #EB5757;&quot;&gt;Not available in your region. If you have VPN enabled, disable it, return to the previous screen, and try again.&lt;/a&gt;</source>
-        <translation>&lt;p&gt;&lt;a style=&quot;color: #EB5757;&quot;&gt;Недоступно в вашем регионе. Если у вас включен VPN, отключите его, вернитесь на предыдущий экран и попробуйте снова.&lt;/a&gt;</translation>
-    </message>
-    <message>
-        <source>%1 MBit/s</source>
-        <translation type="vanished">%1 Мбит/с</translation>
-    </message>
-    <message>
-        <source>%1 days</source>
-        <translation type="vanished">%1 дней</translation>
-    </message>
-    <message>
-        <source>Free</source>
-        <translation type="vanished">Бесплатно</translation>
-    </message>
-    <message>
-        <source>%1 $</source>
-        <translation type="vanished">%1 $</translation>
-    </message>
-    <message>
-        <source>%1 $/month</source>
-        <translation type="vanished">%1 $/месяц</translation>
-    </message>
-</context>
-<context>
     <name>AppSplitTunnelingController</name>
     <message>
         <location filename="../ui/controllers/appSplitTunnelingController.cpp" line="23"/>
@@ -305,24 +124,6 @@
         <location filename="../ui/controllers/connectionController.cpp" line="108"/>
         <source>Disconnecting...</source>
         <translation>Отключение...</translation>
-    </message>
-</context>
-<context>
-    <name>ConnectionTypeSelectionDrawer</name>
-    <message>
-        <location filename="../ui/qml/Components/ConnectionTypeSelectionDrawer.qml" line="36"/>
-        <source>Add new connection</source>
-        <translation>Добавить новое соединение</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Components/ConnectionTypeSelectionDrawer.qml" line="44"/>
-        <source>Configure your server</source>
-        <translation>Настроить свой сервер</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Components/ConnectionTypeSelectionDrawer.qml" line="59"/>
-        <source>Open config file, key or QR code</source>
-        <translation>Открыть файл конфигурации, ключ или QR-код</translation>
     </message>
 </context>
 <context>
@@ -513,24 +314,6 @@ Already installed containers were found on the server. All installed containers 
     </message>
 </context>
 <context>
-    <name>KeyChainClass</name>
-    <message>
-        <location filename="../3rd/qtkeychain/TestAppExample/keychainclass.cpp" line="22"/>
-        <source>Read key failed: %1</source>
-        <translation>Не удалось считать ключ: %1</translation>
-    </message>
-    <message>
-        <location filename="../3rd/qtkeychain/TestAppExample/keychainclass.cpp" line="37"/>
-        <source>Write key failed: %1</source>
-        <translation>Не удалось записать ключ: %1</translation>
-    </message>
-    <message>
-        <location filename="../3rd/qtkeychain/TestAppExample/keychainclass.cpp" line="54"/>
-        <source>Delete key failed: %1</source>
-        <translation>Не удалось удалить ключ: %1</translation>
-    </message>
-</context>
-<context>
     <name>NotificationHandler</name>
     <message>
         <location filename="../ui/notificationhandler.cpp" line="57"/>
@@ -558,20 +341,10 @@ Already installed containers were found on the server. All installed containers 
         <source>Unsecured network detected: </source>
         <translation>Обнаружена незащищенная сеть: </translation>
     </message>
-</context>
-<context>
-    <name>OtpCodeDrawer</name>
     <message>
-        <source>OTP code was sent to your email</source>
-        <translation type="vanished">Одноразовый код был отправлен на ваш email</translation>
-    </message>
-    <message>
-        <source>OTP Code</source>
-        <translation type="vanished">Одноразовый код</translation>
-    </message>
-    <message>
-        <source>Continue</source>
-        <translation type="vanished">Продолжить</translation>
+        <location filename="../ui/utils/notificationHandler.cpp"/>
+        <source>AbstractumVPN notification</source>
+        <translation>Уведомление AbstractumVPN</translation>
     </message>
 </context>
 <context>
@@ -588,34 +361,7 @@ Already installed containers were found on the server. All installed containers 
     </message>
 </context>
 <context>
-    <name>PageDevMenu</name>
-    <message>
-        <location filename="../ui/qml/Pages2/PageDevMenu.qml" line="60"/>
-        <source>Gateway endpoint</source>
-        <translation>Gateway endpoint</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageDevMenu.qml" line="87"/>
-        <source>Dev gateway environment</source>
-        <translation>Dev gateway environment</translation>
-    </message>
-</context>
-<context>
     <name>PageHome</name>
-    <message>
-        <source>You&apos;ve successfully switched to the new Amnezia Premium subscription!</source>
-        <translation type="vanished">Вы успешно перешли на новый тип подписки Amnezia Premium!</translation>
-    </message>
-    <message>
-        <source>Old keys will no longer work. Please use your new subscription key to connect. 
-Thank you for staying with us!</source>
-        <translation type="vanished">Старые ключи перестанут работать. Пожалуйста, используйте новый ключ для подключения.
-Спасибо, что остаетесь с нами!</translation>
-    </message>
-    <message>
-        <source>Continue</source>
-        <translation type="vanished">Продолжить</translation>
-    </message>
     <message>
         <location filename="../ui/qml/Pages2/PageHome.qml" line="83"/>
         <source>Logging enabled</source>
@@ -864,60 +610,6 @@ Thank you for staying with us!</source>
     </message>
 </context>
 <context>
-    <name>PageProtocolCloakSettings</name>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolCloakSettings.qml" line="54"/>
-        <source>Cloak settings</source>
-        <translation>Настройки Cloak</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolCloakSettings.qml" line="75"/>
-        <source>Disguised as traffic from</source>
-        <translation>Замаскировать трафик под</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolCloakSettings.qml" line="103"/>
-        <source>Port</source>
-        <translation>Порт</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolCloakSettings.qml" line="125"/>
-        <location filename="../ui/qml/Pages2/PageProtocolCloakSettings.qml" line="126"/>
-        <source>Cipher</source>
-        <translation>Шифрование</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolCloakSettings.qml" line="184"/>
-        <source>Save</source>
-        <translation>Сохранить</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolCloakSettings.qml" line="189"/>
-        <source>Save settings?</source>
-        <translation>Сохранить настройки?</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolCloakSettings.qml" line="190"/>
-        <source>All users with whom you shared a connection with will no longer be able to connect to it.</source>
-        <translation>Все пользователи, с которыми вы поделились конфигурацией вашего VPN, больше не смогут к нему подключаться.</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolCloakSettings.qml" line="191"/>
-        <source>Continue</source>
-        <translation>Продолжить</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolCloakSettings.qml" line="192"/>
-        <source>Cancel</source>
-        <translation>Отменить</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolCloakSettings.qml" line="196"/>
-        <source>Unable change settings while there is an active connection</source>
-        <translation>Невозможно изменить настройки во время активного соединения</translation>
-    </message>
-</context>
-<context>
     <name>PageProtocolOpenVpnSettings</name>
     <message>
         <location filename="../ui/qml/Pages2/PageProtocolOpenVpnSettings.qml" line="55"/>
@@ -1146,10 +838,6 @@ Thank you for staying with us!</source>
         <translation>Все пользователи, с которыми вы поделились конфигурацией вашего VPN, больше не смогут к нему подключаться.</translation>
     </message>
     <message>
-        <source>All users who you shared a connection with will no longer be able to connect to it.</source>
-        <translation type="obsolete">Все пользователи, с которыми вы поделились этим VPN-протоколом, больше не смогут к нему подключаться.</translation>
-    </message>
-    <message>
         <location filename="../ui/qml/Pages2/PageProtocolRaw.qml" line="184"/>
         <source>Continue</source>
         <translation>Продолжить</translation>
@@ -1158,55 +846,6 @@ Thank you for staying with us!</source>
         <location filename="../ui/qml/Pages2/PageProtocolRaw.qml" line="185"/>
         <source>Cancel</source>
         <translation>Отменить</translation>
-    </message>
-</context>
-<context>
-    <name>PageProtocolShadowSocksSettings</name>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolShadowSocksSettings.qml" line="56"/>
-        <source>Shadowsocks settings</source>
-        <translation>Настройки Shadowsocks</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolShadowSocksSettings.qml" line="69"/>
-        <source>Port</source>
-        <translation>Порт</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolShadowSocksSettings.qml" line="93"/>
-        <location filename="../ui/qml/Pages2/PageProtocolShadowSocksSettings.qml" line="94"/>
-        <source>Cipher</source>
-        <translation>Шифрование</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolShadowSocksSettings.qml" line="152"/>
-        <source>Save</source>
-        <translation>Сохранить</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolShadowSocksSettings.qml" line="157"/>
-        <source>Save settings?</source>
-        <translation>Сохранить настройки?</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolShadowSocksSettings.qml" line="158"/>
-        <source>All users with whom you shared a connection with will no longer be able to connect to it.</source>
-        <translation>Все пользователи, с которыми вы поделились конфигурацией вашего VPN, больше не смогут к нему подключаться.</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolShadowSocksSettings.qml" line="159"/>
-        <source>Continue</source>
-        <translation>Продолжить</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolShadowSocksSettings.qml" line="160"/>
-        <source>Cancel</source>
-        <translation>Отменить</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageProtocolShadowSocksSettings.qml" line="164"/>
-        <source>Unable change settings while there is an active connection</source>
-        <translation>Невозможно изменить настройки во время активного соединения</translation>
     </message>
 </context>
 <context>
@@ -1372,12 +1011,40 @@ Thank you for staying with us!</source>
         <source>Unable change settings while there is an active connection</source>
         <translation>Невозможно изменить настройки во время активного соединения</translation>
     </message>
-</context>
-<context>
-    <name>PageServerContainers</name>
     <message>
-        <source>Continue</source>
-        <translation type="obsolete">Продолжить</translation>
+        <location filename="../ui/qml/Pages2/PageProtocolXraySettings.qml"/>
+        <source>You have read-only access to this server. XRay settings cannot be edited.</source>
+        <translation>У вас доступ к этому серверу только на чтение. Настройки XRay изменить нельзя.</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageProtocolXraySettings.qml"/>
+        <source>Transport</source>
+        <translation>Транспорт</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageProtocolXraySettings.qml"/>
+        <source>Security</source>
+        <translation>Безопасность</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageProtocolXraySettings.qml"/>
+        <source>Settings were reset to defaults. Tap Save to apply them on the server.</source>
+        <translation>Настройки сброшены к значениям по умолчанию. Нажмите «Сохранить», чтобы применить их на сервере.</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageProtocolXraySettings.qml"/>
+        <source>Reset settings?</source>
+        <translation>Сбросить настройки?</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageProtocolXraySettings.qml"/>
+        <source>All XRay settings will be restored to defaults.</source>
+        <translation>Все настройки XRay вернутся к значениям по умолчанию.</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageProtocolXraySettings.qml"/>
+        <source>Reset</source>
+        <translation>Сбросить</translation>
     </message>
 </context>
 <context>
@@ -1487,6 +1154,26 @@ Thank you for staying with us!</source>
         <source>Detailed instructions</source>
         <translation>Подробные инструкции</translation>
     </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageServiceSftpSettings.qml"/>
+        <source>&lt;br&gt;1. Install the </source>
+        <translation>&lt;br&gt;1. Установите пакет </translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageServiceSftpSettings.qml"/>
+        <source> package from your distribution repository.</source>
+        <translation> из репозитория вашего дистрибутива.</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageServiceSftpSettings.qml"/>
+        <source>&lt;br&gt;2. Create a mount point: </source>
+        <translation>&lt;br&gt;2. Создайте точку монтирования: </translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageServiceSftpSettings.qml"/>
+        <source>&lt;br&gt;3. Mount the folder and enter the password shown above when asked:</source>
+        <translation>&lt;br&gt;3. Смонтируйте каталог и введите показанный выше пароль, когда его спросят:</translation>
+    </message>
 </context>
 <context>
     <name>PageServiceSocksProxySettings</name>
@@ -1595,6 +1282,11 @@ Thank you for staying with us!</source>
         <source>When configuring WordPress set the this onion address as domain.</source>
         <translation>При настройке WordPress укажите этот onion-адрес в качестве домена.</translation>
     </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageServiceTorWebsiteSettings.qml"/>
+        <source>Use &lt;a href="https://www.torproject.org/download/" style="color: %1;"&gt;Tor Browser&lt;/a&gt; to open this URL.</source>
+        <translation>Откройте этот адрес в &lt;a href="https://www.torproject.org/download/" style="color: %1;"&gt;Tor Browser&lt;/a&gt;.</translation>
+    </message>
 </context>
 <context>
     <name>PageSettings</name>
@@ -1643,18 +1335,18 @@ Thank you for staying with us!</source>
         <source>Close application</source>
         <translation>Закрыть приложение</translation>
     </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSettings.qml"/>
+        <source>About AbstractumVPN</source>
+        <translation>Об AbstractumVPN</translation>
+    </message>
 </context>
 <context>
     <name>PageSettingsAbout</name>
     <message>
         <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="61"/>
-        <source>Support Amnezia</source>
-        <translation>Поддержите Amnezia</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="76"/>
-        <source>Amnezia is a free and open-source application. You can support the developers if you like it.</source>
-        <translation>Amnezia — это бесплатное приложение с открытым исходным кодом. Поддержите разработчиков, если оно вам нравится.</translation>
+        <source>Support the project</source>
+        <translation>Поддержать проект</translation>
     </message>
     <message>
         <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="86"/>
@@ -1662,560 +1354,44 @@ Thank you for staying with us!</source>
         <translation>Контакты</translation>
     </message>
     <message>
-        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="189"/>
-        <source>Telegram group</source>
-        <translation>Группа в Telegram</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="190"/>
-        <source>To discuss features</source>
-        <translation>Для обсуждения возможностей</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="193"/>
-        <source>https://t.me/amnezia_vpn_en</source>
-        <translation>https://t.me/amnezia_vpn</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="200"/>
-        <source>support@amnezia.org</source>
-        <translation>support@amnezia.org</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="201"/>
-        <source>For reviews and bug reports</source>
-        <translation>Для отзывов и сообщений об ошибках</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="204"/>
-        <source>mailto:support@amnezia.org</source>
-        <translation>mailto:support@amnezia.org</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="211"/>
-        <source>GitHub</source>
-        <translation>GitHub</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="212"/>
-        <source>Discover the source code</source>
-        <translation>Посмотреть исходный код</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="215"/>
-        <source>https://github.com/amnezia-vpn/amnezia-client</source>
-        <translation>https://github.com/amnezia-vpn/amnezia-client</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="222"/>
-        <source>Website</source>
-        <translation>Веб-сайт</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="223"/>
-        <source>Visit official website</source>
-        <translation>Посетить официальный сайт</translation>
-    </message>
-    <message>
         <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="119"/>
         <source>Software version: %1</source>
         <translation>Версия ПО: %1</translation>
     </message>
     <message>
-        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="149"/>
+        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="137"/>
         <source>Check for updates</source>
         <translation>Проверить обновления</translation>
     </message>
     <message>
+        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="159"/>
+        <source>GitHub</source>
+        <translation>GitHub</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="160"/>
+        <source>Discover the source code</source>
+        <translation>Посмотреть исходный код</translation>
+    </message>
+    <message>
         <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="170"/>
-        <source>Privacy Policy</source>
-        <translation>Политика конфиденциальности</translation>
+        <source>Releases</source>
+        <translation>Релизы</translation>
     </message>
-</context>
-<context>
-    <name>PageSettingsApiAvailableCountries</name>
     <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiAvailableCountries.qml" line="129"/>
-        <source>Subscription expired</source>
-        <translation>Подписка закончилась</translation>
+        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="171"/>
+        <source>Download the latest build</source>
+        <translation>Скачать последнюю сборку</translation>
     </message>
     <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiAvailableCountries.qml" line="129"/>
-        <source>Subscription expiring soon</source>
-        <translation>Подписка скоро закончится</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiAvailableCountries.qml" line="148"/>
-        <source>Renew subscription</source>
-        <translation>Продлить подписку</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiAvailableCountries.qml" line="162"/>
-        <source>Location for connection</source>
-        <translation>Страны для подключения</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiAvailableCountries.qml" line="191"/>
-        <source>Unable change server location while trying to make an active connection</source>
-        <translation>Невозможно изменить локацию во время попытки соединения</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiAvailableCountries.qml" line="195"/>
-        <source>Unable change server location while there is an active connection</source>
-        <translation>Невозможно изменить локацию во время активного соединения</translation>
-    </message>
-</context>
-<context>
-    <name>PageSettingsApiDevices</name>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiDevices.qml" line="45"/>
-        <source>Active Devices</source>
-        <translation>Активные устройства</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiDevices.qml" line="46"/>
-        <source>Manage currently connected devices</source>
-        <translation>Управление подключенными устройствами</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiDevices.qml" line="55"/>
-        <source>You can find the identifier on the Support tab or, for older versions of the app, by tapping &apos;+&apos; and then the three dots at the top of the page.</source>
-        <translation>Вы можете найти support tag во вкладке «Поддержка» или, в более ранних версиях приложения, нажав «+» на нижней панели, а затем три точки вверху страницы.</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiDevices.qml" line="69"/>
-        <source> (current device)</source>
-        <translation> (текущее устройство)</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiDevices.qml" line="70"/>
-        <source>Support tag: </source>
-        <translation>Support tag: </translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiDevices.qml" line="70"/>
-        <source>Last updated: </source>
-        <translation>Последнее обновление: </translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiDevices.qml" line="75"/>
-        <source>Cannot unlink device during active connection</source>
-        <translation>Невозможно отвязать устройство во время активного соединения</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiDevices.qml" line="79"/>
-        <source>Are you sure you want to unlink this device?</source>
-        <translation>Вы уверены, что хотите отвязать это устройство?</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiDevices.qml" line="80"/>
-        <source>This will unlink the device from your subscription. You can reconnect it anytime by pressing&#xa0;&quot;Reload API config&quot; in subscription settings on device.</source>
-        <translation>Это отключит устройство от вашей подписки. Вы можете повторно подключить его в любое время, нажав &quot;Перезагрузить конфигурацию API&quot; в настройках подписки на устройстве.</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiDevices.qml" line="81"/>
-        <source>Continue</source>
-        <translation>Продолжить</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiDevices.qml" line="82"/>
-        <source>Cancel</source>
-        <translation>Отменить</translation>
-    </message>
-</context>
-<context>
-    <name>PageSettingsApiInstructions</name>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="22"/>
-        <source>Windows</source>
-        <translation>Windows</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="29"/>
-        <source>macOS</source>
-        <translation>macOS</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="36"/>
-        <source>Android</source>
-        <translation>Android</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="43"/>
-        <source>AndroidTV</source>
-        <translation>Android TV</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="50"/>
-        <source>iOS</source>
-        <translation>iOS</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="57"/>
-        <source>Linux</source>
-        <translation>Linux</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="64"/>
-        <source>Routers</source>
-        <translation>Маршрутизаторы</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="23"/>
-        <source>documentation/instructions/connect-amnezia-premium#windows</source>
-        <translation>documentation/instructions/connect-amnezia-premium#windows</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="30"/>
-        <source>documentation/instructions/connect-amnezia-premium#macos</source>
-        <translation>documentation/instructions/connect-amnezia-premium#macos</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="37"/>
-        <source>documentation/instructions/connect-amnezia-premium#android</source>
-        <translation>documentation/instructions/connect-amnezia-premium#android</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="44"/>
-        <source>documentation/instructions/android_tv_connect/</source>
-        <translation>documentation/instructions/android_tv_connect/</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="51"/>
-        <source>documentation/instructions/connect-amnezia-premium#ios</source>
-        <translation>documentation/instructions/connect-amnezia-premium#ios</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="58"/>
-        <source>documentation/instructions/connect-amnezia-premium#linux</source>
-        <translation>documentation/instructions/connect-amnezia-premium#linux</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="65"/>
-        <source>documentation/instructions/connect-amnezia-premium#routers</source>
-        <translation>documentation/instructions/connect-amnezia-premium#routers</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="101"/>
-        <source>How to connect on another device</source>
-        <translation>Как подключить другие устройства</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiInstructions.qml" line="102"/>
-        <source>Setup guides on the Amnezia website</source>
-        <translation>Инструкции по настройке</translation>
-    </message>
-</context>
-<context>
-    <name>PageSettingsApiNativeConfigs</name>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="23"/>
-        <source>Save AmneziaVPN config</source>
-        <translation>Сохранить конфигурацию AmneziaVPN</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="60"/>
-        <source>Configuration Files</source>
-        <translation>Файлы конфигурации</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="61"/>
-        <source>For router setup or the AmneziaWG app</source>
-        <translation>Для настройки роутера или приложения AmneziaWG</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="73"/>
-        <source>The configuration needs to be reissued</source>
-        <translation>Необходимо заново скачать конфигурацию и добавить ее в приложение</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="135"/>
-        <source> configuration file</source>
-        <translation> файл конфигурации</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="149"/>
-        <source>Generate a new configuration file</source>
-        <translation>Создать новый файл конфигурации</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="150"/>
-        <source>The previously created one will stop working</source>
-        <translation>Ранее созданный файл перестанет работать</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="168"/>
-        <source>Revoke the current configuration file</source>
-        <translation>Отозвать текущий  файл конфигурации</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="201"/>
-        <source>Config file saved</source>
-        <translation>Файл конфигурации сохранен</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="215"/>
-        <source>The config has been revoked</source>
-        <translation>Конфигурация была отозвана</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="222"/>
-        <source>Generate a new %1 configuration file?</source>
-        <translation>Создать новый %1 файл конфигурации?</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="224"/>
-        <source>Revoke the current %1 configuration file?</source>
-        <translation>Отозвать текущий %1 файл конфигурации?</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="227"/>
-        <source>Your previous configuration file will no longer work, and it will not be possible to connect using it</source>
-        <translation>Ваш предыдущий файл конфигурации не будет работать, и вы больше не сможете использовать его для подключения</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="228"/>
-        <source>Download</source>
-        <translation>Скачать</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="228"/>
-        <source>Continue</source>
-        <translation>Продолжить</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiNativeConfigs.qml" line="229"/>
-        <source>Cancel</source>
-        <translation>Отменить</translation>
-    </message>
-</context>
-<context>
-    <name>PageSettingsApiServerInfo</name>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="298"/>
-        <source>Configurations have been updated for some countries. Download and install the updated configuration files</source>
-        <translation>Сетевые адреса одного или нескольких серверов были обновлены. Пожалуйста, удалите старые конфигурацию и загрузите новые файлы</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="343"/>
-        <source>Manage configuration files</source>
-        <translation>Управление файлами конфигурации</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="29"/>
-        <source>Subscription Status</source>
-        <translation>Статус подписки</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="38"/>
-        <source>Valid Until</source>
-        <translation>Действительна до</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="47"/>
-        <source>Active Connections</source>
-        <translation>Активные соединения</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="150"/>
-        <source>Subscription expired</source>
-        <translation>Подписка закончилась</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="151"/>
-        <source>Subscription expiring soon</source>
-        <translation>Подписка скоро закончится</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="181"/>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="246"/>
-        <source>Renew subscription</source>
-        <translation>Продлить подписку</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="270"/>
-        <source>Use VLESS protocol</source>
-        <translation>Использовать протокол VLESS</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="274"/>
-        <source>Cannot change protocol during active connection</source>
-        <translation>Невозможно изменить протокол во время активного соединения</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="319"/>
-        <source>Subscription Key</source>
-        <translation>Ключ для подключения</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="341"/>
-        <source>Configuration Files</source>
-        <translation>Файлы конфигурации</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="361"/>
-        <source>Active Devices</source>
-        <translation>Активные устройства</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="363"/>
-        <source>Manage currently connected devices</source>
-        <translation>Управление подключенными устройствами</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="380"/>
-        <source>Support</source>
-        <translation>Поддержка</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="395"/>
-        <source>How to connect on another device</source>
-        <translation>Как подключить другие устройства</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="420"/>
-        <source>Reload API config</source>
-        <translation>Перезагрузить конфигурацию API</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="423"/>
-        <source>Reload API config?</source>
-        <translation>Перезагрузить конфигурацию API?</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="424"/>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="462"/>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="499"/>
-        <source>Continue</source>
-        <translation>Продолжить</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="425"/>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="463"/>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="500"/>
-        <source>Cancel</source>
-        <translation>Отменить</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="429"/>
-        <source>Cannot reload API config during active connection</source>
-        <translation>Невозможно перзагрузить API конфигурацию при активном соединении</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="457"/>
-        <source>Unlink this device</source>
-        <translation>Отвязать это устройство</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="460"/>
-        <source>Are you sure you want to unlink this device?</source>
-        <translation>Вы уверены, что хотите отвязать это устройство?</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="461"/>
-        <source>This will unlink the device from your subscription. You can reconnect it anytime by pressing&#xa0;&quot;Reload API config&quot; in subscription settings on device.</source>
-        <translation>Это отключит устройство от вашей подписки. Вы можете повторно подключить его в любое время, нажав &quot;Перезагрузить конфигурацию API&quot; в настройках подписки на устройстве.</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="467"/>
-        <source>Cannot unlink device during active connection</source>
-        <translation>Невозможно отвязать устройство во время активного соединения</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="495"/>
-        <source>Remove from application</source>
-        <translation>Удалить из приложения</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="498"/>
-        <source>Remove from application?</source>
-        <translation>Удалить из приложения?</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiServerInfo.qml" line="504"/>
-        <source>Cannot remove server during active connection</source>
-        <translation>Невозможно удалить сервер во время активного соединения</translation>
-    </message>
-</context>
-<context>
-    <name>PageSettingsApiSubscriptionKey</name>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSubscriptionKey.qml" line="85"/>
-        <source>Copy key</source>
-        <translation>Скопировать ключ</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSubscriptionKey.qml" line="90"/>
-        <source>Copied</source>
-        <translation>Скопировано</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSubscriptionKey.qml" line="106"/>
-        <source>Save key as a file</source>
-        <translation>Сохранить ключ как файл</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSubscriptionKey.qml" line="113"/>
-        <source>Save AmneziaVPN config</source>
-        <translation>Сохранить конфигурацию AmneziaVPN</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSubscriptionKey.qml" line="114"/>
-        <source>Config files (*.vpn)</source>
-        <translation>Файлы конфигов (*.vpn)</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSubscriptionKey.qml" line="139"/>
-        <source>Show key text</source>
-        <translation>Показать ключ</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSubscriptionKey.qml" line="180"/>
-        <source>To read the QR code in the Amnezia app, tap + in the main menu → &apos;QR code&apos;</source>
-        <translation>Для считывания QR-кода в приложении Amnezia выберите + в главном меню → &apos;QR-код&apos;</translation>
-    </message>
-</context>
-<context>
-    <name>PageSettingsApiSupport</name>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSupport.qml" line="22"/>
+        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="181"/>
         <source>Telegram</source>
         <translation>Telegram</translation>
     </message>
     <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSupport.qml" line="30"/>
-        <source>Email</source>
-        <translation>Email</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSupport.qml" line="38"/>
-        <source>Email Billing &amp; Orders</source>
-        <translation>По вопросам оплаты</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSupport.qml" line="46"/>
-        <source>Website</source>
-        <translation>Сайт</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSupport.qml" line="81"/>
-        <source>Support</source>
-        <translation>Поддержка</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSupport.qml" line="82"/>
-        <source>Our technical support specialists are available to assist you at any time</source>
-        <translation>Наши специалисты технической поддержки всегда готовы помочь вам.</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSupport.qml" line="110"/>
-        <source>Support tag</source>
-        <translation>Идентификатор поддержки</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSettingsApiSupport.qml" line="120"/>
-        <source>Copied</source>
-        <translation>Скопировано</translation>
+        <location filename="../ui/qml/Pages2/PageSettingsAbout.qml" line="182"/>
+        <source>News, and a chat where you can ask for help</source>
+        <translation>Новости и чат, где можно попросить помощи</translation>
     </message>
 </context>
 <context>
@@ -2392,6 +1568,11 @@ Thank you for staying with us!</source>
         <location filename="../ui/qml/Pages2/PageSettingsApplication.qml" line="249"/>
         <source>Cannot reset settings during active connection</source>
         <translation>Невозможно сбросить настройки во время активного соединения</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSettingsApplication.qml"/>
+        <source>All settings will be reset to default. All installed AbstractumVPN services will still remain on the server.</source>
+        <translation>Все настройки вернутся к значениям по умолчанию. Установленные сервисы AbstractumVPN останутся на сервере.</translation>
     </message>
 </context>
 <context>
@@ -2833,13 +2014,20 @@ Thank you for staying with us!</source>
         <source>Clear logs</source>
         <translation>Очистить логи</translation>
     </message>
-</context>
-<context>
-    <name>PageSettingsNewsNotifications</name>
     <message>
-        <location filename="../ui/qml/Pages2/PageSettingsNewsNotifications.qml" line="33"/>
-        <source>News &amp; Notifications</source>
-        <translation>Новости и Уведомления</translation>
+        <location filename="../ui/qml/Pages2/PageSettingsLogging.qml"/>
+        <source>Enabling this function will save application&apos;s logs automatically. </source>
+        <translation>При включении журналы приложения будут сохраняться автоматически. </translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSettingsLogging.qml"/>
+        <source>AbstractumVPN logs</source>
+        <translation>Журналы AbstractumVPN</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSettingsLogging.qml"/>
+        <source>AbstractumVPN-service logs</source>
+        <translation>Журналы службы AbstractumVPN</translation>
     </message>
 </context>
 <context>
@@ -2941,10 +2129,6 @@ Thank you for staying with us!</source>
         <translation>Невозможно сбросить конфигурацию API во время активного соединения</translation>
     </message>
     <message>
-        <source>Switch to the new Amnezia Premium subscription</source>
-        <translation type="vanished">Перейти на новый тип подписки Amnezia Premium</translation>
-    </message>
-    <message>
         <location filename="../ui/qml/Pages2/PageSettingsServerData.qml" line="154"/>
         <source>Remove server from application</source>
         <translation>Удалить сервер из приложения</translation>
@@ -2958,6 +2142,31 @@ Thank you for staying with us!</source>
         <location filename="../ui/qml/Pages2/PageSettingsServerData.qml" line="184"/>
         <source>Clear server from Amnezia software</source>
         <translation>Очистить сервер от протоколов и сервисов Amnezia</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSettingsServerData.qml"/>
+        <source>Check the server for previously installed Abstractum services</source>
+        <translation>Проверить сервер на ранее установленные сервисы Abstractum</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSettingsServerData.qml"/>
+        <source>All installed AbstractumVPN services will still remain on the server.</source>
+        <translation>Установленные сервисы AbstractumVPN останутся на сервере.</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSettingsServerData.qml"/>
+        <source>Clear server from Abstractum software</source>
+        <translation>Очистить сервер от ПО Abstractum</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSettingsServerData.qml"/>
+        <source>Do you want to clear server from Abstractum software?</source>
+        <translation>Очистить сервер от ПО Abstractum?</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSettingsServerData.qml"/>
+        <source>Cannot clear server from Abstractum software during active connection</source>
+        <translation>Нельзя очистить сервер от ПО Abstractum при активном подключении</translation>
     </message>
 </context>
 <context>
@@ -3180,138 +2389,6 @@ Thank you for staying with us!</source>
     </message>
 </context>
 <context>
-    <name>PageSetupWizardApiFreeInfo</name>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiFreeInfo.qml" line="74"/>
-        <source>Free features</source>
-        <translation>Возможности Free</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiFreeInfo.qml" line="125"/>
-        <source>Continue</source>
-        <translation>Продолжить</translation>
-    </message>
-</context>
-<context>
-    <name>PageSetupWizardApiPremiumInfo</name>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiPremiumInfo.qml" line="91"/>
-        <source>Recommended</source>
-        <translation>Рекомендуется</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiPremiumInfo.qml" line="103"/>
-        <source>Premium features</source>
-        <translation>Возможности Premium</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiPremiumInfo.qml" line="132"/>
-        <source>Charged to your Apple ID at confirmation. Renews automatically unless auto-renew is turned off at least 24 hours before period end. Manage in Apple ID settings.</source>
-        <translation>Списание с Apple ID при подтверждении. Продление автоматическое, если автопродление не отключено минимум за 24 часа до окончания периода. Управление в настройках Apple ID.</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiPremiumInfo.qml" line="169"/>
-        <source>Continue</source>
-        <translation>Продолжить</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiPremiumInfo.qml" line="171"/>
-        <source>Subscribe — %1 for %2</source>
-        <translation>Подписаться — %1 за %2</translation>
-    </message>
-</context>
-<context>
-    <name>PageSetupWizardApiServiceInfo</name>
-    <message>
-        <source>Charged to your Apple ID at confirmation. Renews automatically unless auto-renew is turned off at least 24 hours before period end. Manage in Apple ID settings.</source>
-        <translation type="vanished">Списание с Apple ID при подтверждении. Продление автоматическое, если автопродление не отключено минимум за 24 часа до окончания периода. Управление в настройках Apple ID.</translation>
-    </message>
-    <message>
-        <source>Subscribe Now</source>
-        <translation type="vanished">Подписаться сейчас</translation>
-    </message>
-    <message>
-        <source>By continuing, you agree to the &lt;a href=&quot;%1&quot; style=&quot;color: #FBB26A;&quot;&gt;Terms of Use&lt;/a&gt; and &lt;a href=&quot;%2&quot; style=&quot;color: #FBB26A;&quot;&gt;Privacy Policy&lt;/a&gt;</source>
-        <translation type="vanished">Продолжая, вы соглашаетесь с &lt;a href=&quot;%1&quot; style=&quot;color: #FBB26A;&quot;&gt;Условиями использования&lt;/a&gt; и &lt;a href=&quot;%2&quot; style=&quot;color: #FBB26A;&quot;&gt;Политикой конфиденциальности&lt;/a&gt;</translation>
-    </message>
-    <message>
-        <source>For the region</source>
-        <translation type="vanished">Для региона</translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="vanished">Цена</translation>
-    </message>
-    <message>
-        <source>Work period</source>
-        <translation type="vanished">Период работы</translation>
-    </message>
-    <message>
-        <source>Speed</source>
-        <translation type="vanished">Скорость</translation>
-    </message>
-    <message>
-        <source>Features</source>
-        <translation type="vanished">Особенности</translation>
-    </message>
-    <message>
-        <source>Connect</source>
-        <translation type="vanished">Подключиться</translation>
-    </message>
-</context>
-<context>
-    <name>PageSetupWizardApiServicesList</name>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiServicesList.qml" line="52"/>
-        <source>VPN by Amnezia</source>
-        <translation>VPN от Amnezia</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiServicesList.qml" line="53"/>
-        <source>Choose a VPN service that suits your needs.</source>
-        <translation>Выберите VPN-сервис, который подходит именно вам.</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiServicesList.qml" line="88"/>
-        <source>Recommended</source>
-        <translation>Рекомендуется</translation>
-    </message>
-</context>
-<context>
-    <name>PageSetupWizardApiTrialEmail</name>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiTrialEmail.qml" line="65"/>
-        <source>Create an account</source>
-        <translation>Создайте учётную запись</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiTrialEmail.qml" line="66"/>
-        <source>To manage your subscription</source>
-        <translation>Для управления подпиской</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiTrialEmail.qml" line="77"/>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiTrialEmail.qml" line="78"/>
-        <source>Email</source>
-        <translation>Электронная почта</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiTrialEmail.qml" line="102"/>
-        <source>We will create an account for your trial subscription and send important subscription updates to this email address</source>
-        <translation>Мы создадим учётную запись для вашей пробной подписки и будем отправлять на этот адрес электронной почты важные уведомления о подписке</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiTrialEmail.qml" line="118"/>
-        <source>Continue</source>
-        <translation>Продолжить</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Pages2/PageSetupWizardApiTrialEmail.qml" line="126"/>
-        <source>Enter a valid email address</source>
-        <translation>Введите корректный адрес электронной почты</translation>
-    </message>
-</context>
-<context>
     <name>PageSetupWizardConfigSource</name>
     <message>
         <location filename="../ui/qml/Pages2/PageSetupWizardConfigSource.qml" line="331"/>
@@ -3414,10 +2491,6 @@ Thank you for staying with us!</source>
         <translation>VPN от Amnezia</translation>
     </message>
     <message>
-        <source>Connect to classic paid and free VPN services from Amnezia</source>
-        <translation type="vanished">Подключайтесь к классическим платным и бесплатным VPN-сервисам от Amnezia</translation>
-    </message>
-    <message>
         <location filename="../ui/qml/Pages2/PageSetupWizardConfigSource.qml" line="299"/>
         <source>Self-hosted VPN</source>
         <translation>Self-hosted VPN</translation>
@@ -3465,6 +2538,16 @@ Thank you for staying with us!</source>
         <location filename="../ui/qml/Pages2/PageSetupWizardConfigSource.qml" line="382"/>
         <source>I have nothing</source>
         <translation>У меня ничего нет</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSetupWizardConfigSource.qml"/>
+        <source>Project on GitHub</source>
+        <translation>Проект на GitHub</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSetupWizardConfigSource.qml"/>
+        <source>Configure AbstractumVPN on your own server</source>
+        <translation>Настроить AbstractumVPN на своём сервере</translation>
     </message>
 </context>
 <context>
@@ -3541,6 +2624,11 @@ Thank you for staying with us!</source>
         <source>Password/private key cannot be empty</source>
         <translation>Поле с паролем/закрытым ключом не может быть пустым</translation>
     </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSetupWizardCredentials.qml"/>
+        <source>All data you enter will remain strictly confidential and will not be shared or disclosed to the Abstractum or any third parties</source>
+        <translation>Все введённые данные остаются строго конфиденциальными и не передаются ни Abstractum, ни третьим лицам</translation>
+    </message>
 </context>
 <context>
     <name>PageSetupWizardEasy</name>
@@ -3607,6 +2695,16 @@ Thank you for staying with us!</source>
         <location filename="../ui/qml/Pages2/PageSetupWizardInstalling.qml" line="75"/>
         <source>Usually it takes no more than 5 minutes</source>
         <translation>Обычно это занимает не более 5 минут</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSetupWizardInstalling.qml"/>
+        <source>Abstractum has detected that your server is currently </source>
+        <translation>Abstractum обнаружил, что ваш сервер сейчас </translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageSetupWizardInstalling.qml"/>
+        <source>busy installing other software. Abstractum installation </source>
+        <translation>занят установкой другого ПО. Установка Abstractum </translation>
     </message>
 </context>
 <context>
@@ -3954,6 +3052,16 @@ Thank you for staying with us!</source>
         <source>Share</source>
         <translation>Поделиться</translation>
     </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageShare.qml"/>
+        <source>Save AbstractumVPN config</source>
+        <translation>Сохранить конфигурацию AbstractumVPN</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageShare.qml"/>
+        <source>For the AbstractumVPN app</source>
+        <translation>Для приложения AbstractumVPN</translation>
+    </message>
 </context>
 <context>
     <name>PageShareConnection</name>
@@ -3992,6 +3100,16 @@ Thank you for staying with us!</source>
         <location filename="../ui/qml/Pages2/PageShareConnection.qml" line="323"/>
         <source>To read the QR code in the Amnezia app, select &quot;Add server&quot; → &quot;I have data to connect&quot; → &quot;QR code, key or settings file&quot;</source>
         <translation>Для считывания QR-кода в приложении Amnezia выберите &quot;Добавить сервер&quot; → &quot;У меня есть данные для подключения&quot; → &quot;Открыть файл конфигурации, ключ или QR-код&quot;</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageShareConnection.qml"/>
+        <source>Save AbstractumVPN config</source>
+        <translation>Сохранить конфигурацию AbstractumVPN</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageShareConnection.qml"/>
+        <source>To read the QR code in the Abstractum app, tap + in the main menu → &apos;QR code&apos;</source>
+        <translation>Чтобы считать QR-код в приложении Abstractum, нажмите + в главном меню и выберите «QR-код»</translation>
     </message>
 </context>
 <context>
@@ -4056,6 +3174,11 @@ Thank you for staying with us!</source>
         <location filename="../ui/qml/Pages2/PageStart.qml" line="210"/>
         <source>Logging is enabled. Note that logs will be automaticallydisabled after 14 days, and all log files will be deleted.</source>
         <translation>Логирование включено. Обратите внимание, что через 14 дней оно будет автоматически отключено, а все файлы логов будут удалены.</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/Pages2/PageStart.qml"/>
+        <source>Logging is enabled. Note that logs will be automatically</source>
+        <translation>Журналирование включено. Учтите, что журналы будут автоматически</translation>
     </message>
 </context>
 <context>
@@ -4467,28 +3590,9 @@ Thank you for staying with us!</source>
         <translation>Пожалуйста, обновите приложение, чтобы использовать эту функцию</translation>
     </message>
     <message>
-        <location filename="../core/errorstrings.cpp" line="81"/>
-        <source>Your Amnezia Premium subscription has expired.
- Please check your email for renewal instructions.
- If you haven&apos;t received an email, please contact our support.</source>
-        <translation>Ваша подписка Amnezia Premium истекла.
-Проверьте свою почту для инструкций по продлению.
-Если вы не получили письмо, пожалуйста, свяжитесь с нашей службой поддержки.</translation>
-    </message>
-    <message>
         <location filename="../core/errorstrings.cpp" line="82"/>
         <source>Unable to process purchase</source>
         <translation>Не удалось обработать покупку</translation>
-    </message>
-    <message>
-        <location filename="../core/errorstrings.cpp" line="83"/>
-        <source>No active subscription found</source>
-        <translation>Активная подписка не найдена</translation>
-    </message>
-    <message>
-        <location filename="../core/errorstrings.cpp" line="84"/>
-        <source>No purchased subscriptions found. Please purchase a subscription first</source>
-        <translation>Платные подписки не найдены. Сначала оформите подписку</translation>
     </message>
     <message>
         <location filename="../core/errorstrings.cpp" line="85"/>
@@ -4589,11 +3693,6 @@ Thank you for staying with us!</source>
         <location filename="../core/errorstrings.cpp" line="76"/>
         <source>Missing list of available services</source>
         <translation>Отсутствует список доступных сервисов</translation>
-    </message>
-    <message>
-        <location filename="../core/errorstrings.cpp" line="77"/>
-        <source>The limit of allowed configurations per subscription has been exceeded</source>
-        <translation>Превышен лимит разрешенных конфигураций для одной подписки</translation>
     </message>
     <message>
         <location filename="../core/errorstrings.cpp" line="88"/>
@@ -4875,33 +3974,6 @@ FileZilla или другие SFTP-клиенты, а также смонтир�
 найти в разделе поддержки &quot;Создание файлового хранилища SFTP.&quot; </translation>
     </message>
     <message>
-        <source>
-				AmneziaWG is a modern VPN protocol based on WireGuard, combining simplified architecture with high performance across all devices. It addresses WireGuard’s main vulnerability (easy detection by DPI systems) through advanced obfuscation techniques, making VPN traffic indistinguishable from regular internet traffic.
-
-				AmneziaWG is an excellent choice for those seeking a fast, stealthy VPN connection.
-
-				Features:
-
-				* Available on all AmneziaVPN platforms
-				* Low battery consumption on mobile devices
-				* Minimal settings required
-				* Undetectable by traffic analysis systems (DPI)
-				* Operates over UDP protocol
-			</source>
-        <translation type="obsolete">
-				AmneziaWG — современный VPN-протокол на основе WireGuard, сочетающий простую архитектуру и высокую производительность на всех устройствах. Он устраняет основной недостаток WireGuard (лёгкое обнаружение трафика системами DPI) за счёт эффективного маскирования VPN-трафика под обычный интернет-трафик.
-
-				Таким образом, AmneziaWG идеально подойдёт тем, кто ищет быстрое и незаметное VPN-соединение.
-
-				Особенности:
-				* Доступен во всех версиях AmneziaVPN
-				* Низкое энергопотребление на мобильных устройствах
-				* Минимум настроек
-				* Незаметен для систем анализа трафика (DPI)
-				* Работает по протоколу UDP
-			</translation>
-    </message>
-    <message>
         <location filename="../containers/containers_defs.cpp" line="142"/>
         <source>Deploy a WordPress site on the Tor network in two clicks.</source>
         <translation>Разверните сайт на WordPress в сети Tor в два клика.</translation>
@@ -5130,6 +4202,60 @@ FileZilla или другие SFTP-клиенты, а также смонтир�
         <source>AmneziaWG Legacy is a outdated version of AmneziaWG protocol. To upgrade, install AmneziaWG and recreate users.</source>
         <translation>AmneziaWG Legacy является устаревшей версией протокола AmneziaWG. Для обновления установите AmneziaWG и пересоздайте пользователей.</translation>
     </message>
+    <message>
+        <location filename="../core/utils/errorStrings.cpp"/>
+        <source>Server error: invalid or unreadable XRay server configuration</source>
+        <translation>Ошибка сервера: конфигурация сервера XRay повреждена или нечитаема</translation>
+    </message>
+    <message>
+        <location filename="../core/utils/errorStrings.cpp"/>
+        <source>Server error: XRay server has no VLESS clients</source>
+        <translation>Ошибка сервера: на сервере XRay нет клиентов VLESS</translation>
+    </message>
+    <message>
+        <location filename="../core/utils/errorStrings.cpp"/>
+        <source>Server error: failed to read XRay Reality keys from the server</source>
+        <translation>Ошибка сервера: не удалось прочитать ключи XRay Reality с сервера</translation>
+    </message>
+    <message>
+        <location filename="../core/utils/errorStrings.cpp"/>
+        <source>Server error: The default container runtime available for installation on this server is not supported.
+ Install Docker Engine on the server manually and try again.</source>
+        <translation>Ошибка сервера: среда выполнения контейнеров, доступная на этом сервере по умолчанию, не поддерживается.
+ Установите Docker Engine на сервер вручную и попробуйте снова.</translation>
+    </message>
+    <message>
+        <location filename="../core/utils/errorStrings.cpp"/>
+        <source>Container runtime error: The container runtime service is not running.
+ Check the container runtime service on the server, or wait about a minute and try again.</source>
+        <translation>Ошибка среды выполнения контейнеров: служба не запущена.
+ Проверьте её на сервере или подождите около минуты и попробуйте снова.</translation>
+    </message>
+    <message>
+        <location filename="../core/utils/errorStrings.cpp"/>
+        <source>Abstractum helper service error</source>
+        <translation>Ошибка вспомогательной службы Abstractum</translation>
+    </message>
+    <message>
+        <location filename="../core/utils/errorStrings.cpp"/>
+        <source>Backup files cannot be imported here. Use &apos;Restore from backup&apos; instead.</source>
+        <translation>Файлы резервных копий здесь не импортируются. Воспользуйтесь пунктом «Восстановить из резервной копии».</translation>
+    </message>
+    <message>
+        <location filename="../core/utils/errorStrings.cpp"/>
+        <source>Backup file is corrupted or has invalid format</source>
+        <translation>Файл резервной копии повреждён или имеет неверный формат</translation>
+    </message>
+    <message>
+        <location filename="../core/utils/errorStrings.cpp"/>
+        <source>This legacy Amnezia subscription format is no longer supported</source>
+        <translation>Этот устаревший формат подписки Amnezia больше не поддерживается</translation>
+    </message>
+    <message>
+        <location filename="../core/utils/errorStrings.cpp"/>
+        <source>This protocol is no longer supported. Please select another protocol or remove this container from the server settings.</source>
+        <translation>Этот протокол больше не поддерживается. Выберите другой протокол или удалите этот контейнер в настройках сервера.</translation>
+    </message>
 </context>
 <context>
     <name>RenameServerDrawer</name>
@@ -5203,77 +4329,6 @@ FileZilla или другие SFTP-клиенты, а также смонтир�
     </message>
 </context>
 <context>
-    <name>SitesController</name>
-    <message>
-        <location filename="../ui/controllers/sitesController.cpp" line="22"/>
-        <source>Hostname not look like ip adress or domain name</source>
-        <translation>Имя хоста не похоже на IP-адрес или доменное имя</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/sitesController.cpp" line="52"/>
-        <source>New site added: %1</source>
-        <translation>Добавлен новый сайт: %1</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/sitesController.cpp" line="61"/>
-        <source>Site removed: %1</source>
-        <translation>Сайт удален: %1</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/sitesController.cpp" line="68"/>
-        <source>Site list cleared!</source>
-        <translation>Список сайтов очищен!</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/sitesController.cpp" line="75"/>
-        <source>Can&apos;t open file: %1</source>
-        <translation>Невозможно открыть файл: %1</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/sitesController.cpp" line="81"/>
-        <source>Failed to parse JSON data from file: %1</source>
-        <translation>Не удалось разобрать JSON-данные из файла: %1</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/sitesController.cpp" line="86"/>
-        <source>The JSON data is not an array in file: %1</source>
-        <translation>JSON-данные не являются массивом в файле: %1</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/sitesController.cpp" line="114"/>
-        <source>Import completed</source>
-        <translation>Импорт завершен</translation>
-    </message>
-    <message>
-        <location filename="../ui/controllers/sitesController.cpp" line="133"/>
-        <source>Export completed</source>
-        <translation>Экспорт завершен</translation>
-    </message>
-</context>
-<context>
-    <name>SubscriptionExpiredDrawer</name>
-    <message>
-        <location filename="../ui/qml/Components/SubscriptionExpiredDrawer.qml" line="47"/>
-        <source>Amnezia Premium subscription has expired</source>
-        <translation>Подписка Amnezia Premium закончилась</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Components/SubscriptionExpiredDrawer.qml" line="60"/>
-        <source>Renew to continue using VPN</source>
-        <translation>Продлите подписку, чтобы продолжить использовать VPN</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Components/SubscriptionExpiredDrawer.qml" line="72"/>
-        <source>Renew</source>
-        <translation>Продлить</translation>
-    </message>
-    <message>
-        <location filename="../ui/qml/Components/SubscriptionExpiredDrawer.qml" line="96"/>
-        <source>Support</source>
-        <translation>Поддержка</translation>
-    </message>
-</context>
-<context>
     <name>SystemTrayNotificationHandler</name>
     <message>
         <location filename="../ui/systemtray_notificationhandler.cpp" line="28"/>
@@ -5304,14 +4359,6 @@ FileZilla или другие SFTP-клиенты, а также смонтир�
         <location filename="../ui/systemtray_notificationhandler.cpp" line="66"/>
         <source>Quit</source>
         <translation>Закрыть</translation>
-    </message>
-</context>
-<context>
-    <name>TermsAndPrivacyText</name>
-    <message>
-        <location filename="../ui/qml/Components/TermsAndPrivacyText.qml" line="23"/>
-        <source>By continuing, you agree to the &lt;a href=&quot;%1&quot; style=&quot;color: %3;&quot;&gt;Terms of Use&lt;/a&gt; and &lt;a href=&quot;%2&quot; style=&quot;color: %3;&quot;&gt;Privacy Policy&lt;/a&gt;</source>
-        <translation>Продолжая, вы соглашаетесь с &lt;a href=&quot;%1&quot; style=&quot;color: %3;&quot;&gt;Условиями использования&lt;/a&gt; и &lt;a href=&quot;%2&quot; style=&quot;color: %3;&quot;&gt;Политикой конфиденциальности&lt;/a&gt;</translation>
     </message>
 </context>
 <context>
@@ -5385,6 +4432,95 @@ FileZilla или другие SFTP-клиенты, а также смонтир�
         <source>AmneziaWG protocol will be installed. It provides high connection speed and ensures stable operation even in the most challenging network conditions.</source>
         <translation>Будет установлен протокол AmneziaWG. Он обеспечивает высокую скорость соединения и гарантирует стабильную работу даже в самых сложных условиях.</translation>
     </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>OpenVPN is the most popular VPN protocol, with flexible configuration options. It uses its </source>
+        <translation>OpenVPN — самый популярный протокол VPN с гибкой настройкой. Он использует собственный </translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>This protocol is no longer supported.</source>
+        <translation>Этот протокол больше не поддерживается.</translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>WireGuard - popular VPN protocol with high performance, high speed and low power </source>
+        <translation>WireGuard — популярный протокол VPN с высокой производительностью, высокой скоростью и низким </translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>AmneziaWG is a special protocol from Amnezia based on WireGuard. </source>
+        <translation>AmneziaWG — особый протокол Amnezia на основе WireGuard. </translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>XRay with REALITY masks VPN traffic as web traffic and protects against active probing. </source>
+        <translation>XRay с REALITY маскирует трафик VPN под веб-трафик и защищает от активного зондирования. </translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>IKEv2/IPsec -  Modern stable protocol, a bit faster than others, restores connection after </source>
+        <translation>IKEv2/IPsec — современный стабильный протокол, немного быстрее прочих, восстанавливает соединение после </translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>Telegram MTProto proxy server</source>
+        <translation>Прокси-сервер Telegram MTProto</translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>Telegram MTProto proxy (Telemt, Rust)</source>
+        <translation>Прокси Telegram MTProto (Telemt, Rust)</translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>OpenVPN is one of the most popular and reliable VPN protocols. </source>
+        <translation>OpenVPN — один из самых популярных и надёжных протоколов VPN. </translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>WireGuard is a modern, streamlined VPN protocol offering stable connectivity and excellent performance across all devices. </source>
+        <translation>WireGuard — современный и компактный протокол VPN: стабильное соединение и отличная производительность на любых устройствах. </translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>AmneziaWG is a modern VPN protocol based on WireGuard, </source>
+        <translation>AmneziaWG — современный протокол VPN на основе WireGuard, </translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>REALITY is an innovative protocol developed by the creators of XRay, designed specifically to combat high levels of internet censorship. </source>
+        <translation>REALITY — новый протокол от создателей XRay, разработанный специально для обхода жёсткой интернет-цензуры. </translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>IKEv2, combined with IPSec encryption, is a modern and reliable VPN protocol. </source>
+        <translation>IKEv2 в связке с шифрованием IPSec — современный и надёжный протокол VPN. </translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>After installation, Abstractum will create a
+
+ file storage on your server. </source>
+        <translation>После установки Abstractum создаст на вашем сервере
+
+ файловое хранилище. </translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>Telegram MTProto proxy server. </source>
+        <translation>Прокси-сервер Telegram MTProto. </translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>Telegram MTProto proxy powered by Telemt (Rust). </source>
+        <translation>Прокси Telegram MTProto на базе Telemt (Rust). </translation>
+    </message>
+    <message>
+        <location filename="../core/utils/containers/containerUtils.cpp"/>
+        <source>AmneziaWG protocol will be installed. </source>
+        <translation>Будет установлен протокол AmneziaWG. </translation>
+    </message>
 </context>
 <context>
     <name>main2</name>
@@ -5397,6 +4533,59 @@ FileZilla или другие SFTP-клиенты, а также смонтир�
         <location filename="../ui/qml/main2.qml" line="268"/>
         <source>Save</source>
         <translation>Сохранить</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/main2.qml"/>
+        <source>This server type is no longer supported</source>
+        <translation>Этот тип сервера больше не поддерживается</translation>
+    </message>
+    <message>
+        <location filename="../ui/qml/main2.qml"/>
+        <source>This server was added from a subscription service that this application does not work with.
+Its settings are still stored, but connecting is not possible. Remove the server from the app to continue.</source>
+        <translation>Этот сервер добавлен из подписочного сервиса, с которым приложение не работает.
+Его настройки сохранены, но подключиться нельзя. Удалите сервер из приложения, чтобы продолжить.</translation>
+    </message>
+</context>
+<context>
+    <name>InstallUiController</name>
+    <message>
+        <location filename="../ui/controllers/selfhosted/installUiController.cpp"/>
+        <source>
+Already installed containers were found on the server. </source>
+        <translation>
+На сервере найдены уже установленные контейнеры. </translation>
+    </message>
+</context>
+<context>
+    <name>ServersUiController</name>
+    <message>
+        <location filename="../ui/controllers/serversUiController.cpp"/>
+        <source>Legacy API v1 configs are no longer supported. Remove this server to continue.</source>
+        <translation>Конфигурации API v1 больше не поддерживаются. Удалите этот сервер, чтобы продолжить.</translation>
+    </message>
+    <message>
+        <location filename="../ui/controllers/serversUiController.cpp"/>
+        <source>Use the remove action to delete this legacy config.</source>
+        <translation>Чтобы удалить устаревшую конфигурацию, воспользуйтесь действием «Удалить».</translation>
+    </message>
+</context>
+<context>
+    <name>UpdateUiController</name>
+    <message>
+        <location filename="../ui/controllers/updateUiController.cpp"/>
+        <source>New version released: %1</source>
+        <translation>Вышла новая версия: %1</translation>
+    </message>
+    <message>
+        <location filename="../ui/controllers/updateUiController.cpp"/>
+        <source>New version released: %1 (%2)</source>
+        <translation>Вышла новая версия: %1 (%2)</translation>
+    </message>
+    <message>
+        <location filename="../ui/controllers/updateUiController.cpp"/>
+        <source>Failed to load changelog text</source>
+        <translation>Не удалось загрузить описание изменений</translation>
     </message>
 </context>
 </TS>

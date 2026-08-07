@@ -183,8 +183,8 @@ sits in between and some of the meaning does not survive the trip.
 GPL-3.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
 AbstractumVPN is derived from
-[amnezia-vpn/amnezia-client](https://github.com/amnezia-vpn/amnezia-client), forked at
-`e38a2339`. Most of this codebase is their work, and the licence is inherited rather than
+[amnezia-vpn/amnezia-client](https://github.com/amnezia-vpn/amnezia-client), merged up to
+`0d116bfc`. Most of this codebase is their work, and the licence is inherited rather than
 chosen: GPLv3 requires it.
 
 This is an independent project. It is not affiliated with or endorsed by Amnezia. **Report

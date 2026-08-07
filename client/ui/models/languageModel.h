@@ -7,16 +7,15 @@
 namespace LanguageSettings
 {
     Q_NAMESPACE
+    // LanguageModel builds the selector by walking this enum, so every value
+    // here must have a translation shipped in AMNEZIAVPN_TS_FILES
+    // (client/CMakeLists.txt). A value without one still shows up in the list
+    // and silently falls back to English.
+    //
+    // English needs no .ts: it is the source language.
     enum class AvailableLanguageEnum {
         English,
-        Russian,
-        China_cn,
-        Ukrainian,
-        Persian,
-        Arabic,
-        Burmese,
-        Urdu,
-        Hindi
+        Russian
     };
     Q_ENUM_NS(AvailableLanguageEnum)
 
