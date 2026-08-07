@@ -73,7 +73,10 @@ Window  {
         console.warn("Scene graph error:", error, message)
     }
 
-    title: "AmneziaVPN"
+    // No title on purpose. The platform composes the caption as
+    // "<window title> - <application display name>", so any title set here ends
+    // up alongside the product name; leaving it empty shows the display name on
+    // its own, and that name comes from APPLICATION_NAME.
 
     Item { // This item is needed for focus handling
         id: defaultFocusItem
