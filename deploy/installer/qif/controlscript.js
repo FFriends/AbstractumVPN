@@ -4,6 +4,68 @@ var desktopAppProcessRunning = false;
 var appInstalledUninstallerPath;
 var appInstalledUninstallerPath_x86;
 
+// --- wording -----------------------------------------------------------------
+//
+// The wizard's language is the system locale and cannot be chosen by the user:
+// Qt Installer Framework loads the translation matching it, offers no page to
+// pick one, and has no command line switch for it. Its own chrome - the Next
+// and Cancel buttons, the target directory and licence pages - is translated by
+// the framework, which ships Russian and English both.
+//
+// Our own pages are not, so they read the same value and pick their strings
+// here. No .qm of our own: producing one needs lrelease, and this project has no
+// local Qt toolchain to run it with.
+//
+// Headline words stay English on purpose - DEPLOY and PURGE are graphic
+// elements, not prose.
+
+function isRussian()
+{
+    return String(installer.value("UILanguage")).toLowerCase().indexOf("ru") === 0;
+}
+
+var STRINGS = {
+    ru: {
+        welcomeContext:  "[ УСТАНОВКА · %1 ]",
+        welcomeBody:     "VPN-клиент, который сам поднимает сервер. Даёте машину — он ставит " +
+                         "туда VPN по SSH и подключается.\n\nБез аккаунтов. Без подписок. Без посредника.",
+        welcomeFacts:    "> СЛУЖБА   требует прав администратора\n> НА ДИСКЕ  около 214 МБ",
+        doneHeadline:    "Развёрнуто",
+        doneDetail:      "СЛУЖБА ЗАРЕГИСТРИРОВАНА И ЗАПУЩЕНА",
+        failHeadline:    "Установка прервана",
+        failDetail:      "Изменения отменены. Подробности — в журнале установки.",
+        runApp:          "Запустить AbstractumVPN"
+    },
+    en: {
+        welcomeContext:  "[ SETUP · %1 ]",
+        welcomeBody:     "A VPN client that builds the server for you. You give it a machine, " +
+                         "it installs the VPN there over SSH and connects.\n\nNo accounts. " +
+                         "No subscriptions. No operator in the middle.",
+        welcomeFacts:    "> SERVICE  requires administrator rights\n> ON DISK  about 214 MB",
+        doneHeadline:    "Deployed",
+        doneDetail:      "SERVICE REGISTERED AND RUNNING",
+        failHeadline:    "Installation aborted",
+        failDetail:      "Changes were rolled back. See the installation log for details.",
+        runApp:          "Run AbstractumVPN"
+    }
+};
+
+function tr(key)
+{
+    return STRINGS[isRussian() ? "ru" : "en"][key];
+}
+
+function platformTag()
+{
+    if (runningOnWindows()) {
+        return "WINDOWS X64";
+    }
+    if (runningOnLinux()) {
+        return "LINUX X64";
+    }
+    return "MACOS";
+}
+
 function appName()
 {
     return installer.value("Name");
@@ -131,7 +193,12 @@ Controller.prototype.PerformInstallationPageCallback = function()
 
 Controller.prototype.LicenseAgreementPageCallback = function()
 {
-    gui.clickButton(buttons.NextButton);
+    // Only stepped over when updating: the licence has not changed between two
+    // builds of the same product, and an update that stops to ask about it is
+    // an update people cancel. A fresh install shows it and waits.
+    if (installer.isUpdater()) {
+        gui.clickButton(buttons.NextButton);
+    }
 }
 
 Controller.prototype.FinishedPageCallback = function ()
@@ -175,8 +242,54 @@ Controller.prototype.TargetDirectoryPageCallback = function ()
         widget.BrowseDirectoryButton.clicked.disconnect(onBrowseButtonClicked);
         widget.BrowseDirectoryButton.clicked.connect(onBrowseButtonClicked);
 
-        gui.clickButton(buttons.NextButton);
+        // Stepped over only when updating - the path is already decided and
+        // must not change under an installed service.
+        if (installer.isUpdater()) {
+            gui.clickButton(buttons.NextButton);
+        }
     }
+}
+
+// Our own pages replace the framework's introduction and finished screens.
+// They are shipped through USER_INTERFACES in cmake/CPack.cmake and inserted
+// here; the built-in ones are hidden so the two do not both appear.
+//
+// If a page fails to load - a typo in the .ui, a file missing from the package -
+// findChild returns null and this quietly does nothing rather than throwing,
+// which would abort the installer. The built-in page stays visible in that case,
+// so the worst outcome is an unstyled wizard, not one that cannot install.
+function installCustomPages()
+{
+    var welcome = gui.pageWidgetByObjectName("DynamicWelcomePage");
+    if (welcome !== null) {
+        installer.setDefaultPageVisible(QInstaller.Introduction, false);
+
+        var context = welcome.findChild("ContextLabel");
+        if (context !== null) {
+            context.setText(tr("welcomeContext").replace("%1", platformTag()));
+        }
+        var body = welcome.findChild("BodyLabel");
+        if (body !== null) {
+            body.setText(tr("welcomeBody"));
+        }
+        var facts = welcome.findChild("FactsLabel");
+        if (facts !== null) {
+            facts.setText(tr("welcomeFacts"));
+        }
+    }
+
+}
+
+// The finished page is deliberately still the framework's own. It carries the
+// Finish button and the hand-off that launches the application, and that flow
+// works today; replacing it blind - with no local build to try it on - risks
+// ending an otherwise good installation with an app that does not start. The
+// stylesheet still applies to it, so it is dark and on-brand, just plainer.
+// Revisit once the first release build proves the custom page mechanism.
+
+Controller.prototype.DynamicWelcomePageCallback = function ()
+{
+    installCustomPages();
 }
 
 Controller.prototype.IntroductionPageCallback = function ()
@@ -236,10 +349,13 @@ function Controller () {
     }
 
     if (installer.isInstaller()) {
+        // Component selection and the start menu page stay hidden - there is one
+        // component and one shortcut, so both would be a page with nothing to
+        // decide on. The target directory and the licence are shown again as of
+        // 07.08.2026: people installing a VPN tend to want to know where it goes
+        // and under what licence.
         installer.setDefaultPageVisible(QInstaller.ComponentSelection, false);
-        installer.setDefaultPageVisible(QInstaller.TargetDirectory, false);
         installer.setDefaultPageVisible(QInstaller.StartMenuDirectoryPage, false);
-        installer.setDefaultPageVisible(QInstaller.LicenseCheck, false);
 
         isDesktopAppProcessRunningMessageLoop();
 

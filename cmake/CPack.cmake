@@ -28,6 +28,24 @@ set(CPACK_IFW_PACKAGE_TITLE                         AbstractumVPN)
 set(CPACK_IFW_PACKAGE_WIZARD_DEFAULT_WIDTH          600)
 set(CPACK_IFW_PACKAGE_WIZARD_DEFAULT_HEIGHT         380)
 set(CPACK_IFW_PACKAGE_WIZARD_STYLE                  Modern)
+
+# === Look ===
+# Terminal styling, applied to the installer AND to maintenancetool - the
+# uninstaller is the same binary, so this dresses both.
+#
+# The window frame belongs to the operating system and none of this reaches it:
+# on Windows the title bar stays whatever the system theme draws.
+#
+# Images are generated from the mark, never committed by hand:
+#     python deploy/generate_installer_assets.py
+set(CPACK_IFW_PACKAGE_STYLE_SHEET   ${CMAKE_SOURCE_DIR}/deploy/installer/qif/abstractum.qss)
+set(CPACK_IFW_PACKAGE_BANNER        ${CMAKE_SOURCE_DIR}/deploy/installer/qif/images/banner.png)
+set(CPACK_IFW_PACKAGE_LOGO          ${CMAKE_SOURCE_DIR}/deploy/installer/qif/images/logo.png)
+set(CPACK_IFW_PACKAGE_WINDOW_ICON   ${CMAKE_SOURCE_DIR}/deploy/installer/qif/images/window_icon.png)
+
+# The column of steps down the left side. IFW owns its layout; the stylesheet
+# only colours it.
+set(CPACK_IFW_PACKAGE_WIZARD_SHOW_PAGE_LIST         ON)
 set(CPACK_IFW_PACKAGE_REMOVE_TARGET_DIR             ON)
 set(CPACK_IFW_PACKAGE_ALLOW_SPACE_IN_PATH           ON)
 set(CPACK_IFW_PACKAGE_ALLOW_NON_ASCII_CHARACTERS    ON)
@@ -88,6 +106,9 @@ cpack_ifw_configure_component(AbstractumVPN
     REQUIRES_ADMIN_RIGHTS
     FORCED_INSTALLATION
     SCRIPT ${CMAKE_SOURCE_DIR}/deploy/installer/qif/componentscript.js
+    # Our welcome screen. componentscript.js inserts it ahead of the target
+    # directory page; controlscript.js fills in its text.
+    USER_INTERFACES ${CMAKE_SOURCE_DIR}/deploy/installer/qif/pages/WelcomePage.ui
 )
 
 include(CPack)

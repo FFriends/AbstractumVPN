@@ -47,7 +47,18 @@ function Component()
 
 Component.prototype.componentLoaded = function ()
 {
-
+    // Our welcome screen, inserted ahead of the target directory page. The .ui
+    // travels with the component through USER_INTERFACES in cmake/CPack.cmake;
+    // addWizardPage needs a component, which is why this lives here and not in
+    // controlscript.js. The page is filled with text in that script instead -
+    // it owns the language handling.
+    //
+    // Only for a fresh install: an update should not stop to introduce a
+    // product the user already has, and the uninstaller has nothing to welcome
+    // anyone to.
+    if (installer.isInstaller()) {
+        installer.addWizardPage(component, "WelcomePage", QInstaller.TargetDirectory);
+    }
 }
 
 Component.prototype.installationFinishedPageIsShown = function()

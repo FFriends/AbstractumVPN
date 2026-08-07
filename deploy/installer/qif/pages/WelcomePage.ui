@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WelcomePage</class>
+ <widget class="QWidget" name="WelcomePage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>452</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <!-- Every visible string is left empty on purpose. controlscript.js fills
+       them from installer.value("UILanguage"), because the wizard follows the
+       system locale and we ship no .qm of our own. Putting Russian here would
+       hard-code one language into the layout. -->
+  <layout class="QVBoxLayout" name="rootLayout">
+   <property name="leftMargin"><number>22</number></property>
+   <property name="topMargin"><number>20</number></property>
+   <property name="rightMargin"><number>22</number></property>
+   <property name="bottomMargin"><number>18</number></property>
+   <property name="spacing"><number>0</number></property>
+   <item>
+    <widget class="QLabel" name="HeadlineLabel">
+     <property name="text"><string notr="true">DEPLOY_</string></property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 25px; font-weight: 700; color: #EAEAEA;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="ContextLabel">
+     <property name="text"><string/></property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 11px; color: #6E7681; padding-bottom: 14px;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="BodyLabel">
+     <property name="text"><string/></property>
+     <property name="wordWrap"><bool>true</bool></property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 12px; color: #C2C8CE;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="bodySpacer">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>0</width><height>12</height></size></property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QLabel" name="FactsLabel">
+     <property name="text"><string/></property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 11px; color: #6E7681;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="tailSpacer">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+     <property name="sizeType"><enum>QSizePolicy::Expanding</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>0</width><height>0</height></size></property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,300 @@
+/* AbstractumVPN installer - terminal styling.
+ *
+ * Loaded through CPACK_IFW_PACKAGE_STYLE_SHEET, so it dresses both the
+ * installer and maintenancetool: the uninstaller is the same binary and needs
+ * no styling of its own.
+ *
+ * This is a Qt Style Sheet, which is a SUBSET of CSS. Things that look like
+ * they should work and do not:
+ *
+ *   - letter-spacing        no such property; tracking is faked with spaces in
+ *                           the strings themselves where it matters
+ *   - flex / grid           no layout control at all; geometry belongs to the
+ *                           .ui files and to IFW's own pages
+ *   - transform, filter,    absent
+ *     opacity on widgets
+ *   - repeating gradients   only qlineargradient/qradialgradient, so the
+ *                           scanline texture is a tiled PNG instead
+ *
+ * The window frame is the operating system's and cannot be reached from here.
+ * On Windows it stays whatever the system theme draws.
+ *
+ * Palette mirrors client/ui/qml/Modules/Style/AmneziaStyle.qml. Change it there
+ * first - that file is the source of truth for the product's colours.
+ */
+
+/* ---- surface ----------------------------------------------------------- */
+
+QWidget {
+    background-color: #0A0A0A;   /* deactivated CRT, deliberately not pure black */
+    color: #EAEAEA;
+    font-family: "JetBrains Mono", "Consolas", "DejaVu Sans Mono", monospace;
+    font-size: 12px;
+}
+
+/* The wizard carries the scanline texture: a 1x4 px tile, three transparent
+ * rows and one barely-lit row, repeated. Tiling is the only way to get a
+ * repeating pattern here - Qt Style Sheets have no repeating-linear-gradient.
+ *
+ * UNVERIFIED, and deliberately harmless if it fails. Whether IFW exposes a
+ * file shipped alongside this stylesheet under the ":/" resource prefix is not
+ * documented, and there is no local build to try it on. If the URL does not
+ * resolve, Qt logs a warning and paints background-color alone - the design
+ * loses a texture and nothing else. Check the first release build and drop
+ * these two lines if the warning shows up. */
+QWizard,
+QWizard > QWidget {
+    background-color: #0A0A0A;
+    background-image: url(:/scanline.png);
+    background-repeat: repeat;
+}
+
+/* ---- type -------------------------------------------------------------- */
+
+QLabel {
+    background: transparent;
+    color: #EAEAEA;
+}
+
+QLabel[objectName="TitleLabel"],
+QLabel[objectName="SubTitleLabel"] {
+    color: #9BBFDE;
+    font-weight: 600;
+}
+
+/* ---- buttons ----------------------------------------------------------- */
+/* Square by mandate: no border-radius anywhere in this file. */
+
+QPushButton {
+    background-color: transparent;
+    color: #6E7681;
+    border: 1px solid #232A31;
+    padding: 7px 16px;
+    font-size: 11px;
+    min-width: 76px;
+}
+
+QPushButton:hover {
+    color: #EAEAEA;
+    border-color: #3E5D75;
+}
+
+QPushButton:pressed {
+    background-color: #131A20;
+}
+
+QPushButton:disabled {
+    color: #2E353C;
+    border-color: #161B20;
+}
+
+/* The button that moves the wizard forward. IFW marks it as the default
+ * button, which is the only reliable hook for "this is the primary action". */
+QPushButton:default {
+    color: #9BBFDE;
+    border-color: #9BBFDE;
+}
+
+QPushButton:default:hover {
+    background-color: #131A20;
+}
+
+/* ---- input ------------------------------------------------------------- */
+
+QLineEdit {
+    background-color: #050505;
+    color: #EAEAEA;
+    border: 1px solid #232A31;
+    padding: 7px 9px;
+    selection-background-color: #9BBFDE;
+    selection-color: #0A0A0A;
+}
+
+QLineEdit:focus {
+    border-color: #9BBFDE;
+}
+
+QLineEdit:disabled {
+    color: #4d5760;
+}
+
+/* Licence text and the installation log. */
+QTextEdit,
+QTextBrowser,
+QPlainTextEdit {
+    background-color: #050505;
+    color: #8D959C;
+    border: 1px solid #232A31;
+    font-size: 11px;
+    selection-background-color: #9BBFDE;
+    selection-color: #0A0A0A;
+}
+
+/* ---- progress ---------------------------------------------------------- */
+/* Flat block, no gradient, no rounding - a bar that looks machine-drawn. */
+
+QProgressBar {
+    background-color: #050505;
+    border: 1px solid #232A31;
+    color: #EAEAEA;
+    text-align: center;
+    font-size: 11px;
+    min-height: 16px;
+}
+
+QProgressBar::chunk {
+    background-color: #9BBFDE;
+    margin: 2px;
+}
+
+/* ---- checkable --------------------------------------------------------- */
+
+QCheckBox,
+QRadioButton {
+    background: transparent;
+    spacing: 9px;
+}
+
+QCheckBox::indicator,
+QRadioButton::indicator {
+    width: 13px;
+    height: 13px;
+    background-color: #050505;
+    border: 1px solid #3E5D75;
+}
+
+QCheckBox::indicator:checked,
+QRadioButton::indicator:checked {
+    background-color: #9BBFDE;
+    border-color: #9BBFDE;
+}
+
+QCheckBox::indicator:hover,
+QRadioButton::indicator:hover {
+    border-color: #9BBFDE;
+}
+
+/* ---- page list --------------------------------------------------------- */
+/* The column of steps down the left side, enabled by
+ * CPACK_IFW_PACKAGE_WIZARD_SHOW_PAGE_LIST. IFW owns its layout; only its
+ * colours are ours. */
+
+QListView,
+QListWidget {
+    background-color: #0A0A0A;
+    border: 0;
+    border-right: 1px solid #232A31;
+    color: #39424B;
+    font-size: 11px;
+    outline: 0;
+}
+
+QListView::item,
+QListWidget::item {
+    padding: 5px 10px;
+    border: 0;
+}
+
+QListView::item:selected,
+QListWidget::item:selected {
+    background-color: transparent;
+    color: #9BBFDE;
+}
+
+/* Component tree, hidden in our flow but styled so it is not a white slab if
+ * it ever appears. */
+QTreeView {
+    background-color: #050505;
+    border: 1px solid #232A31;
+    color: #EAEAEA;
+    outline: 0;
+}
+
+QTreeView::item:selected {
+    background-color: #131A20;
+    color: #9BBFDE;
+}
+
+/* ---- scrollbars -------------------------------------------------------- */
+/* Thin, square, no arrows: the default ones are the loudest light-grey element
+ * left on a dark page. */
+
+QScrollBar:vertical {
+    background-color: #050505;
+    width: 10px;
+    margin: 0;
+    border: 0;
+    border-left: 1px solid #232A31;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #232A31;
+    min-height: 24px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #3E5D75;
+}
+
+QScrollBar:horizontal {
+    background-color: #050505;
+    height: 10px;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid #232A31;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #232A31;
+    min-width: 24px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: #3E5D75;
+}
+
+QScrollBar::add-line,
+QScrollBar::sub-line,
+QScrollBar::add-page,
+QScrollBar::sub-page {
+    background: transparent;
+    border: 0;
+    height: 0;
+    width: 0;
+}
+
+/* ---- dialogs ----------------------------------------------------------- */
+/* Message boxes are separate top-level windows; without this they arrive in the
+ * platform's own light palette next to a black wizard. */
+
+QDialog,
+QMessageBox {
+    background-color: #0A0A0A;
+    color: #EAEAEA;
+}
+
+QMessageBox QLabel {
+    color: #EAEAEA;
+}
+
+/* ---- separators -------------------------------------------------------- */
+
+QFrame[frameShape="4"],   /* HLine */
+QFrame[frameShape="5"] {  /* VLine */
+    background-color: #232A31;
+    border: 0;
+    max-height: 1px;
+}
+
+QGroupBox {
+    border: 1px solid #232A31;
+    margin-top: 8px;
+    padding-top: 10px;
+}
+
+QGroupBox::title {
+    color: #9BBFDE;
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 5px;
+}
