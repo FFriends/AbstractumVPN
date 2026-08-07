@@ -78,16 +78,42 @@ class Daemon : public QObject {
 
   void checkHandshake();
 
+  // Watches an already established tunnel and notices when it stops passing
+  // traffic. checkHandshake() cannot do this: it stops polling as soon as the
+  // first handshake arrives, so a tunnel that dies afterwards stays "connected"
+  // forever. See gotcha in TECHNICAL.md.
+  void checkLiveness();
+
+  // Cheapest rung of the recovery ladder: re-send the peer over the UAPI, which
+  // forces a fresh handshake without touching the interface, the routes or the
+  // kill switch. Returns false once it has been tried too many times without
+  // the tunnel coming back, at which point the client is told to reconnect.
+  // "attempt" is passed in rather than looked up: this runs while iterating
+  // m_connections, and QMap::operator[] on a missing key would insert and
+  // invalidate the iterator.
+  bool tryQuickRecovery(const InterfaceConfig& config, const QString& reason,
+                        int attempt);
+
   class ConnectionState {
    public:
     ConnectionState(){};
     ConnectionState(const InterfaceConfig& config) { m_config = config; }
     QDateTime m_date;
     InterfaceConfig m_config;
+
+    // Previous liveness sample, used to tell "idle" from "black hole": with a
+    // persistent keepalive a healthy tunnel keeps receiving even when the user
+    // sends nothing, so rx standing still while tx grows means the far end
+    // stopped answering.
+    qint64 m_lastTxBytes = 0;
+    qint64 m_lastRxBytes = 0;
+    int m_stalledSamples = 0;
+    int m_quickRecoveryAttempts = 0;
   };
   QMap<InterfaceConfig::HopType, ConnectionState> m_connections;
   QHash<IPAddress, int> m_excludedAddrSet;
   QTimer m_handshakeTimer;
+  QTimer m_livenessTimer;
 };
 
 #endif  // DAEMON_H

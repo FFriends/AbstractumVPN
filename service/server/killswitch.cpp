@@ -78,6 +78,10 @@ bool KillSwitch::isStrictKillSwitchEnabled()
 }
 
 bool KillSwitch::disableKillSwitch() {
+    // Paired with the line in enableKillSwitch(). Between the two, the log now
+    // shows exactly when traffic was blocked and when it was let through again.
+    qDebug() << "Disabling kill switch";
+
 #ifdef Q_OS_LINUX
     if (isStrictKillSwitchEnabled()) {
         LinuxFirewall::setAnchorEnabled(LinuxFirewall::Both, QStringLiteral("000.allowLoopback"), true);
@@ -270,6 +274,13 @@ bool KillSwitch::enablePeerTraffic(const QJsonObject &configStr) {
 }
 
 bool KillSwitch::enableKillSwitch(const QJsonObject &configStr, int vpnAdapterIndex) {
+    // The privileged side said nothing at all about the kill switch until now,
+    // so a user reporting "it broke and I think the kill switch did it" left no
+    // trace anywhere to confirm or rule that out.
+    qDebug() << QString("Enabling kill switch on adapter %1, split tunnel type %2")
+                        .arg(vpnAdapterIndex)
+                        .arg(configStr.value("splitTunnelType").toInt());
+
 #ifdef Q_OS_WIN
     if (configStr.value("splitTunnelType").toInt() != 0) {
         WindowsFirewall::create(this)->allowAllTraffic();

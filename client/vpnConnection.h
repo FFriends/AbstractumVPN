@@ -92,6 +92,22 @@ private:
 
    Vpn::ConnectionState m_connectionState;
 
+   // Automatic reconnection. The tunnel used to come back only if the user
+   // asked for it: a reconnect trigger arriving in any state other than
+   // Connected was dropped, and one failed attempt parked the connection in
+   // Error, where no further trigger could ever reach it.
+   //
+   // Attempts are never given up on - the delay grows and then holds, because a
+   // machine that has been asleep for a week should still find its tunnel
+   // waiting when it wakes.
+   QTimer m_reconnectTimer;
+   int m_reconnectAttempt = 0;
+   bool m_userInitiatedDisconnect = false;
+
+   void scheduleReconnect(const QString &reason);
+   void cancelReconnect();
+   int reconnectDelayMsec() const;
+
    void createProtocolConnections();
 
    void appendSplitTunnelingConfig();

@@ -44,6 +44,9 @@ VpnConnection::VpnConnection(SecureServersRepository* serversRepository, SecureA
     connect(IosController::Instance(), &IosController::connectionStateChanged, this, &VpnConnection::setConnectionState);
     connect(IosController::Instance(), &IosController::bytesChanged, this, &VpnConnection::onBytesChanged);
 #endif
+
+    m_reconnectTimer.setSingleShot(true);
+    connect(&m_reconnectTimer, &QTimer::timeout, this, &VpnConnection::reconnectToVpn);
 }
 
 VpnConnection::~VpnConnection()
@@ -308,6 +311,12 @@ Vpn::ConnectionState VpnConnection::connectionState() const
 
 void VpnConnection::connectToVpn(const QString &serverId, DockerContainer container, const QJsonObject &vpnConfiguration)
 {
+    // A fresh user-initiated connection: retries are welcome again, and the
+    // delay starts over from one second rather than wherever the previous
+    // sequence left it.
+    m_userInitiatedDisconnect = false;
+    cancelReconnect();
+
     if (!m_appSettingsRepository || !m_serversRepository) {
         qCritical() << "VpnConnection::connectToVpn: repositories not initialized";
         setConnectionState(Vpn::ConnectionState::Error);
@@ -369,9 +378,18 @@ void VpnConnection::createProtocolConnections()
     connect(m_vpnProtocol.data(), SIGNAL(bytesChanged(quint64, quint64)), this, SLOT(onBytesChanged(quint64, quint64)));
 
 #ifdef AMNEZIA_DESKTOP
+    // Both signals mean "reconnect", but they mean it for different reasons,
+    // and the log is the only place that difference survives. Without it a
+    // reconnect storm cannot be told apart from a flapping network adapter.
     IpcClient::withInterface([this](QSharedPointer<IpcInterfaceReplica> rep) {
-        connect(rep.data(), &IpcInterfaceReplica::networkChanged, this, &VpnConnection::reconnectToVpn, Qt::QueuedConnection);
-        connect(rep.data(), &IpcInterfaceReplica::wakeup, this, &VpnConnection::reconnectToVpn, Qt::QueuedConnection);
+        connect(rep.data(), &IpcInterfaceReplica::networkChanged, this, [this]() {
+            qWarning() << "Reconnect trigger: the network interface changed";
+            reconnectToVpn();
+        }, Qt::QueuedConnection);
+        connect(rep.data(), &IpcInterfaceReplica::wakeup, this, [this]() {
+            qWarning() << "Reconnect trigger: the machine woke from sleep";
+            reconnectToVpn();
+        }, Qt::QueuedConnection);
     });
 #endif
 }
@@ -383,8 +401,18 @@ void VpnConnection::appendKillSwitchConfig()
         return;
     }
 
-    m_vpnConfiguration.insert(configKey::killSwitchOption, QVariant(m_appSettingsRepository->isKillSwitchEnabled()).toString());
-    m_vpnConfiguration.insert(configKey::allowedDnsServers, QVariant(m_appSettingsRepository->getAllowedDnsServers()).toJsonValue());
+    const bool killSwitchEnabled = m_appSettingsRepository->isKillSwitchEnabled();
+    const QStringList allowedDns = m_appSettingsRepository->getAllowedDnsServers();
+
+    // Worth a line in the log: when a connection misbehaves, the first question
+    // is always whether the kill switch was involved, and until now nothing
+    // recorded whether it was even on.
+    qDebug() << QString("Kill switch is %1, %2 allowed DNS server(s)")
+                        .arg(killSwitchEnabled ? "enabled" : "disabled")
+                        .arg(allowedDns.count());
+
+    m_vpnConfiguration.insert(configKey::killSwitchOption, QVariant(killSwitchEnabled).toString());
+    m_vpnConfiguration.insert(configKey::allowedDnsServers, QVariant(allowedDns).toJsonValue());
 }
 
 void VpnConnection::appendSplitTunnelingConfig()
@@ -538,29 +566,86 @@ QString VpnConnection::bytesPerSecToText(quint64 bytes)
     return QString("%1 %2").arg(QString::number(mbps, 'f', 2)).arg(tr("Mbps")); // Mbit/s
 }
 
+int VpnConnection::reconnectDelayMsec() const
+{
+    // Grows, then holds. Holding rather than giving up is deliberate: a server
+    // that has been unreachable for an hour may come back, and the user should
+    // not have to notice that it did.
+    static const int delaysSec[] = { 1, 2, 5, 15, 30 };
+    static const int count = sizeof(delaysSec) / sizeof(delaysSec[0]);
+
+    const int index = m_reconnectAttempt < count ? m_reconnectAttempt : count - 1;
+    return delaysSec[index] * 1000;
+}
+
+void VpnConnection::scheduleReconnect(const QString &reason)
+{
+    if (m_userInitiatedDisconnect) {
+        qDebug() << "Not reconnecting:" << reason << "- the user asked to disconnect";
+        return;
+    }
+
+    const int delay = reconnectDelayMsec();
+    qWarning() << QString("Connection lost (%1). Reconnect attempt %2 in %3 s")
+                          .arg(reason)
+                          .arg(m_reconnectAttempt + 1)
+                          .arg(delay / 1000);
+
+    m_reconnectTimer.start(delay);
+}
+
+void VpnConnection::cancelReconnect()
+{
+    m_reconnectTimer.stop();
+    m_reconnectAttempt = 0;
+}
+
 void VpnConnection::reconnectToVpn() {
     if (m_vpnProtocol.isNull())
         return;
 
-    if (m_connectionState != Vpn::ConnectionState::Connected) {
-        qWarning() << QString("Reconnect triggered on %1 during inappropriate state: %2; ignoring slot")
-                              .arg(QMetaEnum::fromType<Vpn::ConnectionState>().valueToKey(m_connectionState));
+    // Deliberately not restricted to the Connected state. The tunnel is most in
+    // need of a reconnect exactly when it is already Disconnected or in Error,
+    // and refusing to act there was why a dropped connection never came back on
+    // its own. The two states left out are the ones where reconnecting would
+    // fight somebody else: a teardown in progress, and an attempt already under
+    // way.
+    if (m_connectionState == Vpn::ConnectionState::Disconnecting
+        || m_connectionState == Vpn::ConnectionState::Reconnecting) {
+        qDebug() << QString("Reconnect ignored: already %1")
+                            .arg(QMetaEnum::fromType<Vpn::ConnectionState>().valueToKey(m_connectionState));
         return;
     }
 
-    qDebug() << "Reconnect triggered. Reconnecting to the server";
+    if (m_userInitiatedDisconnect) {
+        qDebug() << "Reconnect ignored: the user asked to disconnect";
+        return;
+    }
+
+    m_reconnectAttempt++;
+    qWarning() << QString("Reconnecting to the server, attempt %1 (was %2)")
+                          .arg(m_reconnectAttempt)
+                          .arg(QMetaEnum::fromType<Vpn::ConnectionState>().valueToKey(m_connectionState));
 
     setConnectionState(Vpn::ConnectionState::Reconnecting);
 
     m_vpnProtocol->stop();
     if (ErrorCode err = m_vpnProtocol->start(); err != ErrorCode::NoError) {
-        setConnectionState(Vpn::ConnectionState::Error);
+        // Report the error, but keep trying: the kill switch stays on, so the
+        // user is not leaking while we wait, and the next attempt is already
+        // scheduled.
         emit vpnProtocolError(err);
+        scheduleReconnect(QString("start failed with error %1").arg(static_cast<int>(err)));
     }
 }
 
 void VpnConnection::disconnectFromVpn()
 {
+    // Everything that follows is on purpose, so the automatic retry must stay
+    // out of the way until the user connects again.
+    m_userInitiatedDisconnect = true;
+    cancelReconnect();
+
 #if defined(Q_OS_IOS) || defined(MACOS_NE)
     // iOS/macOS NE use IosController directly; m_vpnProtocol is not set there.
     IosController::Instance()->disconnectVpn();
@@ -601,6 +686,31 @@ void VpnConnection::setConnectionState(Vpn::ConnectionState state) {
     if (state == Vpn::Disconnected && m_connectionState == Vpn::Reconnecting)
         return;
 
+    const Vpn::ConnectionState previous = m_connectionState;
+
     m_connectionState = state;
     emit connectionStateChanged(state);
+
+    // Everything below decides whether the tunnel should come back by itself.
+    // The kill switch is never touched here: it stays on for the whole of the
+    // retry sequence, which is the point of having it.
+    if (state == Vpn::ConnectionState::Connected) {
+        if (m_reconnectAttempt > 0) {
+            qWarning() << QString("Connection restored after %1 attempt(s)").arg(m_reconnectAttempt);
+        }
+        cancelReconnect();
+        return;
+    }
+
+    if (m_userInitiatedDisconnect) {
+        return;
+    }
+
+    // A tunnel that was up and is now down, or that failed outright. Both are
+    // worth retrying; neither used to be retried at all.
+    if (state == Vpn::ConnectionState::Disconnected && previous == Vpn::ConnectionState::Connected) {
+        scheduleReconnect("tunnel went down");
+    } else if (state == Vpn::ConnectionState::Error) {
+        scheduleReconnect("protocol reported an error");
+    }
 }

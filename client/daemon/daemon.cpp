@@ -18,6 +18,26 @@
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
 constexpr int HANDSHAKE_POLL_MSEC = 250;
 
+// How often an established tunnel is asked whether it is still alive. This is a
+// read from a local pipe or socket, so it is cheap; five seconds keeps the
+// reaction quick without being noise in the log.
+constexpr int LIVENESS_POLL_MSEC = 5000;
+
+// A tunnel carrying traffic renegotiates roughly every two minutes and the
+// protocol itself gives up on a session after three. 150 seconds sits between
+// the two: late enough that a healthy tunnel never trips it, early enough to
+// react before the session is discarded.
+constexpr qint64 HANDSHAKE_STALE_MSEC = 150 * 1000;
+
+// Consecutive samples of "we are sending, nothing comes back" before calling it
+// a black hole. Three samples is fifteen seconds - long enough not to fire on a
+// brief loss, short enough that the user has not yet reached for the mouse.
+constexpr int BLACKHOLE_SAMPLES = 3;
+
+// How many times the cheap recovery is attempted before handing the problem to
+// the client, which rebuilds the tunnel from scratch.
+constexpr int QUICK_RECOVERY_ATTEMPTS = 3;
+
 namespace {
 
 Logger logger("Daemon");
@@ -36,6 +56,12 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
 
   m_handshakeTimer.setSingleShot(true);
   connect(&m_handshakeTimer, &QTimer::timeout, this, &Daemon::checkHandshake);
+
+  // Repeating, unlike the handshake timer: this one runs for as long as the
+  // tunnel is up.
+  m_livenessTimer.setSingleShot(false);
+  m_livenessTimer.setInterval(LIVENESS_POLL_MSEC);
+  connect(&m_livenessTimer, &QTimer::timeout, this, &Daemon::checkLiveness);
 }
 
 Daemon::~Daemon() {
@@ -471,6 +497,11 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 bool Daemon::deactivate(bool emitSignals) {
   Q_ASSERT(wgutils() != nullptr);
 
+  // Stop watching before tearing anything down, otherwise the watchdog sees the
+  // interface disappearing and reports a dead tunnel we are killing on purpose.
+  m_livenessTimer.stop();
+  m_handshakeTimer.stop();
+
   // Deactivate the main interface.
   if (!m_connections.isEmpty()) {
     const ConnectionState& state = m_connections.first();
@@ -629,6 +660,12 @@ void Daemon::checkHandshake() {
       }
       if (status.m_handshake != 0) {
         connection.m_date.setMSecsSinceEpoch(status.m_handshake);
+        // Seed the liveness sample from the handshake we just observed, so the
+        // first check five seconds from now compares against something real.
+        connection.m_lastTxBytes = status.m_txBytes;
+        connection.m_lastRxBytes = status.m_rxBytes;
+        connection.m_stalledSamples = 0;
+        connection.m_quickRecoveryAttempts = 0;
         emit connected(status.m_pubkey);
       }
     }
@@ -641,5 +678,120 @@ void Daemon::checkHandshake() {
   // Check again if there were connections that haven't completed a handshake.
   if (pendingHandshakes > 0) {
     m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
+  } else if (!m_connections.isEmpty()) {
+    // Everything has handshaked: hand over to the watchdog, which is the only
+    // thing that will notice if the tunnel dies from here on.
+    m_livenessTimer.start();
   }
+}
+
+void Daemon::checkLiveness() {
+  Q_ASSERT(wgutils() != nullptr);
+
+  if (m_connections.isEmpty() || !wgutils()->interfaceExists()) {
+    m_livenessTimer.stop();
+    return;
+  }
+
+  const QList<WireguardUtils::PeerStatus> peers = wgutils()->getPeerStatus();
+  const qint64 now = QDateTime::currentMSecsSinceEpoch();
+
+  for (ConnectionState& connection : m_connections) {
+    const InterfaceConfig& config = connection.m_config;
+
+    for (const WireguardUtils::PeerStatus& status : peers) {
+      if (status.m_pubkey != config.m_serverPublicKey) {
+        continue;
+      }
+
+      const qint64 txDelta = status.m_txBytes - connection.m_lastTxBytes;
+      const qint64 rxDelta = status.m_rxBytes - connection.m_lastRxBytes;
+      connection.m_lastTxBytes = status.m_txBytes;
+      connection.m_lastRxBytes = status.m_rxBytes;
+
+      // Anything coming back means the far end is alive, whatever the counters
+      // did before. This is also what keeps an idle tunnel from being declared
+      // dead: the persistent keepalive is answered even when the user is doing
+      // nothing.
+      if (rxDelta > 0) {
+        connection.m_stalledSamples = 0;
+        connection.m_quickRecoveryAttempts = 0;
+        continue;
+      }
+
+      // We are sending and hearing nothing back. One sample is a blip, several
+      // in a row is a black hole.
+      if (txDelta > 0) {
+        connection.m_stalledSamples++;
+      }
+
+      const qint64 handshakeAge =
+          status.m_handshake > 0 ? now - status.m_handshake : -1;
+      const bool handshakeStale =
+          handshakeAge > HANDSHAKE_STALE_MSEC || status.m_handshake == 0;
+      const bool blackHole = connection.m_stalledSamples >= BLACKHOLE_SAMPLES;
+
+      // Every sample where nothing came back, whether or not it is bad enough
+      // to act on. Only reaches the log file when the user has switched logging
+      // on, and it is what makes an intermittent drop diagnosable afterwards.
+      logger.debug() << QString("liveness: tx +%1 rx +%2, handshake %3 s ago, "
+                                "silent samples %4/%5")
+                            .arg(txDelta)
+                            .arg(rxDelta)
+                            .arg(handshakeAge < 0 ? -1 : handshakeAge / 1000)
+                            .arg(connection.m_stalledSamples)
+                            .arg(BLACKHOLE_SAMPLES);
+
+      if (!handshakeStale && !blackHole) {
+        continue;
+      }
+
+      const QString reason = blackHole
+          ? QString("black hole: sent %1 bytes over %2 samples, received none")
+                .arg(txDelta)
+                .arg(connection.m_stalledSamples)
+          : QString("stale handshake: last one %1 s ago")
+                .arg(handshakeAge < 0 ? -1 : handshakeAge / 1000);
+
+      if (!tryQuickRecovery(config, reason)) {
+        // The cheap fix did not take. Tell the client, which owns the server
+        // configuration and can rebuild the tunnel from it.
+        logger.warning() << "Tunnel is not recovering, handing over to the "
+                            "client for a full reconnect";
+        m_livenessTimer.stop();
+        emit disconnected();
+        return;
+      }
+
+      connection.m_quickRecoveryAttempts++;
+      connection.m_stalledSamples = 0;
+    }
+  }
+}
+
+bool Daemon::tryQuickRecovery(const InterfaceConfig& config,
+                              const QString& reason, int attempt) {
+  Q_ASSERT(wgutils() != nullptr);
+
+  if (attempt >= QUICK_RECOVERY_ATTEMPTS) {
+    return false;
+  }
+
+  // Built with arg() rather than streamed: LogStreamer has no int overload, so
+  // a negative number would silently arrive as a huge unsigned one.
+  logger.warning() << QString("Tunnel looks dead - %1 - forcing a new "
+                             "handshake, attempt %2 of %3")
+                              .arg(reason)
+                              .arg(attempt + 1)
+                              .arg(QUICK_RECOVERY_ATTEMPTS);
+
+  // Re-sending the peer makes the tunnel renegotiate. The interface, the
+  // routes and the kill switch are left alone, so there is no gap for traffic
+  // to leak through and nothing for the user to notice.
+  if (!wgutils()->updatePeer(config)) {
+    logger.error() << "Failed to re-send the peer configuration";
+    return false;
+  }
+
+  return true;
 }
