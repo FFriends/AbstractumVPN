@@ -15,7 +15,7 @@ set(PROJECT AbstractumVPN)
 # component stays 0, so a development build never claims to be newer than a
 # published release. It must stay a number either way: the Windows resource
 # below expands VERSION_TWEAK into FILEVERSION, which needs four of them.
-set(AMNEZIAVPN_VERSION 5.0.0)
+set(AMNEZIAVPN_VERSION 5.0.1)
 if(DEFINED ENV{ABSTRACTUM_BUILD_NUMBER} AND NOT "$ENV{ABSTRACTUM_BUILD_NUMBER}" STREQUAL "")
     set(AMNEZIAVPN_VERSION ${AMNEZIAVPN_VERSION}.$ENV{ABSTRACTUM_BUILD_NUMBER})
 else()
