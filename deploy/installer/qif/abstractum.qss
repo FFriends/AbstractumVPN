@@ -67,7 +67,9 @@ QLabel[objectName="SubTitleLabel"] {
 
 QPushButton {
     background-color: transparent;
-    color: #6E7681;
+    /* 5.78:1. The previous #6E7681 sat at 4.31:1, under the 4.5:1 a control
+     * carrying a label should clear. */
+    color: #878B91;
     border: 1px solid #232A31;
     padding: 7px 16px;
     font-size: 11px;
@@ -84,7 +86,10 @@ QPushButton:pressed {
 }
 
 QPushButton:disabled {
-    color: #2E353C;
+    /* Disabled is meant to read as unavailable, not as absent: #2E353C came to
+     * 1.59:1 and the button simply vanished into the background. 3.28:1 still
+     * reads as switched off next to an active one at 5.78:1. */
+    color: #5A646E;
     border-color: #161B20;
 }
 
@@ -115,7 +120,9 @@ QLineEdit:focus {
 }
 
 QLineEdit:disabled {
-    color: #4d5760;
+    /* Same reasoning as the disabled button above, and the same value so the
+     * two read as one state rather than two. */
+    color: #5A646E;
 }
 
 /* Licence text and the installation log. */
@@ -184,7 +191,11 @@ QListWidget {
     background-color: #0A0A0A;
     border: 0;
     border-right: 1px solid #232A31;
-    color: #39424B;
+    /* Was #39424B, which came to 1.94:1 against this background - the steps
+     * were there but unreadable. The current step stays the accent colour at
+     * 10.28:1, so the hierarchy survives the step that is not current becoming
+     * legible. */
+    color: #878B91;
     font-size: 11px;
     outline: 0;
 }
