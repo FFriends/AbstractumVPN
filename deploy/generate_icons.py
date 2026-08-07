@@ -39,9 +39,35 @@ BARS = [
 RADIUS = 4
 SS = 4  # supersampling factor
 
+# Backing plate for the application icon. The bare mark is three thin bars on
+# transparency, and a shortcut has to survive whatever the user set as their
+# wallpaper - on a light or busy one the mark washed out. Everything below is in
+# the same 64-unit space as the bars.
+#
+# Not used by the tray icons: those are state indicators sitting on the system's
+# own panel, and a plate there would read as a second, competing icon.
+PLATE = (28, 29, 33, 255)           # #1C1D21 onyx, same as the iOS background
+PLATE_EDGE = (62, 93, 117, 255)     # #3E5D75, keeps the plate off a dark wallpaper
+PLATE_RADIUS = 14                   # ~22% of the side: a rounded square, not a circle
+PLATE_EDGE_WIDTH = 1
+MARK_SCALE = 0.74                   # the mark shrinks to leave a margin inside the plate
 
-def render(size, background=None):
-    """Draw the mark at `size` px. Opaque `background` disables alpha."""
+# Below this the margin costs more than it buys: at 16 px a mark at 0.74 leaves
+# bars a pixel and a half tall, and the middle one merges into the top one. Small
+# sizes get more of the plate and no edge - a one-pixel outline there eats a
+# sixteenth of the icon.
+SMALL_SIZE = 24
+SMALL_MARK_SCALE = 0.88
+
+
+def render(size, background=None, plate=True):
+    """Draw the mark at `size` px.
+
+    `plate` puts the mark on a rounded square. `background` fills the whole
+    canvas opaquely and is meant for iOS, which rejects an alpha channel and
+    applies its own rounded mask - drawing our own plate under that mask would
+    show a rounded square inside a rounded square.
+    """
     big = size * SS
     scale = big / 64.0
     mode = "RGBA"
@@ -49,10 +75,36 @@ def render(size, background=None):
     img = Image.new(mode, (big, big), base)
     draw = ImageDraw.Draw(img)
 
+    # The mark keeps its proportions and moves to the centre of the plate.
+    small = size < SMALL_SIZE
+    if plate:
+        mark = SMALL_MARK_SCALE if small else MARK_SCALE
+    else:
+        mark = 1.0
+    offset = 32.0 * (1.0 - mark)
+
+    if plate:
+        if small:
+            draw.rounded_rectangle(
+                [0, 0, big - 1, big - 1],
+                radius=PLATE_RADIUS * scale,
+                fill=PLATE,
+            )
+        else:
+            inset = PLATE_EDGE_WIDTH * scale / 2
+            draw.rounded_rectangle(
+                [inset, inset, big - 1 - inset, big - 1 - inset],
+                radius=PLATE_RADIUS * scale,
+                fill=PLATE,
+                outline=PLATE_EDGE,
+                width=max(1, int(round(PLATE_EDGE_WIDTH * scale))),
+            )
+
     for x, y, w, h, colour in BARS:
         draw.rounded_rectangle(
-            [x * scale, y * scale, (x + w) * scale, (y + h) * scale],
-            radius=RADIUS * scale,
+            [(offset + x * mark) * scale, (offset + y * mark) * scale,
+             (offset + (x + w) * mark) * scale, (offset + (y + h) * mark) * scale],
+            radius=RADIUS * mark * scale,
             fill=colour,
         )
 
@@ -152,7 +204,7 @@ def main():
     ios = [20, 29, 40, 50, 57, 58, 60, 72, 76, 80, 87,
            100, 114, 120, 144, 152, 167, 180, 1024]
     for s in ios:
-        write(render(s, background=ONYX),
+        write(render(s, background=ONYX, plate=False),
               "client", "ios", "app", "Media.xcassets",
               "AppIcon.appiconset", f"{s}.png")
 
