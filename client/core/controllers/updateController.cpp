@@ -141,7 +141,16 @@ void UpdateController::fetchLatestRelease()
             return;
         }
 
-        if (error != QNetworkReply::NoError || !parseRelease(body) || !isNewVersionAvailable()) {
+        if (error != QNetworkReply::NoError || !parseRelease(body)) {
+            finishUpdateCheck();
+            return;
+        }
+
+        if (!isNewVersionAvailable()) {
+            // Split out of the failure branch above on purpose: this is the one
+            // case where we actually know the answer, and the manual check in
+            // the settings has to be able to say so.
+            emit updateNotFound();
             finishUpdateCheck();
             return;
         }
@@ -163,6 +172,19 @@ QString UpdateController::normalizedVersion(const QString &tagName)
     const qsizetype dash = version.indexOf(QLatin1Char('-'));
     if (dash != -1) {
         version.truncate(dash);
+    }
+
+    // A second release within the same ISO week keeps the version it was built
+    // with and gets a ".2", ".3" ... suffix on the tag alone - four components
+    // is all the Windows FILEVERSION resource accepts, so the version itself
+    // cannot grow. That suffix is not a version component and must not be read
+    // as one: "5.0.0.2632.3" parses as five components and compares greater
+    // than the installed "5.0.0.2632", so the client offers an update to the
+    // build it is already running, and keeps offering it forever.
+    QStringList components = version.split(QLatin1Char('.'));
+    if (components.size() > 4) {
+        components = components.mid(0, 4);
+        version = components.join(QLatin1Char('.'));
     }
 
     return QVersionNumber::fromString(version).isNull() ? QString() : version;

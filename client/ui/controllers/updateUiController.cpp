@@ -4,7 +4,17 @@ UpdateUiController::UpdateUiController(UpdateController* updateController, QObje
     : QObject(parent), m_updateController(updateController)
 {
     if (m_updateController) {
-        connect(m_updateController, &UpdateController::updateFound, this, &UpdateUiController::updateFound);
+        connect(m_updateController, &UpdateController::updateFound, this, [this]() {
+            m_manualCheck = false;
+            emit updateFound();
+        });
+        connect(m_updateController, &UpdateController::updateNotFound, this, [this]() {
+            if (!m_manualCheck) {
+                return;
+            }
+            m_manualCheck = false;
+            emit updateNotFound();
+        });
     }
 }
 
@@ -50,6 +60,7 @@ QString UpdateUiController::getVersion() const
 void UpdateUiController::checkForUpdates()
 {
     if (m_updateController) {
+        m_manualCheck = true;
         m_updateController->checkForUpdates();
     }
 }

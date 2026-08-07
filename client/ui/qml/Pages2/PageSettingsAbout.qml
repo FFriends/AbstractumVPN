@@ -14,6 +14,16 @@ import "../Components"
 PageType {
     id: root
 
+    Connections {
+        target: UpdateController
+
+        // The drawer with the changelog opens by itself when there is something
+        // to install, so only the empty answer needs a word here.
+        function onUpdateNotFound() {
+            PageController.showNotificationMessage(qsTr("You are running the latest version"))
+        }
+    }
+
     BackButtonType {
         id: backButton
 
@@ -137,7 +147,12 @@ PageType {
                 text: qsTr("Check for updates")
 
                 clickedFunc: function() {
-                    Qt.openUrlExternally("https://github.com/FFriends/AbstractumVPN/releases/latest")
+                    // Used to open the releases page in a browser, which asked
+                    // the system for a handler and failed outright on a machine
+                    // with no default browser - while the application already
+                    // carries a full update check of its own.
+                    PageController.showNotificationMessage(qsTr("Checking for updates"))
+                    UpdateController.checkForUpdates()
                 }
             }
 

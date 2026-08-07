@@ -25,6 +25,12 @@ public slots:
 signals:
     void updateFound();
 
+    // Emitted when the check completed and the published release is not newer
+    // than what is running. Deliberately not emitted on a network failure or on
+    // a rate limit: "you are up to date" and "we could not find out" are
+    // different answers, and only the first one is this signal.
+    void updateNotFound();
+
 private:
     void finishUpdateCheck();
 
@@ -36,7 +42,9 @@ private:
     bool parseRelease(const QByteArray &json);
 
     // "v5.0.0.2631" -> "5.0.0.2631". Also copes with the older tag shape
-    // "v5.0.0.5-2026w31", where everything from the dash on is not a version.
+    // "v5.0.0.5-2026w31", where everything from the dash on is not a version,
+    // and with "v5.0.0.2632.3", where the trailing ".3" only disambiguates a
+    // second release published in the same week.
     static QString normalizedVersion(const QString &tagName);
 
     // Picks the installer for this platform out of the release assets by file

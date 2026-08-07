@@ -25,9 +25,15 @@ public slots:
 
 signals:
     void updateFound();
+    void updateNotFound();
 
 private:
     UpdateController* m_updateController;
+
+    // The check that runs by itself at startup must stay silent. Only a check
+    // the user asked for is allowed to answer "nothing new", otherwise every
+    // launch would greet them with a notification.
+    bool m_manualCheck = false;
 };
 
 #endif // UPDATEUICONTROLLER_H
