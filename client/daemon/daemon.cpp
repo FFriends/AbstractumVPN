@@ -753,7 +753,8 @@ void Daemon::checkLiveness() {
           : QString("stale handshake: last one %1 s ago")
                 .arg(handshakeAge < 0 ? -1 : handshakeAge / 1000);
 
-      if (!tryQuickRecovery(config, reason)) {
+      if (!tryQuickRecovery(config, reason,
+                            connection.m_quickRecoveryAttempts)) {
         // The cheap fix did not take. Tell the client, which owns the server
         // configuration and can rebuild the tunnel from it.
         logger.warning() << "Tunnel is not recovering, handing over to the "
