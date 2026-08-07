@@ -18,6 +18,7 @@ No accounts, no subscriptions, no operator in the middle.
 
 [Download](https://github.com/FFriends/AbstractumVPN/releases) ·
 [How it works](#how-it-works) ·
+[Step by step](#step-by-step) ·
 [Build from source](#building)
 
 [Русский](README_RU.md)
@@ -54,6 +55,36 @@ The part that makes this different from every other client: **it provisions the 
 Enter an address, a login and a password or key. The client SSHes in, installs Docker if
 it is missing, builds the container for the protocol you picked, and connects. Removing it
 later is one button.
+
+## Step by step
+
+What the first run actually looks like. Nothing here is typed on the server.
+
+**1. Have a machine ready.** Any VPS or box of your own with a fresh Linux on it, and the SSH
+details for it: address, user, and either a password or a private key. That is the whole
+prerequisite — see [What the server needs](#what-the-server-needs) below.
+
+**2. Open the client and press "Let's get started".** The next screen offers two ways in: paste
+a ready configuration, or set up a server of your own. Choose the second.
+
+**3. Enter the SSH details.** Address in `host:port` form, user name, then password or key.
+Press "Continue". The client logs in, checks the user can use `sudo`, and looks at whether the
+machine is busy installing something else.
+
+**4. Pick a protocol** on the "VPN protocol" screen. AmneziaWG if you have no reason to prefer
+another. This is the only protocol decision you have to make now — more can be added later.
+
+**5. Wait.** The client installs Docker if it is missing, builds the container, opens the port
+in the host firewall and connects. Usually a few minutes. There is a cancel button throughout.
+
+At this point you have a working VPN and can stop reading.
+
+**6. Adding a service afterwards — AmneziaDNS as the example.** Settings → your server →
+the **Services** tab → **AmneziaDNS** → install. Same SSH session, same "wait a few minutes",
+no configuration to write. Every service in the table below is added this way, one at a time.
+
+The **Protocols** tab next to it does the same for a second protocol, and **Management** holds
+removal — of one container, or of everything the client ever put there.
 
 ## What the server needs
 
@@ -93,8 +124,7 @@ actually deployed.
 
 **None of these are installed by default.** Pick a protocol and you get that protocol and
 nothing else. The list below is what you *may* add afterwards, one at a time, if you happen to
-want it — open the server in Settings, go to its **Services** tab, choose one, and the client
-installs it over the same SSH session. Removing it is the same button.
+want it — the path through the interface is step 6 above. Removing it is the same button.
 
 | | |
 |---|---|
