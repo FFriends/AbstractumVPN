@@ -1,7 +1,11 @@
 #!/bin/bash
 
 APP_NAME=AbstractumVPN
-ORG_NAME=AbstractumVPN.ORG
+# Must equal ORGANIZATION_NAME in version.h - Qt builds every user-data path as
+# <base>/$ORG_NAME/$APP_NAME. This said "AbstractumVPN.ORG" until 07.08.2026,
+# a name the application never writes to, so nothing under the user's home was
+# ever actually removed.
+ORG_NAME=AbstractumVPN
 LOG_FOLDER=/var/log/$APP_NAME
 LOG_FILE="$LOG_FOLDER/post-uninstall.log"
 APP_PATH=/opt/$APP_NAME
@@ -70,18 +74,40 @@ if test -f "$LOG_FOLDER/AbstractumVPN-service.log"; then
     sudo rm -f "$LOG_FOLDER/AbstractumVPN-service.log" >> $LOG_FILE 2>&1
 fi
 
-### Remove user logs for current user only
+### Remove everything the application wrote into the user's home, so the machine
+### looks as if AbstractumVPN had never been installed. Every path below is named
+### after this product only - an Amnezia Client installed alongside keeps its own
+### settings, servers and logs.
+###
+### Current user only: another account keeps its copy.
 TARGET_HOME="$HOME"
 if [ -n "$SUDO_USER" ] && [ "$SUDO_USER" != "root" ]; then
     TARGET_HOME=$(getent passwd "$SUDO_USER" | cut -d: -f6)
 fi
-if test -d "$TARGET_HOME/.local/share/$ORG_NAME/$APP_NAME/log"; then
-    rm -rf "$TARGET_HOME/.local/share/$ORG_NAME/$APP_NAME/log" >> $LOG_FILE 2>&1
+
+### Server list, logs and the OpenVPN config
+if test -d "$TARGET_HOME/.local/share/$ORG_NAME"; then
+    rm -rf "$TARGET_HOME/.local/share/$ORG_NAME" >> $LOG_FILE 2>&1
+    echo "Removed user data under .local/share/$ORG_NAME" >> $LOG_FILE
 fi
 
-# Try to remove empty app and organization directories under user share
-if rmdir "$TARGET_HOME/.local/share/$ORG_NAME/$APP_NAME" 2>/dev/null; then :; fi
-if rmdir "$TARGET_HOME/.local/share/$ORG_NAME" 2>/dev/null; then :; fi
+### Settings written by QSettings
+if test -d "$TARGET_HOME/.config/$ORG_NAME"; then
+    rm -rf "$TARGET_HOME/.config/$ORG_NAME" >> $LOG_FILE 2>&1
+    echo "Removed settings under .config/$ORG_NAME" >> $LOG_FILE
+fi
+
+### Autostart entry, written when the user enables "launch on login"
+if test -f "$TARGET_HOME/.config/autostart/$APP_NAME.desktop"; then
+    rm -f "$TARGET_HOME/.config/autostart/$APP_NAME.desktop" >> $LOG_FILE 2>&1
+    echo "Removed autostart entry" >> $LOG_FILE
+fi
+
+### Settings encryption key, if a secret service is in use. Absent on machines
+### without one - on Linux the settings are not encrypted anyway.
+if command -v secret-tool &> /dev/null; then
+    secret-tool clear service "$APP_NAME-Keychain" >> $LOG_FILE 2>&1
+fi
 
 if command -v steamos-readonly &> /dev/null; then
 	sudo steamos-readonly enable >> $LOG_FILE
