@@ -239,7 +239,10 @@ Logger::LogStreamer::~LogStreamer()
     case LogLevel::Error: logLevelString = "[ERROR]"; break;
     }
 
-    const QString message = QString("%1 %2 Amnezia %3 : %4")
+    // The product name sits on every single line, so it has to be ours: these
+    // files get sent to us for diagnosis, and a foreign brand on each of them
+    // is both wrong and confusing about which client produced them.
+    const QString message = QString("%1 %2 " APPLICATION_NAME " %3 : %4")
                                     .arg(QDateTime::currentDateTimeUtc().toString("[yyyy-MM-dd hh:mm:ss.zzzZ]"),
                                          logLevelString, m_logger->className(), m_data->m_buffer.trimmed());
 
