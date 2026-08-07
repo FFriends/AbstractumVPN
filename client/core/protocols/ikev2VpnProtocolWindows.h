@@ -41,7 +41,10 @@ public:
     ErrorCode start() override;
     void stop() override;
 
-    static QString tunnelName() { return "AmneziaVPN IKEv2"; }
+    // Becomes the RAS phonebook entry Windows stores. Shared with an AmneziaVPN
+    // installed next to this one, the two clients would edit and dial the same
+    // entry.
+    static QString tunnelName() { return "AbstractumVPN IKEv2"; }
 
 public:
     void newConnectionStateEventReceived(UINT unMsg,

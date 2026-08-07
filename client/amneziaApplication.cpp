@@ -268,7 +268,11 @@ bool AmneziaApplication::parseCommands()
 
 #if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS) && !defined(MACOS_NE)
 void AmneziaApplication::startLocalServer() {
-    const QString serverName("AmneziaVPNInstance");
+    // Names the socket that makes a second launch raise the running window
+    // instead of starting a second copy. Sharing it with an AmneziaVPN
+    // installed next to this one means starting one of them raises the other's
+    // window - and removeServer() below would delete a socket that is not ours.
+    const QString serverName(QStringLiteral(APPLICATION_NAME "Instance"));
     QLocalServer::removeServer(serverName);
 
     QLocalServer *server = new QLocalServer(this);

@@ -12,6 +12,7 @@
 #include <QPointer>
 
 #include "daemon/wireguardutils.h"
+#include "version.h"
 #include "windowsroutemonitor.h"
 #include "windowstunnelservice.h"
 
@@ -30,7 +31,11 @@ class WireguardUtilsWindows final : public WireguardUtils {
   QString interfaceName() override {
     return WireguardUtilsWindows::s_interfaceName();
   }
-  static const QString s_interfaceName() { return "AmneziaVPN"; }
+  // Becomes the name of the network adapter Windows shows. Must stay in step
+  // with VPN_NAME in windowscommons.cpp, which looks the adapter up by this
+  // name - and must differ from AmneziaVPN's, or two installed clients end up
+  // fighting over one adapter.
+  static const QString s_interfaceName() { return APPLICATION_NAME; }
   bool addInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
 

@@ -120,7 +120,11 @@ using ProcessInfo = struct {
 
 constexpr static const auto DRIVER_SYMLINK = L"\\\\.\\MULLVADSPLITTUNNEL";
 constexpr static const auto DRIVER_FILENAME = "mullvad-split-tunnel.sys";
-constexpr static const auto DRIVER_SERVICE_NAME = L"AmneziaVPNSplitTunnel";
+// Registered as a Windows service, so the name has to be ours: an AmneziaVPN
+// installed next to this one registers its own driver service, and a shared
+// name means whichever client installs second fails or takes over the first
+// one's service.
+constexpr static const auto DRIVER_SERVICE_NAME = L"AbstractumVPNSplitTunnel";
 constexpr static const auto MV_SERVICE_NAME = L"MullvadVPN";
 
 #pragma endregion
@@ -618,7 +622,7 @@ std::vector<uint8_t> WindowsSplitTunnel::generateProcessBlob() {
 
 // static
 SC_HANDLE WindowsSplitTunnel::installDriver() {
-  LPCWSTR displayName = L"Amnezia Split Tunnel Service";
+  LPCWSTR displayName = L"AbstractumVPN Split Tunnel Service";
   QFileInfo driver(qApp->applicationDirPath() + "/" + DRIVER_FILENAME);
   if (!driver.exists()) {
     logger.error() << "Split Tunnel Driver File not found "

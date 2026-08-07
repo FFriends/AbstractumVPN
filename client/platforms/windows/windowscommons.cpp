@@ -19,8 +19,17 @@
 
 #include "logger.h"
 #include "platforms/windows/windowsutils.h"
+#include "version.h"
 
-constexpr const char* VPN_NAME = "AmneziaVPN";
+// Names the tunnel configuration directory and the network adapter, so it has
+// to be ours: an AmneziaVPN installed next to this one owns a directory and an
+// adapter of its own, and sharing either name would make the two clients pick
+// up each other's state.
+constexpr const char* VPN_NAME = APPLICATION_NAME;
+
+// Not ours and deliberately left alone - this is where the AmneziaWG driver
+// itself installs, the same way AmneziaDNS keeps its name. Renaming it would
+// only mean failing to find the driver's log.
 constexpr const char* WIREGUARD_DIR = "AmneziaWG";
 constexpr const char* DATA_DIR = "Data";
 
@@ -57,7 +66,7 @@ QString WindowsCommons::tunnelConfigFile() {
 
     QDir vpnDir(dir.filePath(VPN_NAME));
     if (!vpnDir.exists() && !dir.mkdir(VPN_NAME)) {
-      logger.debug() << "Failed to create path Amnezia under" << path;
+      logger.debug() << "Failed to create path" << VPN_NAME << "under" << path;
       continue;
     }
 
@@ -132,9 +141,13 @@ int WindowsCommons::AdapterIndexTo(const QHostAddress& dst) {
 // static
 int WindowsCommons::VPNAdapterIndex() {
   // For someReason QNetworkInterface::fromName(MozillaVPN) does not work >:(
+  //
+  // Matching on VPN_NAME rather than a literal matters when an AmneziaVPN is
+  // installed next to this one: its adapter would otherwise match here, and the
+  // kill switch would be applied to somebody else's tunnel.
   auto adapterList = QNetworkInterface::allInterfaces();
   for (const auto& adapter : adapterList) {
-    if (adapter.humanReadableName().contains("AmneziaVPN")) {
+    if (adapter.humanReadableName().contains(VPN_NAME)) {
       return adapter.index();
     }
   }

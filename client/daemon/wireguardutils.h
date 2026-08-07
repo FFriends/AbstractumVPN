@@ -14,7 +14,19 @@
 
 #include "interfaceconfig.h"
 
-constexpr const char* WG_INTERFACE = "amn0";
+// Name of the local tunnel interface on Linux. Must differ from AmneziaVPN's
+// "amn0", or two clients installed on one machine create and tear down the same
+// interface behind each other's back.
+//
+// Careful: this constant is duplicated in
+// platforms/linux/daemon/linuxroutemonitor.cpp and spelled out as a literal in
+// linuxfirewall.cpp and wireguardutilslinux.cpp. Both have internal linkage, so
+// changing one and missing the others compiles cleanly and breaks the tunnel at
+// runtime. Grep for the value, not for the name.
+//
+// Unrelated to the "amn0" in server_scripts/prepare_host.sh - that is the
+// Docker bridge on the server and part of the contract with Amnezia Client.
+constexpr const char* WG_INTERFACE = "abs0";
 
 class WireguardUtils : public QObject {
   Q_OBJECT

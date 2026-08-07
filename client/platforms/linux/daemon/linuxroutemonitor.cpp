@@ -39,7 +39,8 @@ typedef struct wg_allowedip {
     struct wg_allowedip *next_allowedip;
 } wg_allowedip;
 
-constexpr const char* WG_INTERFACE = "amn0";
+// Duplicate of the constant in daemon/wireguardutils.h - keep the two equal.
+constexpr const char* WG_INTERFACE = "abs0";
 
 static void nlmsg_append_attr(struct nlmsghdr* nlmsg, size_t maxlen,
                               int attrtype, const void* attrdata,

@@ -15,9 +15,15 @@
 #include "platforms/windows/windowsutils.h"
 #include "windowsdaemon.h"
 
+// The "AmneziaWG" segment is dictated by the amneziawg-windows driver and is
+// not ours to rename. The last segment must match the suffix of
+// TUNNEL_SERVICE_NAME ("AmneziaWGTunnel$AbstractumVPN") - the tunnel service
+// opens the pipe under that name, so the two drift apart silently if only one
+// is changed. It used to say AmneziaVPN here, which is also the pipe an
+// AmneziaVPN installed next to this one opens.
 #define TUNNEL_NAMED_PIPE \
   "\\\\."                 \
-  "\\pipe\\ProtectedPrefix\\Administrators\\AmneziaWG\\AmneziaVPN"
+  "\\pipe\\ProtectedPrefix\\Administrators\\AmneziaWG\\AbstractumVPN"
 
 constexpr uint32_t WINDOWS_TUNNEL_MONITOR_TIMEOUT_MSEC = 2000;
 
@@ -148,7 +154,7 @@ bool WindowsTunnelService::start(const QString& configData) {
 
   logger.debug() << "Service:" << qApp->applicationFilePath();
 
-  service = CreateService(scm, TUNNEL_SERVICE_NAME, L"Amnezia VPN (tunnel)",
+  service = CreateService(scm, TUNNEL_SERVICE_NAME, L"AbstractumVPN (tunnel)",
                           SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
                           SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
                           (const wchar_t*)serviceCmdline.utf16(), nullptr, 0,
@@ -159,7 +165,7 @@ bool WindowsTunnelService::start(const QString& configData) {
   }
 
   SERVICE_DESCRIPTION sd = {
-      (wchar_t*)L"Manages the Amnezia VPN tunnel connection"};
+      (wchar_t*)L"Manages the AbstractumVPN tunnel connection"};
 
   if (!ChangeServiceConfig2(service, SERVICE_CONFIG_DESCRIPTION, &sd)) {
     WindowsUtils::windowsLog(

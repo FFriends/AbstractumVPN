@@ -165,11 +165,15 @@ bool WindowsFirewall::initSublayer() {
   }
   auto cleanup = qScopeGuard([&] { FwpmEngineClose0(wfp); });
 
+  // Only the display names are ours to choose. The sublayers themselves are
+  // keyed by the GUIDs above, which come from the split tunnel driver headers
+  // and are therefore shared with any other client built on the same driver -
+  // renaming here makes the log readable, it does not separate the sublayers.
   return ensureSublayer(wfp, ST_FW_WINFW_BASELINE_SUBLAYER_KEY,
-                        L"Amnezia-SplitTunnel-Sublayer",
+                        L"AbstractumVPN-SplitTunnel-Sublayer",
                         L"Filters that enforce a good baseline") &&
          ensureSublayer(wfp, ST_FW_WINFW_DNS_SUBLAYER_KEY,
-                        L"Amnezia-SplitTunnel-DNS-Sublayer",
+                        L"AbstractumVPN-SplitTunnel-DNS-Sublayer",
                         L"DNS filters for split tunneling");
 }
 
@@ -215,7 +219,7 @@ bool WindowsFirewall::enableInterface(int vpnAdapterIndex) {
   FW_OK(allowDHCPTraffic(MED_WEIGHT, "Allow DHCP Traffic"));
   FW_OK(allowHyperVTraffic(MAX_WEIGHT, "Allow Hyper-V Traffic"));
   FW_OK(allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT,
-                                "Allow all for AmneziaVPN.exe"));
+                                "Allow all for AbstractumVPN.exe"));
   FW_OK(blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS"));
   FW_OK(allowLoopbackTraffic(MED_WEIGHT,
                              "Allow Loopback traffic on device %1"));

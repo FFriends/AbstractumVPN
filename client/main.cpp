@@ -25,10 +25,14 @@ void anchorOpenSSL() {
 #if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS) && !defined(MACOS_NE)
 bool isAnotherInstanceRunning()
 {
+    // Paired with startLocalServer() in amneziaApplication.cpp - the two must
+    // spell the socket the same way. They used to say "AmneziaVPNInstance",
+    // which is also what an AmneziaVPN installed next to this one listens on:
+    // launching this client would then find that one and refuse to start.
     QLocalSocket socket;
-    socket.connectToServer("AmneziaVPNInstance");
+    socket.connectToServer(QStringLiteral(APPLICATION_NAME "Instance"));
     if (socket.waitForConnected(500)) {
-        qWarning() << "AmneziaVPN is already running";
+        qWarning() << APPLICATION_NAME << "is already running";
         return true;
     }
     return false;
