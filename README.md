@@ -58,37 +58,113 @@ later is one button.
 
 ## Step by step
 
-What the first run actually looks like. Nothing here is typed on the server.
+### First, the thing everyone trips over: you install nothing on the server
 
-**1. Have a machine ready.** Any VPS or box of your own with a fresh Linux on it, and the SSH
-details for it: address, user, and either a password or a private key. That is the whole
-prerequisite — see [What the server needs](#what-the-server-needs) below.
+**You download nothing onto the server, run nothing there, and never log into it yourself.**
+There is nothing to install by hand. The downloads on this page are a program for **your own
+computer**, and not one byte of them ends up on the server.
 
-**2. Open the client and press "Let's get started".** The next screen offers two ways in: paste
-a ready configuration, or set up a server of your own. Choose the second.
+Whatever the server needs, the program puts there itself: it connects over the network, runs
+the commands for you, and disconnects. Your part is typing the server's address and password
+into four fields.
 
-**3. Enter the SSH details.** Address in `host:port` form, user name, then password or key.
-Press "Continue". The client logs in, checks the user can use `sudo`, and looks at whether the
-machine is busy installing something else.
+There are two machines in this story, and they are easy to confuse:
 
-**4. Pick a protocol** on the "VPN protocol" screen. AmneziaWG if you have no reason to prefer
-another. This is the only protocol decision you have to make now — more can be added later.
+| | What it is | What you do with it |
+|---|---|---|
+| **Your computer** | The Windows or Linux machine in front of you | Download and install AbstractumVPN from the releases page |
+| **The server** | Someone else's computer in a data centre that you rent | **Nothing.** You only find out its address and password and type them into the program |
 
-**5. Wait.** The client installs Docker if it is missing, builds the container, opens the port
-in the host firewall and connects. Usually a few minutes. There is a cancel button throughout.
+### Step 1. Rent a server
 
-At this point you have a working VPN and can stop reading.
+What you need is a **VPS** — a virtual private server, meaning you pay to rent a slice of a
+machine in a data centre and get full control of it. Usually 3–5 dollars a month. There are
+many providers; we recommend none of them, because we have no arrangement with anyone.
 
-**6. Adding a service afterwards — AmneziaDNS as the example.** Settings → your server →
-the **Services** tab → **AmneziaDNS** → install. Same SSH session, same "wait a few minutes",
-no configuration to write. Every service in the table below is added this way, one at a time.
+What to choose when ordering:
 
-The **Protocols** tab next to it does the same for a second protocol, and **Management** holds
-removal — of one container, or of everything the client ever put there.
+- **Operating system: Linux.** Ubuntu, Debian, Fedora, CentOS, openSUSE or Arch all work. If
+  you have no opinion, take the latest **Ubuntu** — it is the ordinary choice.
+- **Location: the country you want to appear to be in.** Closer to you means faster.
+- **Size: the smallest one.** A VPN barely loads a server.
+- **It must be an empty server**, not one already running something of yours.
+
+After you pay, the provider sends three things. They are everything you need:
+
+| What arrives | What it looks like | Where it goes later |
+|---|---|---|
+| The server's IP address | `203.0.113.17` | the "Server IP address" field |
+| A user name | usually `root` | the login field |
+| A password | a string of characters | the password field |
+
+Some providers hand you an SSH key file instead of a password. The program takes that too.
+
+### Step 2. Install the program on your own computer
+
+Download a file from the [releases page](https://github.com/FFriends/AbstractumVPN/releases)
+and run it, like any other program.
+
+| Your computer | Which file |
+|---|---|
+| Windows | `AbstractumVPN_*_windows_x64.exe` |
+| Linux | `AbstractumVPN_*_linux_x64.run` |
+
+Windows will warn about an unknown publisher. It will keep doing that until the project pays
+for a signing certificate.
+
+### Step 3. Type in the server details
+
+Open the program and press **"Let's get started"**. It asks where the connection comes from —
+choose the option about **your own server**, not the one about a ready-made configuration.
+
+Then four fields, all of it straight from the provider's email:
+
+1. **Server IP address** — the address from the email, for example `203.0.113.17`. You do not
+   need a port: unless the provider told you otherwise, the program uses the standard one. If
+   they did, add it after a colon: `203.0.113.17:2222`.
+2. **Login** — usually `root`.
+3. **Password** — from the email. Or paste the whole key, including the `BEGIN` and `END` lines.
+4. Press **"Continue"**.
+
+The program connects and checks that the access works and that the server is not busy with
+another installation. If something does not add up, it says what.
+
+### Step 4. Choose a protocol
+
+The **"VPN protocol"** screen appears. If you do not know which to take, take **AmneziaWG** —
+it is first in the list and suits most people. Others can be added later; the server can hold
+several.
+
+### Step 5. Wait
+
+From here the program does everything itself: logs in, installs Docker, builds the VPN, opens
+the port and connects. Usually **three to ten minutes**, longest on a slow server. Progress is
+on screen, with a cancel button next to it.
+
+When the bar finishes, the VPN works. You can stop reading here.
+
+### Step 6. Later: add a service, for example AmneziaDNS
+
+Optional. If you also want your lookups of website names to stop going to your provider:
+
+**Settings** → your server → the **"Services"** tab → **AmneziaDNS** → install.
+
+A few minutes of waiting again, and again nothing to configure by hand. Everything else in the
+table below is added the same way, one at a time.
+
+The **"Protocols"** tab next to it adds a second protocol, and **"Management"** removes things —
+one container, or everything the program ever put on that server.
+
+### If something goes wrong
+
+Ask in the chat attached to [@AbstractumMind](https://t.me/AbstractumMind), in English or
+Russian. The link is in the program too, under "About".
 
 ## What the server needs
 
-Any Linux machine you control, reachable over SSH. Nothing is pre-configured by hand.
+The precise version of [step 1](#step-1-rent-a-server), for readers who want the requirements
+rather than the shopping advice. Any Linux machine you control, reachable over SSH. Nothing is
+pre-configured by hand.
 
 | | |
 |---|---|
@@ -142,18 +218,13 @@ desktop client — nothing from them is installed on the server.
 
 ## Install
 
-Grab a build from [Releases](https://github.com/FFriends/AbstractumVPN/releases).
-
-| | |
-|---|---|
-| **Windows** | `AbstractumVPN_*_windows_x64.exe` |
-| **Linux** | `AbstractumVPN_*_linux_x64.run` |
+Which file to take is in [step 2](#step-2-install-the-program-on-your-own-computer) above. What
+is worth knowing beyond that:
 
 Every release is published as a pre-release while the project is young. GitHub's "latest"
 shortcut only ever points at a stable release, so it resolves to nothing here — the releases
 page itself is the place to look.
 
-Builds are not code-signed yet, so Windows SmartScreen will warn about an unknown publisher.
 macOS, Android and iOS are not built at the moment: the code supports them, the signing
 certificates and store accounts do not exist.
 
