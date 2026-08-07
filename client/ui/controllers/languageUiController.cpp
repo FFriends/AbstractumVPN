@@ -55,20 +55,35 @@ LanguageSettings::AvailableLanguageEnum LanguageUiController::getSystemLanguageE
     }
 }
 
-// The project has no website and no documentation site of its own, so both of
-// these point at the Telegram channel, where the linked chat answers questions
-// in Russian and English. There is nothing to select a locale by: it is one
-// address for every language.
+// The project has no website of its own, but it does have a README with a
+// walkthrough for people setting up a VPN for the first time. The setup wizard
+// asks for exactly one path - "starter-guide" - and that is what it gets;
+// anything else lands on the repository front page, which renders the same
+// README.
 //
-// "path" is kept only so the QML call sites need not change, and is ignored -
-// there are no sections to address. Should a documentation site ever appear,
-// this is the single place that has to learn about it.
+// The Russian README is a translation rather than a shorter version, so a
+// Russian interface is sent to it. "blob/HEAD" follows the default branch, so
+// this survives a branch rename.
+//
+// The fragments are the anchors GitHub derives from the walkthrough headings.
+// Rename a heading and this link quietly lands at the top of the page instead -
+// nothing reports it, so the headings and these two strings change together.
 QString LanguageUiController::getCurrentSiteUrl(const QString &path) const
 {
-    Q_UNUSED(path)
-    return QStringLiteral("https://t.me/AbstractumMind");
+    const QString repository = QStringLiteral("https://github.com/FFriends/AbstractumVPN");
+
+    if (path == QLatin1String("starter-guide")) {
+        const bool isRussian = m_settingsController->getAppLanguage().language() == QLocale::Russian;
+        return isRussian ? repository + QStringLiteral("/blob/HEAD/README_RU.md#по-шагам")
+                         : repository + QStringLiteral("#step-by-step");
+    }
+
+    return repository;
 }
 
+// No documentation site exists, so these keep pointing at the Telegram channel,
+// where the linked chat answers questions in Russian and English. One address
+// for every language - there is nothing to select a locale by.
 QString LanguageUiController::getCurrentDocsUrl(const QString &path) const
 {
     Q_UNUSED(path)
