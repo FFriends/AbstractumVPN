@@ -78,10 +78,12 @@ after about five minutes, it stops with an error instead of waiting forever.
 | **AmneziaWG** | The default. WireGuard speed, with obfuscation so the traffic does not look like WireGuard |
 | **WireGuard** | Fast and simple, when nothing is inspecting your traffic |
 | **OpenVPN** | Mature and widely understood. Slower |
-| **OpenVPN over Cloak** | Makes the connection resemble ordinary HTTPS |
-| **OpenVPN over Shadowsocks** | Another masking layer, useful where Cloak is blocked |
-| **XRay** | Deep packet inspection evasion |
-| **IKEv2** | Built into Windows, no extra driver |
+| **XRay** | Deep packet inspection evasion, using REALITY |
+| **IKEv2 / IPsec** | Built into Windows, no extra driver |
+
+**Cloak and Shadowsocks are gone.** Upstream dropped both before our fork point, so neither can
+be deployed any more. A server that still runs one is recognised and listed, and the client
+tells you the protocol is no longer supported — it does not pretend to connect.
 
 `AmneziaWG` and `AmneziaDNS` keep their names on purpose: they are components you install on
 your own server, not our branding. Renaming them would leave you unable to recognise what you
@@ -100,9 +102,13 @@ installs it over the same SSH session. Removing it is the same button.
 | **SFTP storage** | A private file share on the server |
 | **SOCKS5 proxy** | For applications that speak SOCKS but not VPN |
 | **MTProxy** | A Telegram proxy running on your server, for handing out access to other people |
-| **Website in Tor** | Publishes a site of yours as an onion service |
+| **Telemt** | The same idea, a newer Telegram proxy written in Rust |
+| **Website in Tor** | Runs a WordPress site on your server and publishes it as an onion address. Opening that address needs Tor Browser — an ordinary browser cannot resolve `.onion` |
 
-There is no manual setup guide for any of them, because there is nothing to set up manually.
+There is no manual setup guide for any of them, because there is nothing to set up by hand.
+You never log into the server yourself and you never copy anything onto it: the client opens an
+SSH session, builds the container there and closes it. The downloads on this page are the
+desktop client — nothing from them is installed on the server.
 
 ## Install
 
