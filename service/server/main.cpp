@@ -30,8 +30,14 @@ int runApplication(int argc, char** argv)
         }
 
         if (!tokens.empty() && tokens[0] == "tunneldaemon") {
-            WindowsDaemonTunnel *daemon = new WindowsDaemonTunnel();
-            daemon->run(tokens);
+            // This process exists only to host the WireGuard tunnel, and run()
+            // blocks inside tunnel.dll for as long as the tunnel lives. Falling
+            // through to LocalServer once it returns started a second copy of
+            // the entire service stack - IPC host, daemon local server, network
+            // watcher, kill switch - inside a process the SCM already considers
+            // stopped.
+            WindowsDaemonTunnel daemon;
+            return daemon.run(tokens);
         }
     }
 #endif
