@@ -28,8 +28,6 @@ public:
         HasInstalledContainers,
 
         IsServerFromGatewayApiRole,
-        IsSubscriptionExpiredRole,
-        IsSubscriptionExpiringSoonRole,
     };
 
     ServersModel(QObject *parent = nullptr);

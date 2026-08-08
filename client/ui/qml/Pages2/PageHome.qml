@@ -282,7 +282,12 @@ PageType {
                     spacing: 0
 
                     BasicButtonType {
-                        enabled: (ServersUiController.defaultServerImagePathCollapsed !== "") && drawer.isCollapsedStateActive
+                        // Used to also require a country flag to be present, and
+                        // the flag only ever came from a subscription server. With
+                        // that layer gone the condition was never true, so the
+                        // button was permanently dead and there was no way into
+                        // the server settings from here.
+                        enabled: drawer.isCollapsedStateActive
                         hoverEnabled: enabled
 
                         implicitHeight: 36
@@ -301,9 +306,6 @@ PageType {
                         buttonTextLabel.font.weight: 400
 
                         text: drawer.isCollapsedStateActive ? ServersUiController.defaultServerDescriptionCollapsed : ServersUiController.defaultServerDescriptionExpanded
-                        leftImageSource: ServersUiController.defaultServerImagePathCollapsed
-                        leftImageColor: ""
-                        changeLeftImageSize: false
 
                         rightImageSource: hoverEnabled ? "qrc:/images/controls/chevron-down.svg" : ""
 

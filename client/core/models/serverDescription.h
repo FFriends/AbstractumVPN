@@ -2,7 +2,6 @@
 #define SERVERDESCRIPTION_H
 
 #include <QString>
-#include <QJsonArray>
 #include <QJsonObject>
 
 #include "core/utils/containerEnum.h"
@@ -31,22 +30,12 @@ struct ServerDescription
     DockerContainer defaultContainer = DockerContainer::None;
     bool hasInstalledVpnContainers = false;
 
-    bool isApiV1 = false;
-    bool isApiV2 = false;
+    // The only survivor of the gateway/subscription era. A few QML pages still
+    // ask it in order to hide settings that make no sense for a server the user
+    // does not own; nothing sets it any more, so it is always false, and the
+    // branches behind it are unreachable. Removing it means rewriting those
+    // pages, which is a separate piece of work.
     bool isServerFromGatewayApi = false;
-    bool isPremium = false;
-
-    bool isCountrySelectionAvailable = false;
-    QJsonArray apiAvailableCountries;
-    QString apiServerCountryCode;
-
-    bool isAdVisible = false;
-    QString adHeader;
-    QString adDescription;
-    QString adEndpoint;
-    bool isRenewalAvailable = false;
-    bool isSubscriptionExpired = false;
-    bool isSubscriptionExpiringSoon = false;
 
     QString collapsedServerDescription;
     QString expandedServerDescription;

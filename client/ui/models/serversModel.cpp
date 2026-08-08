@@ -74,10 +74,6 @@ QVariant ServersModel::data(const QModelIndex &index, int role) const
         return row.hasInstalledVpnContainers;
     case IsServerFromGatewayApiRole:
         return row.isServerFromGatewayApi;
-    case IsSubscriptionExpiredRole:
-        return row.isSubscriptionExpired;
-    case IsSubscriptionExpiringSoonRole:
-        return row.isSubscriptionExpiringSoon;
     }
 
     return QVariant();
@@ -136,8 +132,6 @@ QHash<int, QByteArray> ServersModel::roleNames() const
     roles[HasInstalledContainers] = "hasInstalledContainers";
 
     roles[IsServerFromGatewayApiRole] = "isServerFromGatewayApi";
-    roles[IsSubscriptionExpiredRole] = "isSubscriptionExpired";
-    roles[IsSubscriptionExpiringSoonRole] = "isSubscriptionExpiringSoon";
 
     return roles;
 }
