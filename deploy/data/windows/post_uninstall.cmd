@@ -3,10 +3,9 @@ rem Full uninstall: the machine should look as if AbstractumVPN had never been
 rem installed. Everything below is named after this product only - an AmneziaVPN
 rem installed alongside keeps its own services, settings and credentials.
 rem
-rem Deliberately NOT removed: the service "AmneziaVPNSplitTunnel", left behind by
-rem builds of ours from before the rename. That name is indistinguishable from a
-rem live Amnezia installation's own service, so deleting it here would break the
-rem neighbour. Remove it by hand if Amnezia is not installed.
+rem The one service with an ambiguous name, "AmneziaVPNSplitTunnel", is handled
+rem near the end of this file - by what its driver file is, not by what it is
+rem called.
 rem
 rem This runs as the uninstalling user: another user's profile keeps its copy of
 rem the settings.
@@ -15,6 +14,12 @@ set "ORG_DIR=%AppData%\AbstractumVPN"
 set "USER_APP_DIR=%ORG_DIR%\AbstractumVPN"
 set "LOCAL_DIR=%LocalAppData%\AbstractumVPN"
 set "SYS_APP_DIR=%ProgramData%\AbstractumVPN"
+
+rem The directory this script is running from, i.e. the installation directory.
+rem Needed in two places below, so it is worked out once here.
+set "INSTALL_DIR=%~dp0"
+if "%INSTALL_DIR:~-1%"=="\" set "INSTALL_DIR=%INSTALL_DIR:~0,-1%"
+for %%I in ("%INSTALL_DIR%") do set "INSTALL_LEAF=%%~nxI"
 
 timeout /t 1
 
@@ -80,6 +85,29 @@ if defined AMNEZIA_PRESENT goto :keep_driver_dir
 if exist "%AWG_DIR%" rmdir /S /Q "%AWG_DIR%"
 :keep_driver_dir
 
+rem --- Split tunnel service from our builds before the rename ---------------
+rem "AmneziaVPNSplitTunnel" is the name our own builds registered until
+rem 07.08.2026. A live Amnezia registers a service under exactly that name too,
+rem so the name proves nothing - but the driver file behind it does. It is a
+rem kernel driver service, and its ImagePath points at the installation
+rem directory of whichever client created it.
+rem
+rem So: remove it only when its driver lives in the directory being uninstalled
+rem right now. On a machine where both clients are installed this still answers
+rem correctly, which "is Amnezia present" cannot - and that machine is the only
+rem kind that has this leftover at all.
+rem
+rem ImagePath is read straight from the registry rather than parsed out of
+rem "sc qc": the registry value has no human-readable formatting to depend on.
+set "LEGACY_ST=AmneziaVPNSplitTunnel"
+set "ABS_INSTALL_DIR=%INSTALL_DIR%"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$key = 'HKLM:\SYSTEM\CurrentControlSet\Services\' + $env:LEGACY_ST; $image = (Get-ItemProperty -Path $key -Name ImagePath -ErrorAction SilentlyContinue).ImagePath; if ($image -and $image -like ('*' + $env:ABS_INSTALL_DIR + '*')) { exit 0 }; exit 1" >nul 2>&1
+if errorlevel 1 goto :keep_legacy_service
+
+sc stop %LEGACY_ST%
+sc delete %LEGACY_ST%
+:keep_legacy_service
+
 rem --- The installation directory itself ------------------------------------
 rem maintenancetool.exe cannot delete itself while it is running, so it hands
 rem that to a step of its own after exit - and that step is NOT elevated. Under
@@ -90,10 +118,6 @@ rem This script is elevated, so it starts a detached waiter: wait for
 rem maintenancetool to exit, then remove the directory. The name is checked
 rem first - this is a recursive delete, and the path comes from wherever the
 rem script happens to be running.
-set "INSTALL_DIR=%~dp0"
-if "%INSTALL_DIR:~-1%"=="\" set "INSTALL_DIR=%INSTALL_DIR:~0,-1%"
-for %%I in ("%INSTALL_DIR%") do set "INSTALL_LEAF=%%~nxI"
-
 if /i not "%INSTALL_LEAF%"=="AbstractumVPN" goto :done
 
 start "" /b powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command "Set-Location $env:SystemRoot; Get-Process -Name maintenancetool -ErrorAction SilentlyContinue | Wait-Process -Timeout 300 -ErrorAction SilentlyContinue; Start-Sleep -Seconds 3; Remove-Item -LiteralPath '%INSTALL_DIR%' -Recurse -Force -ErrorAction SilentlyContinue" >nul 2>&1
