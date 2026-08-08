@@ -383,6 +383,18 @@ bool WindowsSplitTunnel::start(int inetAdapterIndex, int vpnAdapterIndex) {
 }
 
 void WindowsSplitTunnel::stop() {
+  // Clearing a configuration the driver never received fails, and it is called
+  // on every connection that has no excluded apps - which is most of them. The
+  // driver is opened whether or not split tunneling is used, so the object
+  // existing says nothing about there being anything to clear; only the state
+  // does.
+  const auto state = getState();
+  if (state < STATE_READY) {
+    logger.debug() << "Split tunnel has no configuration to clear, state:"
+                   << stateString();
+    return;
+  }
+
   DWORD bytesReturned;
   auto ok = DeviceIoControl(m_driver, IOCTL_CLEAR_CONFIGURATION, nullptr, 0,
                             nullptr, 0, &bytesReturned, nullptr);

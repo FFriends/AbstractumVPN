@@ -188,9 +188,19 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   }
 
   // Exclude the server address, except for multihop exit servers.
+  //
+  // Each address is checked first: IPAddress(QString) built from an empty
+  // string keeps the sentinel prefix length 999999, and the route it produces
+  // is rejected with "invalid parameter". A server without an IPv6 address is
+  // the normal case, so that used to put an [ERROR] line in the service log on
+  // every single connection - in the log we read to diagnose broken tunnels.
   if (m_routeMonitor && config.m_hopType != InterfaceConfig::MultiHopExit) {
-    m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
-    m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+    if (!config.m_serverIpv4AddrIn.isEmpty()) {
+      m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
+    }
+    if (!config.m_serverIpv6AddrIn.isEmpty()) {
+      m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+    }
   }
 
   QString reply = m_tunnel.uapiCommand(message);
